@@ -58,6 +58,9 @@ button{font:inherit;color:inherit}
 .detail .block{margin:0 0 12px;font-size:14px}
 .detail .block strong{display:block;font:700 14px var(--serif);margin-bottom:2px}
 .detail a{color:var(--river)}
+.model{margin:0 0 12px}
+.model iframe{width:100%;aspect-ratio:4/3;border:1px solid var(--rule);border-radius:3px;background:var(--paper-2)}
+.model button{border:1px solid var(--ink);background:var(--paper);border-radius:3px;padding:6px 10px;cursor:pointer;font-size:14px}
 .grade{display:inline-block;font-weight:600}
 .empty{font:italic 15px var(--serif);color:var(--ink-2)}
 details{margin-top:6px}
@@ -243,6 +246,15 @@ Promise.all(['config.json','historic_features.geojson','river_1883.geojson','mod
     const block = (title, node) => { if (!node || (typeof node==='string' && !node)) return; const b = el('div',{class:'block'}, el('strong',{text:title})); b.append(node); d.append(b); };
     block('How it is placed', p.evidence);
     if (p.notes) block('Notes', p.notes);
+    if (p.model) {
+      const m = el('div',{class:'model'}, el('strong',{text:'Drone model today'}));
+      const btn = el('button',{type:'button', text:'Show 3D drone model'});
+      btn.addEventListener('click', () => {
+        btn.replaceWith(el('iframe',{src:'https://sketchfab.com/models/' + p.model + '/embed?autostart=1&ui_infos=0', title:'3D drone model of ' + p.name, allow:'autoplay; fullscreen; xr-spatial-tracking', allowfullscreen:'', loading:'lazy'}));
+      });
+      m.append(btn, el('p',{class:'small', text:'Photogrammetry of the site as it is today (Sketchfab).'}));
+      d.append(m);
+    }
     if (p.photos) block('Images', linkList(p.photos));
     block('Sources', p.sources);
   }

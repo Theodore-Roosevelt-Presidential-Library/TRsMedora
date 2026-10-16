@@ -1,0 +1,447 @@
+date,page,building,owner_or_business,event,dims_ft,stories,material,location_text,town,quote,confidence
+1884-02-07,4,abattoir,NPRC,mention,,,,,Medora,"as soon as the backbone of winter is broken, the abattoir will be thoroughly cleaned and overhauled",medium
+1884-02-07,4,Marquis brick block (planned),Marquis de Mores,planned,,2,brick,,Medora,"the Marquis will build a brick block, containing two large store rooms on the ground floor, the floors above being used for offices; a boarding house and restaurant also on the list; besides a fine billiard hall. Numerous small ...",medium
+1884-02-07,4,Hotel de Mores,G. W. Fitzgerald prop.,ad,,,,a few steps from the depot,Medora,"[Hotel de Mores] THE BEST HOTEL IN MEDORA ... Located centrally, but a few steps from the depot (ad repeated through 1884)",medium
+1884-02-14,4,slaughter house,NPRC,mention,,,,,Medora,About fifteen head of beef cattle are killed at the slaughter house every day,high
+1884-02-14,5,Hotel de Mores,Marquis,mention,,,,,Medora,The dance at the Hotel de Mores last Saturday evening ... given by the many friends of Lloyd Roberts,high
+1884-02-14,5,brick buildings (planned),,planned,,,brick,,Medora,"no definite arrangements made for a brick kiln here ... Besides the brick buildings already contracted for, others are being figured on",high
+1884-02-21,1,"J. A. Freeze, contractor and builder",J. A. Freeze,ad,,,,Little Missouri; residence at Cantonment,Little Missouri,"J. FREEZE, Contractor and Builder, LITTLE MISSOURI, DAK. All kinds of Carpenter Work ... Residence at Cantonment",medium
+1884-02-21,4,Fitzgerald restaurant,J. J.[?] Fitzgerald,mention,,,,,Medora,worked for Mr. J. J. [?] Fitzgerald in his restaurant,low
+1884-02-21,4,abattoir,NPRC / Z. Hyde foreman,addition planned,,,,,Medora,"Many additions will be made in the spring, and facilities for slaughtering a hundred cattle a day will be added",high
+1884-02-21,4,ice house (Medora),NPRC,mention,,,,,Medora,outfit which put up the ice here and afterward went to Miles City to build the ice-house,medium
+1884-02-21,4,The Senate saloon,,mention,,,,,Medora,"look at the ""Senate,"" smell the slaughter house, and think of the many changes here within a year",high
+1884-02-21,4,company store,NPRC,mention,,,,,Medora,"Mr. Frank Keeler, who has been occupying Mr. Porter's place in the Co's. store",high
+1884-02-28,4,streets (scoria),Paddock and Roberts,improvement,,,scoria,,Medora,"haul fifty or seventy-five loads of scoria and distribute it along the streets, thus forming a good road-bed",high
+1884-02-28,4,Pyramid Park Hotel,[Paddock?] & Frank Moore,remodel,,2,,,Little Missouri,gone into partnership with Frank Moore to run the Pyramid Park Hotel. Many improvements ... cutting up the second floor into rooms,medium
+1884-03-06,1,Pennell & Roberts hall (Little Missouri),Pennell & Roberts,mention (stockmen's meeting),,,,,Little Missouri,"meeting held at Little Missouri in Pennell & Roberts' hall, Thursday afternoon, Feb. 28",medium
+1884-03-13,4,freight depot/freight house,Marquis / NPRC,planned,100x32,,frame?,,Medora,"The following buildings will be begun immediately: freight-house 100 by 32, six dwelling-houses, restaurant, billiard hall and lodging house. Lumber is ordered",high
+1884-03-13,4,six residence houses,Marquis,planned,,,,,Medora,a freight depot should be erected here immediately ... Six residence houses are also to be built at the same time,high
+1884-03-13,4,Pyramid Park Hotel,Paddock,mention,,,,,Little Missouri,dance at the Pyramid Park hotel last Friday evening was an event in the social history of Little Missouri,high
+1884-03-20,4,Kennedy store (planned),"""Boomer"" Kennedy",planned,,2,,,Little Missouri,Boomer Kennedy was down from Little Missouri this week and thinks of erecting a two-story store this season,high
+1884-03-20,4,west bank houses,Little Missouri,mention,,,,,Little Missouri,"saving the western bank, which threatens to wash away and dump several houses into the river",medium
+1884-03-27,4,Ferris dry goods store,J. A. Ferris,opened,,,,,Medora,J. A. Ferris who has opened a dry goods and notion store in the building formerly occupied by John Nelson,medium
+1884-03-27,4,depot,NP,mention,,,,,Medora,our night-man who keepeth watch during the darkest hour of night at the depot,medium
+1884-03-27,4,Little Missouri school fund,n/a,mention,,,,,Little Missouri,Those who have not paid their subscription to the School Fund of Little Missouri,medium
+1884-04-03,1,Pennell & Roberts hall (Little Missouri),Pennell & Roberts,mention (round-up meeting),,,,,Little Missouri,round-up meeting ... will be held ... at Pennell & Roberts' hall,medium
+1884-04-03,4,Hyde residence,Z. Hyde,built (in progress),,,,,Medora,Mr. Hyde will bring his family back and live at the Cantonment until his residence is completed,high
+1884-04-03,4,frame building south of Cow Boy office,A. T. Packard,for rent,,,frame,,Medora,"The frame building south of the Cow Boy office. For terms, apply to A. T. Packard",medium
+1884-04-03,4,brickyard (planned),Peter Book,planned,,,brick,,Medora,"a brick-yard and pottery works will soon be in active operation here. Mr. Peter Book, of Mandan",high
+1884-04-10,4,billiard hall (Roberts Hall),contract Thos. McClung,contract let,,,,,Medora,the contract for the new billiard hall has been awarded to Mr. Thos. McClung. A large amount of lumber is here,high
+1884-04-17,1,Hotel de Mores,n/a,mention (Republican county convention; stock association),,,,,Medora,The Republicans of Billings county met ... at the Hotel de Mores,high
+1884-04-17,4,Haines & Casey drug store,Haines & Casey of Glendive,opened (rented room),,,,,Medora,will rent the room now occupied by the N. P. Ref. Car Co. as a meat market. They will soon erect a building of their own,medium
+1884-04-17,4,NPRC meat market,NPRC,mention,,,,,Medora,the room now occupied by the N. P. Ref. Car Co. as a meat market,medium
+1884-04-17,4,Racek harness shop (planned),G. W. Racek,planned,,,brick,,Medora,bought one lot of us and reserved three others ... will erect a substantial brick building as soon as Mr. Book can get the brick ready,medium
+1884-04-17,4,Marquis garden / hot beds,Adolph Eyraud,mention,,,,,Medora,improvements in the bottom south of the Marquis' house. A large number of hot beds,high
+1884-04-17,4,Merchants National Bank (planned),"Stebbins, Fox & Co. [Deadwood]",lots sold,,,brick,corner of Third street and Broadway,Medora,"we sold four $250 lots to the Merchant's National Bank, of Deadwood. ... a substantial brick building will adorn the corner of Third street and Broadway",high
+1884-04-17,4,Pioneer Hotel,?,ad,,,,,Little Missouri,"Pioneer Hotel of Little Missouri, situated close to the depot",medium
+1884-04-24,4,Fitzgerald ice chest,Geo. Fitzgerald,built,,,,,Medora,Geo. Fitzgerald is having a large ice-chest built,high
+1884-04-24,4,Cow Boy office,A. T. Packard,painted,,,,,Medora,Painting is now the order of the day. The Cow Boy office is glistening in a new coat,medium
+1884-04-24,4,billiard hall (Roberts Hall),contract Thos. McClung,construction,,,,,Medora,Several new carpenters have arrived and work on the new billiard hall is being rapidly pushed,high
+1884-04-24,4,brickyard,Peter Book,begun,,,brick,south of town where the Deadwood trail separates from the river,Medora,"Lumber was bought immediately and work begun on the grounds, which are located south of town where the Deadwood trail separates from the river",medium
+1884-04-24,4,lots south of track,,lots for sale,,,,,Medora,The lots on the south side of the track have been priced and are now for sale at The Cow Boy office,high
+1884-04-24,4,saloon next door to Cow Boy office,?,opened,,,,,Medora,new dispensary of spirituous comfort ... Next door to The Cow Boy office,medium
+1884-05-01,4,abattoir,NPRC,addition planned,,,,,Medora,The work of overhauling and enlarging the abattoir will soon begin,high
+1884-05-01,4,Main Street,town,graded,,,,,Medora,The work of grading Main St. began this morning. It will be levelled and filled in,high
+1884-05-01,4,freight warehouse,NPRC / Marquis,site selected,,,brick (planned),south side of the track near the bluff,Medora,The site for the freight warehouse has been selected. It is on the south side of the track near the bluff. Work will begin as soon as the brick can be supplied by Mr. Book,high
+1884-05-01,4,billiard hall (Roberts Hall),McClung contractor,frame ready to raise,,,frame,,Medora,"The frame to the new billiard hall is almost ready to raise, but work has been interrupted by the storm",high
+1884-05-01,4,Cantonment,Z. Hyde family,mention (residence),,,,,Medora,Z. Hyde returned from Chicago ... with his wife and children. They are now keeping house at the Cantonment,high
+1884-05-01,4,depot,NP,mention,,,,,Medora,dead body ... on the north side of the track about a thousand feet east of the depot,high
+1884-05-01,4,town plat / lot price list,Medora townsite,lots for sale,,,,,Medora,We publish this week the price-list of lots. The plat can be seen at The Cow Boy office,high
+1884-05-01,4,town plat price list,Medora townsite (Cow Boy office agent),lots for sale,,,,"blocks 2–66 listed; typical block lots 1–24 (1–12 and 13–24); corner lots 1,12,13,24 priced higher ($100–$300)",Medora,"price-list of lots ... Blocks 63,64,65,66, all lots 100. Prices subject to change without notice",medium
+1884-05-08,4,Main Street,town,graded,,,,,Medora,No greater improvement could have been made for the money than that done on Main street by grading. The leveling and ditching were much needed,high
+1884-05-08,4,river dam below railroad bridge,NPRC,built,,,,,Medora,a dam has been built below the railroad bridge which throws the current toward the western bank,high
+1884-05-08,4,railroad bridge,NP,mention,,,,,Medora,below the railroad bridge,high
+1884-05-08,4,O'Sullivan barber shop,John O'Sullivan,lot bought / planned,,,,,Medora,John O'Sullivan has bought a lot and will soon begin the erection of a barber shop,high
+1884-05-08,4,harness shop (planned),[Racek? name illegible],lot bought,,,,,Medora,bought a business lot and will soon open a large harness [shop],low
+1884-05-08,4,billiard hall (Roberts Hall),McClung contractor,walls up,,,frame; hard finish inside; brown paper and clapboarding outside,,Medora,"The billiard hall has now assumed nearly its true proportions, the walls all being up and both floors in. There will be a hard finish inside and a thickness of brown paper and clapboarding outside",high
+1884-05-08,4,Fisher's buildings,[A. L.?] Fisher,construction,,,,,Medora,Sam English ... expects to go into one of Mr. Fisher's buildings when they are completed,high
+1884-05-08,4,company barn and corral,NPRC,mention (livery),,,,,Medora,Mr. Deffebach ... will use the company's barn and corral and additional stable room will be built,high
+1884-05-08,4,brickyard,Peter Book,operating,,,brick,,Medora,"The brickyard is now running on full time, ten thousand or more being turned out every day ... For the first kiln only fifty thousand will be burned",high
+1884-05-08,4,Cantonment,James Hannigan and wife,occupied,,,,,Medora,Mr. and Mrs. James Hannigan will begin keeping house to-day at the Cantonment,high
+1884-05-08,4,freight house (site),Marquis / Medora Forwarding,planned,,,brick (planned),"south side of the track, as near as possible to the butte",Medora,"The freight house will be built as soon as brick can be procured. It will stand on the south side of the track, as near as possible to the butte. For the present, freight will be stored in the ...",high
+1884-05-15,1,billiard hall (Roberts Hall),Pennell & Roberts,nearly finished,,,,,Medora,"The billiard hall is rapidly approaching completion. In fifteen days at the farthest, Pennell & Roberts expect to open it with a grand ball",high
+1884-05-15,1,Fisher & Van Driesche business building (three store rooms),J. C. Fisher and Wm. Van Driesche,planned,,,,,Medora,J. C. Fisher and Wm. Van Driesche will soon begin the erection of a building for business purposes. It will contain three store rooms and tenants are waiting already,high
+1884-05-15,1,abattoir,NPRC,addition planned,,,,,Medora,Additions will be made to the abattoir as soon as work is finished on the billiard hall. Facilities for slaughtering a hundred more head a day,high
+1884-05-15,1,depot agent,NP; C. L. Brinker replaces Spurrier,mention,,,,,Medora,"The new agent, Mr. Brinker, came yesterday to relieve Mr. Spurrier",high
+1884-05-15,1,lots sold,Medora townsite,lots sold,,,,,Medora,We have sold a number more valuable lots this week,high
+1884-05-15,4,Hotel de Mores,Marquis,improvements,,,,,Medora,improvements in the Hotel de Mores,low
+1884-05-15,4,slaughter house / dam,NPRC,mention,,,,,Medora,danger that the river would wash in too close to the slaughter-house but the building of the dam has averted it,high
+1884-05-15,4,company store room / carriage house -> meat market,NPRC,remodel,,,,,Medora,Part of the store room formerly used as a carriage house by the company has undergone a number of improvements and will be used temporarily as a meat market,high
+1884-05-15,4,company stable,NPRC; renter Bassie Deffebach,rented (livery),,,,,Medora,"Bassie Deffebach, of Spearfish, has rented the company's stable and will take possession June 1",high
+1884-05-15,4,O'Sullivan barber shop,O'Sullivan,begun,,,,,Medora,"O'Sullivan, the barber, has bought a lot and next Monday will begin the erection of a barber shop",high
+1884-05-15,4,Cantonment,Rev. Wm. Cooke,mention (services),,,,,Medora,Rev. Wm. Cooke's sermon at the Cantonment last Sunday evening,high
+1884-05-15,4,T. G. Jones lots,T. G. Jones of Deadwood,lots bought,,,,,Medora,he purchased four of our best business lots,high
+1884-05-15,4,brickyard,Peter J. Book,ad / mention,,,brick (white and red; moulded and re-pressed),,Medora,"Both white and red, mould and re-pressed brick will be made, and extensive pottery works will be built in the fall",high
+1884-05-15,4,building for rent in Little Missouri,via Cow Boy office,for rent,,,,,Little Missouri,"Building for Rent. Suitable for business building, situated in Little Missouri. Enquire at Cow Boy office",high
+1884-05-22,4,brickyard (first kiln),Peter Book,fired,,,brick,,Medora,The fire was started yesterday in the first brick kiln. Mr. Book has invented a new grate,high
+1884-05-29,4,telegraph office (night),NP,moved,,,,,unknown,The night telegraph office ... [on the other side] of the river has been moved to this side [?],low
+1884-05-29,4,E. G. Paddock residence,E. G. Paddock,built (in progress),,,,,Little Missouri,"E. G. Paddock [is] building a residence on his claim, about half [a mile from] the railroad [?]",low
+1884-05-29,4,billiard hall and theatre (Roberts Hall),Pennell & Roberts,nearly ready for plasterers,,,,,Medora,The billiard hall and theatre [is] nearly ready for the plasterers and will soon be ready for occupancy,medium
+1884-05-29,4,O'Sullivan barber shop and bath rooms,John O'Sullivan,planned,,,,,Medora,John O'Sullivan will begin the erection of his barbershop and bath rooms as soon as the lumber arrives [?],low
+1884-05-29,4,brickyard (first kiln),Peter Book,kiln opening,,,brick,,Medora,"Peter Book will open his first brick kiln ... Immediate use will be made of the first kiln in building foundations, etc.",low
+1884-06-05,4,billiard hall (Roberts Hall),,plastering,,,,,Medora,The plasterers for the billiard hall are expected in a day or two,high
+1884-06-05,4,windmill near Marquis' residence,Mr. Elder of St. Paul,planned,,,,Chateau de Mores (Marquis residence),Medora,"Mr. Elder, of St. Paul, is in town making preparations to put in a wind-mill near the Marquis' residence",medium
+1884-06-05,4,new freight house for railroad company,NP,planned,,,,,Medora,[a] new freight house for the railroad company will be built at the ... [text broken],low
+1884-06-05,4,Yankton Indian camp,n/a,mention,,,,,Medora,A party of Yankton Indians is in camp on the south side of the track,high
+1884-06-12,4,Pyramid Park Hotel,?,mention (dance),,,,,Little Missouri,The pillow-slip dance to be given by the young ladies at the Pyramid Park hotel to-night,high
+1884-06-12,4,N. P. coal mine,N. P. Coal Co.,damage,,,,,Medora,A serious mistake was made by the N. P. Coal Co. in removing the supports from their mine here. The roof is caving in,high
+1884-06-19,4,O'Sullivan barber shop,John O'Sullivan,built (in progress),,,,on his lot next to John Warn's [?] temperance [?] house,Medora,John O'Sullivan is building a barber shop on his lot next to John Warn's [?] tem[perance?] ...,low
+1884-06-19,4,Coleman & Brown boarding house,R. M. Coleman and C. F. Brown,lot bought/planned,,,,,Medora,R. M. Coleman and C. F. Brown have bought a lot and intend erecting a building for a boarding house,medium
+1884-06-19,4,Hotel de Mores,Marquis,mention (new cook),,,,,Medora,General P. D. Q. Sheridan will hereafter attend to the cuisine of the Hotel de Mores,medium
+1884-06-19,4,slaughter house cold-storage end,NPRC,foundation,,,,,Medora,A number of improvements have taken place at the slaughter house. A large foundation for the cold-storage end will be built immediately,medium
+1884-06-19,4,billiard hall and theatre (Roberts Hall),Pennell & Roberts,nearly finished,,,,,Medora,"The work on the new billiard hall and theatre building is about completed, the hard-finish coat being the only thing to finish. The house-warming and opening dance ... until the glorious fourth",high
+1884-06-26,4,Ferris store,Jos. [J. A.] Ferris,addition,,,,,Medora,Jos. Ferris is building a large addition to his store and intends to add a line of groceries,medium
+1884-06-26,4,Coleman & Brown restaurant,Coleman & Brown,construction,,,,,Medora,Coleman & Brown's restaurant is being rapidly completed,medium
+1884-06-26,4,theatre building (Roberts Hall),,mention (dance July 4),,,,,Medora,"trip the light fantastic in the theatre building, the evening of July 4th",high
+1884-06-26,4,billiard hall and theatre (Roberts Hall),Pennell & Roberts,finished (description),24x75; 26 ft high,2,"frame; board, paper and drop siding; double floor 2-1/2 in hard pine; three coats plaster","lot 7, block 17; in full view from the railroad",Medora,"It is located on lot 7, block 17 ... The dimensions of the building are 24x75, and 26 feet high. There are two full stories, each being twelve feet clear",high
+1884-06-26,4,Roberts Hall interior,Pennell & Roberts,description,,,,,Medora,"club room(s) lead off a hall extending to the rear. In the second story is the theatre, consisting of a large hall, a movable stage and two dressing rooms",medium
+1884-06-26,4,M. V. P. [?] side-track,NP,built,,,,,Medora,The M. V. P.[?] side-track is completed except for a little levelling,low
+1884-06-26,4,Marquis garden force-pump,Marquis / M. Eyraud,mention,,,,Chateau de Mores (Marquis residence),Medora,The force-pump in the Marquis' garden is working in excellent shape,high
+1884-06-26,4,Little Tom's Saloon,?,ad,,,,,Little Missouri,"LITTLE TOM'S SALOON ... LITTLE MISSOURI, DAK.",medium
+1884-07-03,4,Coleman & Brown restaurant,Coleman & Brown,nearly finished,,,,,Medora,"Coleman & Brown's restaurant building is nearly completed, and they promise a good square meal",high
+1884-07-03,4,Roberts & Co. billiard hall,Roberts & Co.,moved,,,,from Little Missouri to Medora (Roberts Hall ground floor),Medora,"Roberts & Co. have removed their billiard hall from Little Missouri to Medora, occupying the down stairs of the new hall building",high
+1884-07-03,4,railroad bridge,NP,mention,,,,,Medora,A passenger ... leaned out ... as the train was crossing the bridge ... his head collided with the bridge,high
+1884-07-03,4,new hall building,Roberts & Co.,opening,,,,,Medora,"Roberts & Co. are busily engaged moving into the new hall building, which will be formally opened with a grand ball on the 4th",medium
+1884-07-10,4,new hall (Roberts Hall),Roberts & Co.,opened,,,,,Medora,the new hall was formally opened with a grand ball ... about fifty couples present,medium
+1884-07-10,4,Montgomery's saloon addition,Bob Montgomery,addition,,,,unknown (Medora or Belfield),unknown,Bob Montgomery's neat addition looms up handsomely,low
+1884-07-10,4,Cantonment,n/a,mention (sketched),,,,,Medora,"sketches were taken here at the Cantonment, out on the Bad Lands and at the bend of the river above town",low
+1884-07-17,1,freight house (N. P. Stage & Forwarding Co.),Northern Pacific (bought quarter interest in townsite) and Marquis,begun (piles and sills),240x42,,frame on piles,,Medora,The N. P. inaugurated proceedings by buying a quarter interest in the townsite and in conjunction with the Marquis have organized the N. P. [Stage] & Forwarding Co. ... piles have been put in position and sills laid for ...,medium
+1884-07-17,1,town site,Northern Pacific; Marquis,quarter interest sold,,,,,Medora,The N. P. ... buying a quarter interest in the townsite,medium
+1884-07-17,4,store room across the river,[unknown],built,,,,,Little Missouri,... his new store room across the river,low
+1884-07-17,4,Cantonment school house,teacher [Sam.?] Williams,opened (school),,,,,Medora,"School has begun at the Cantonment school-house, with [?] Williams teacher. Twenty scholars were enrolled",low
+1884-07-24,4,freight house (Medora Forwarding / NPRC),Marquis,construction,,,,,Medora,One of the quickest jobs we have ever seen is the building of the new freight house here ... will probably be ready for occupancy next week,high
+1884-07-31,4,well at company stables,NPRC,dug,,,,,Medora,"[began] digging a well for the company at the stables and at three o'clock had a [spout?] in, discharging the best water",low
+1884-07-31,4,new hall (Roberts Hall),,mention (dance),,,,,Medora,hold one [dance] tomorrow evening at the new hall,high
+1884-08-07,4,Roberts/Paddock cottage,Bob Roberts and E. G. Paddock,built (in progress),,,,on the former's lot [by] the new hall,Medora,[Bob] Roberts and E. G. Paddock are building a cottage on the former's lot [by] the new hall,medium
+1884-08-07,4,cottage east of the new hall,rented by Bassie Deffebach,rented,,,,east of the new hall (Roberts Hall),Medora,Bassie [Deffebach] has rented the cottage east of the new hall,medium
+1884-08-14,4,"abattoir (new brick slaughter-house, planned)",NPRC,planned,,,brick,,Medora,The present abattoir and cooling rooms are entirely insufficient ... will be torn down to make room for buildings capable of killing and cooling five hundred head of cattle a day ... built entirely of brick,high
+1884-08-14,4,freight house,Medora Forwarding and Stage Co.,finished,,,,,Medora,"The freight house, capable of holding 225 carloads of freight, is all complete except the finishing touches",high
+1884-08-14,4,"stage stations, barns, corrals",Medora Forwarding and Stage Co.,built,,,,along Medora–Deadwood line,outside town,"a large force is now at work building stations, barns, corrals, etc.",high
+1884-08-14,4,new church (planned),Marquis/Marquise,contract,,,,,Medora,... new church ... contract for the erection of two [brick?] cottages has been awarded to ... Peter Book [?] ... asked to furnish plans and specifications for a handsome little [church?] to be built of brick,low
+1884-08-14,4,two brick cottages,Marquis; contractor Peter Book [?],contract let,,,brick,,Medora,the contract for the erection of two ... cottages has been awarded to [Peter Book?],low
+1884-08-14,4,Van Driesche bank,"[A.] Van Driesche, company cashier",planned,,,,,Medora,"Van Driesche, cashier ... for the company at this place, has the consent of the Marquis to ... conduct a general banking [business]",low
+1884-08-21,4,freight house,Capt. Wrenshaw / Medora Forwarding,addition,,,,,Medora,"The west end will be partitioned off into three rooms, and a platform will be built on the same end. A large derrick will also be erected",high
+1884-08-28,4,company lumber yard,NPRC / Marquis,fenced,,,,,Medora,The company's lumber yard has been enclosed by a high board fence,high
+1884-08-28,4,Garver hardware store and tin shop,J. D. Garver,opened (planned),,,,,Medora,"J. D. Garver, formerly of Bismarck, arrived here yesterday with his family and a stock of goods. He will open a hardware store and tin shop",high
+1884-08-28,4,depot (telegraph and ticket office roof),NP,storm damage,,,,,Medora,During the recent storm that portion of the roof of the depot covering the telegraph and ticket office [was damaged] ... The ceiling is good enough,medium
+1884-09-04,4,depot,NP,damaged (storm),,,,,Medora,[damage] done by the recent storm to the depot,low
+1884-09-04,4,Pyramid Park Hotel,?,mention (mass),,,,,Little Missouri,"Rev. Father Martin, of Mandan, was here Tuesday, and held mass at the Pyramid Park hotel",medium
+1884-09-04,4,abattoir,NPRC / Chas. Turner,cleaned,,,,,Medora,"Chas. Turner has made a general cleanup around the abattoir this week, and the nauseating odor ... thoroughly remedied",medium
+1884-09-18,1,Medora Stage & Forwarding office (in warehouse),"J. C. Fisher, local manager",built (partitioned office),,,,in the large warehouse [freight house],Medora,"Mr. J. C. Fisher, local manager of the Medora Stage and Forwarding company, is nicely ensconced in a cozy office which has been partitioned off from the large warehouse",high
+1884-09-18,1,stage stations,Medora Stage & Forwarding Co.,built,,,,Davis creek; Rocky Ridge,outside town,"Lumber for two more stations is being sent out, and stoves and other utensils have been distributed to stations already built",high
+1884-09-18,4,Catholic church (St. Mary's),Marchioness de Mores,built (in progress),,,,,Medora,"The new church is to be built by the Marchioness instead of the Marquis, as stated last week",medium
+1884-09-18,4,Jorgens drug store (temporary building),H. M. Jorgens,moved,,,,next to the company's [store/office?],Medora,H. M. Jorgens is daily expecting the arrival of his drug stock. The building which he is to occupy temporarily has been moved next to the company's ...,medium
+1884-09-18,4,Baron von Hoffmann brick cottage,Baron von Hoffmann,built (in progress),,,brick,,Medora,the new brick cottage the Baron von Hoffmann is building. Mr. Grymes is the happy recipient [?],low
+1884-09-18,4,Medora hall,n/a,mention (convention),,,,,Medora,"convention to be held at Medora hall on next Monday evening, September 22",medium
+1884-09-18,4,town building boom,n/a,mention,,,,,Medora,"buildings are going up in every part of town, and the building boom will undoubtedly continue for the next two or three months",medium
+1884-09-25,1,Roberts' hall,Roberts & Co.,mention (Republican convention),,,,,Medora,"a republican convention was held in Robert's hall at Medora on last Monday evening, September 22, 1884",high
+1884-09-25,4,brick cottages,Marquis,nearly finished,,,brick,,Medora,The brick cottages are rapidly nearing completion,high
+1884-09-25,4,O'Sullivan barber shop,John Sullivan,painted,,,,,Medora,John Sullivan ... is beautifying his tonsorial establishment with a coat of paint,high
+1884-09-25,4,Catholic church,Marquise de Mores,cornerstone laid,,,,,Medora,"The corner-stone of the new church was laid last Saturday afternoon ... inscribed ""Athenais,"" and on the other ""Medora Marquise de Mores, Sept 15, 1884""",medium
+1884-09-25,4,Pyramid Park Hotel,?,mention (dance),,,,,Little Missouri,The dance at the Pyramid Park hotel last Friday evening,high
+1884-10-02,4,Ferris warehouse,J. A. Ferris,built,,,,,Medora,J. A. Ferris' store not being adequate to hold his immense stock he has been compelled to build a large warehouse,medium
+1884-10-02,4,hospital (proposed),[Father Martin?],proposed,,,,,Medora,"It is estimated that the cost of the building will be $25,000 ... the only hospital between here and Brainerd",low
+1884-10-02,4,stage line schedule,Medora & Black Hills Stage,mention (timetable),,,,,Medora,"coaches will arrive Tuesdays, Thursdays and Saturdays at 6 p.m. connecting with westbound passenger train, and depart Mondays, Wednesdays and Fridays at 8:30 a.m., connecting with eastbound train",medium
+1884-10-09,4,Roberts Hall / Hotel de Mores,n/a,mention (dances),,,,,Medora,The dances at Roberts' Hall and Hotel de Mores ... were both well [attended],medium
+1884-10-09,4,new refrigerator (ice),NPRC,built (in progress),,,,,Medora,"[ice?] for the new refrigerator commenced yesterday. The Marquis telegraphed ordering 50 cords additional, making 300 cords",low
+1884-10-09,4,Pyramid Park Hotel,Boyd & [Alexander],reopened,,,,,Little Missouri,"Since the reopening of the Pyramid Park hotel, Little Missouri, by Boyd & [Alexander]",medium
+1884-10-16,4,Grymes brick dwelling,E. Grymes,built (in progress),,,brick,,Medora,The brick dwelling that is building for E. Grymes will afford a very com[fortable home?],medium
+1884-10-16,4,Pyramid Park Hotel,n/a,mention (goods sale),,,,,Little Missouri,"millinery and fancy goods ... Friday, October 17, at Pyramid Park hotel parlors. The ladies of Medora and Little Missouri are cordially invited",high
+1884-10-23,4,Hotel de Mores,Geo. Fitzgerald,fire (attempted arson),,,,,Medora,"[An attempt was] made to burn Hotel de Mores early this morning. About half-past 1 o'clock Mr. McClellan, a guest ... was awakened by smoke",medium
+1884-10-23,4,Pyramid Park Hotel,Boyd & Alexander,mention,,,,,Little Missouri,"The Pyramid Park hotel, Boyd & Alexander proprietors, doing a rushing [business]",medium
+1884-10-23,4,NPRC new cooler / slaughter and engine house,NPRC,planned,60x120 [?] (cooler),,,,Medora,The new cooler of the Northern Pacific Refrigerator Car company will be [6]0x120 feet. The company is also building a new slaughter and engine house,medium
+1884-10-30,4,Roberts Hall roller rink,Roberts,opened (planned),,,,,Medora,A roller rink will be opened in Roberts' hall,high
+1884-10-30,4,Roberts' building,Bob Roberts,raised (south side),,,,,Medora,Bob Roberts has had the south side of his building raised,medium
+1884-10-30,4,NPRC slaughter house (new),NPRC,begun (soon),,,,,Medora,The erection of the N. P. R. C. Co.'s slaughter house will be commenced shortly,high
+1884-10-30,4,Hotel de Mores,Geo. Fitzgerald,repaired (fire damage),,,,,Medora,The damage caused by fire to Hotel de Mores has been repaired,high
+1884-10-30,4,Catholic church,Marquise de Mores,blessed,,,,,Medora,"Next Sunday morning at 9:30 the new Catholic church will be blessed, and mass celebrated. Rev. Father Martin, of Mandan",high
+1884-10-30,4,new cooler foundation,NPRC,foundation delayed,,,cement,,Medora,Work on the foundation of the new cooler has been temporarily delayed by the non-arrival of cement,high
+1884-11-06,1,two brick cottages,NPRC / Marquis,finished,,,brick,,Medora,The two brick cottages are now finished and accepted by the company,high
+1884-11-06,1,Catholic church,Marquise de Mores,nearly finished,,,,,Medora,The church is receiving its finishing touches and will be entirely completed in a few days,high
+1884-11-06,1,Fisher two stores,J. C. Fisher,built (in progress),,,,"on Third avenue, near Main street",Medora,"Mr. J. C. Fisher is erecting two stores on Third avenue, near Main street",high
+1884-11-06,1,NPRC new buildings (lumber),NPRC,lumber arriving,,,,,Medora,The lumber for the new buildings of the N. P. R. C. Co. is arriving daily,high
+1884-11-06,1,stage stations (improvements),Medora Stage & Forwarding Co.,improved,,,,Medora–Deadwood line,outside town,"improving the stations, fencing hay stacks, plowing fire guards around stations, digging wells ... An additional station is being built between South Moreau and Indian Creek",high
+1884-11-06,4,Pyramid Park Hotel,Boyd & Alexander,partnership dissolved,,,,,Little Missouri,"[Boyd &] Alexander, of the Pyramid Park Hotel, Little Missouri, dissolved partnership on the 1st",medium
+1884-11-06,4,Catholic church,Marquise de Mores,finished/blessed,,,,,Medora,The Catholic church erected by the Marquise de Mores was [blessed] ... [bishop] here to dedicate the church early next spring,medium
+1884-11-06,4,Jorgens drug store,Dr. H. M. Jorgens,opened,,,,corner of Third avenue and Third street,Medora,H. M. Jorgens has opened a complete stock on the corner of Third avenue and Third street,high
+1884-11-13,4,Fisher buildings (two stores),"J. C. Fisher; tenants Charles Cook (confectioner), J. D. Garver (tinsmith)",nearly finished,,,,,Medora,"One of J. C. Fisher's buildings [is] nearly completed, and will be occupied in a few days by Mr. Cook. J. D. Garver will occupy the other as soon as completed",high
+1884-11-13,4,dug-out barn on coal mine butte,?,damaged,,dugout,,east side of coal mine butte,Medora,wandered upon the coal mine butte and out on the roof of the dug-out barn located on the east side. The roof caved in,high
+1884-11-13,4,Antelope stage station,Medora Forwarding and Stage Co.,built,,,,between South Moreau and Indian Creeks,outside town,A new station has been built on the stage line between South Moreau and Indian Creeks and will be called Antelope [?],medium
+1884-11-13,4,Roberts' hall roller rink,Roberts & Co.,opened,,,,,Medora,at the opening of the roller skating in Robert's hall ... a nail was not driven home in the floor,medium
+1884-11-20,1,Hotel de Mores dining room,Fitzgerald,mention (concert),,,,,Medora,"entertainment to-morrow night in the dining room of Hotel de Mores, kindly tendered him by Mr. Fitzgerald",high
+1884-11-20,1,Medora Hotel,"M. M. Coleman, proprietor",ad,,,,,Medora,"MEDORA HOTEL! M. M. COLEMAN, PROPRIETOR",medium
+1884-11-20,4,Roberts Hall,n/a,mention (Thanksgiving dance),,,,,Medora,The dance at Robert's hall on Thanksgiving Eve,high
+1884-11-20,4,Fisher buildings,J. C. Fisher,occupied,,,,,Medora,"One of them is occupied by Mr. Charles Cook, the confectioner, and the other will be taken by Mr. Garver, the tin smith",high
+1884-11-20,4,roller skating rink (Roberts Hall),Roberts & Co.,opened,,,,,Medora,the roller skating rink will be open on Tuesday and Friday afternoons and evenings,high
+1884-11-20,4,Cook confectionery,Charles Cook,opened,,,,[in J. C. Fisher's building],Medora,"Mr. Charles Cook wishes to announce ... a full stock of confectionery, nuts, fruits ... tobacco ... stationery",high
+1884-11-27,1,Roberts' hall,Roberts & Co.,mention (dance; school meeting),,,,,Medora,"a school will ... be held in Roberts' hall to-morrow, Saturday evening",medium
+1884-12-04,1,NPRC new slaughter and cold storage houses,NPRC; foreman John McGee; L. Ayers supt. for N.P.R.R.,nearly finished,refrigerator 40x130; slaughter house 60x[?]; corridor 36x180 [?]; passage way 18x80,,heavy timber frame; gravel roofs; ice house shingled,,Medora,"The main refrigerator building is 40x130 feet ... The slaughter house proper is 60x[?] feet. Besides these there will be a corridor 36x180 [?] feet, and a passage way 18x80 feet. All ... except the ice house will have ...",medium
+1884-12-04,1,Roberts Hall,n/a,mention (stockmen's meeting called Dec 19),,,,,Medora,"a meeting of the stockmen ... is hereby called to be held in Roberts Hall, Medora",high
+1884-12-04,4,Catholic church,Marquise de Mores,donated,,,,,Medora,"We, the undersigned Catholics of Medora and Little Missouri ... thanks ... to the Marquise de Mores for her kindness in building and donating the church to us",high
+1884-12-11,4,brick cottages,James Hannigan,occupied (soon),,,brick,,Medora,James Hannigan and wife intend occupying one of the brick cottages soon,high
+1884-12-11,4,Fitzgerald new hotel (Metropolitan),George Fitzgerald,begun,,,,,Medora,Lumber has arrived and work will soon begin in earnest on George Fitzgerald's new hotel,high
+1884-12-11,4,NPRC slaughter house buildings,NPRC,mention,,,,,Medora,to again inspect the N. P. R. C. Co.'s slaughter house buildings here,medium
+1884-12-11,4,company offices,NPRC; Gill Kennedy,painted,,,,,Medora,Gill Kennedy is improving the company's offices with a coat of paint,high
+1884-12-11,4,old telegraph office,NP,moved (on flat car),,,,across the river (west side),Little Missouri,The old telegraph office is still loaded on a flat car across the river. It is too broad to take through the bridges west and will be sold here,high
+1884-12-11,4,Roberts & Co. hall,Roberts & Co.,safe installed,,,,,Medora,Roberts & Co. have indulged in a first rate burglar and fire proof safe,medium
+1884-12-18,1,Western House,"Mr. Malloy (deceased), proprietor",mention,,,,,Medora,While here he was proprietor of the Western house,medium
+1884-12-18,4,new slaughter house,NPRC,construction (halted by cold),,,,,Medora,"The carpenters were forced to knock off work on the new slaughter house building, owing to the cold",high
+1884-12-18,4,church building used as school,Marquise de Mores; teacher Miss Finger,school opened,,,,,Medora,"School was opened Monday morning in the church building, Miss Finger of South Heart being teacher",high
+1884-12-18,4,company ice houses,NPRC,mention,,,,,Medora,Four thousand tons will be stored in the company's ice houses here,high
+1884-12-18,4,town census,n/a,mention,,,,,Medora,"a careful enumeration of our population reveals the fact that we number two hundred and fifty-one citizens. Of these a hundred and forty-six are men, thirty-nine women and sixty-six children",high
+1884-12-25,4,Fitzgerald new hotel (Metropolitan),George Fitzgerald,construction,,,,,Medora,George Fitzgerald's new hotel is beginning to assume proportions,high
+1885-01-01,5,Roberts & Co.'s hall,Roberts & Co.,mention (dance),,,,,Medora,The dance at Roberts & Co.'s hall Christmas eve,high
+1885-01-01,5,Gill Kennedy and E. Kimer buildings,Gill Kennedy; E. Kimer,attempted arson,,,,adjacent buildings,Medora,"Some despicable villain put a bundle of lighted hay between the buildings occupied by Gill Kennedy and E. Kimer, Christmas morning",medium
+1885-01-01,5,NPRC new buildings (slaughter house / cooler),NPRC,finished,,,heavy timber frame,,Medora,"A stroll through the new buildings of the Company shows ... the most substantial structures in this part of the country. The heaviest timbers have been used, and the floor room is almost large enough for a base ball ground",high
+1885-01-08,4,Pyramid Park Hotel,?,mention (New Year's dance),,,,,Little Missouri,The dance at the Pyramid Park hotel New Year's night was a great success,high
+1885-01-08,4,depot,NP,improved,,,,,Medora,The recent improvements in the depot are a great convenience to the public,high
+1885-01-15,4,ice houses,NPRC; [Ellison],filled,,,,,Medora,[Ellison] is taking advantage of the present cold snap and will have all the ice houses filled in a few days,medium
+1885-01-15,4,Roosevelt ranch house (Elkhorn) - planned,Theodore Roosevelt; lumber hauled by E. G. Paddock,planned,,,,down the river (Elkhorn),outside town,"Theodore Roosevelt intends the construction of a large building on his ranch, down the river. E. G. Paddock will haul the lumber",high
+1885-01-15,4,Williamson store building,J. C. Williamson,improved,,,,,Medora,"The recent improvements in store building, made by J. C. Williamson, give better facilities for all connected with the store",medium
+1885-01-15,4,O'Sullivan shaving parlor,John O'Sullivan,refitted; brick house planned,,,brick (planned),,Medora,"John O'Sullivan, Medora's tonsorial artist, has fitted up his shaving parlor in a creditable manner. His next move will probably be the erection of a brick house",medium
+1885-01-15,4,Paddock building occupied by Gill Kennedy (fire),E. G. Paddock; Gill Kennedy,fire (saved),,,,between Bob Roberts' and E. G. Paddock's buildings,unknown,a fire between Bob Roberts' and E. G. Paddock's buildings ... Mr. Paddock's building [was] occupied by Gill Kennedy,medium
+1885-01-15,5,Metropolitan Hotel (Fitzgerald),George Fitzgerald; J. C. Williamson,nearly finished,,,,,Medora,George Fitzgerald's new hotel is fast approaching completion. J. C. Williamson is building a carpenter shop near [?] the new hotel,low
+1885-01-15,5,Cantonment,Mr. and Mrs. H. Butler,occupied,,,,,Medora,Mr. and Mrs. H. Butler have started housekeeping at the Cantonment,medium
+1885-01-15,5,fire: Roberts and Paddock buildings,Bob Roberts; E. G. Paddock,fire,,,,Little Missouri? (adjacent buildings),unknown,the peaceful slumberers of Little Missouri and Medora were awakened by the prolonged whistle of an engine ... a fire between Bob Roberts' and E. G. Paddock's buildings ... saved most of the stock in the buildings,medium
+1885-01-22,4,Metropolitan Hotel (Fitzgerald),George Fitzgerald,lathing/description,,2,"frame, to be brick-veneered",,Medora,"On the first floor are the bar room, office, dining-room, besides small rooms for wash-room and baggage ... Above are sixteen sleeping rooms and a parlor ... the building will be veneered and a long porch for the front added",high
+1885-01-22,4,new slaughter house,NPRC,tanking finished,,,,,Medora,The tanking is now all finished at the slaughter house and it is hoped that the season's slaughtering in this new house will begin about the middle of May,high
+1885-01-22,4,buildings burned (insurance),?,fire (insurance adjusted),,,,Medora/Little Missouri,unknown,came up to adjust the loss of [Roberts' and Paddock's?] buildings burned last Thursday morning,low
+1885-01-29,4,ice houses,NPRC,filled,,,,,Medora,The last ice house is about two-thirds full ... a total of six thousand tons put up here,high
+1885-01-29,4,Metropolitan Hotel (Fitzgerald),George Fitzgerald,nearly finished,,,brick work (veneer) to be finished in spring,,Medora,"George Fitzgerald's new hotel is nearly completed, and will probably be ready for occupancy next week ... the brick work finished in the spring",high
+1885-01-29,4,new slaughter house,NPRC,construction,,,,,Medora,Work on the slaughter house is progressing rapidly and only a part of the inside work remains to be done,high
+1885-01-29,4,depot,NP,mention (night operator),,,,,Medora,The night operator at the depot ...,medium
+1885-02-05,4,Hotel de Mores,Marquis,remodel planned,,,,,Medora,"All the partitions will be taken out and changed, the whole building plastered and calcimined, a porch built on the west and south sides, an addition built and ... the whole building [veneered?]",high
+1885-02-05,4,Metropolitan Hotel (Fitzgerald),George Fitzgerald,occupied,,,,,Medora,[Fitzgerald] is now moving in [to his] new hotel,medium
+1885-02-05,4,sidewalk in front of Co's stores,NPRC,built,,,"plank? (""very substantial"")",in front of the Co's. stores,Medora,A side-walk of a very substantial nature is being built in front of the Co's. stores,high
+1885-02-12,4,skating rink (Roberts Hall),Roberts & Co.,closed (floor repairs),,,,,Medora,"The skating rink has been closed, not on account of a lack of patronage, but the floor is in need of repairs",high
+1885-02-12,4,Pyramid Park Hotel,Arch Boyd,mention (dance),,,,,Little Missouri,"That Arch Boyd is a good host was abundantly proven last Friday night, at the dance held at the Pyramid Park hotel",high
+1885-02-12,4,Metropolitan Hotel,George Fitzgerald,finished/opened,,,,,Medora,"George Fitzgerald's new hotel, the Metropolitan, is ready for occupancy",high
+1885-02-12,4,slaughter house and cold storage rooms,NPRC,construction,,,frame; galvanized iron,,Medora,"About 500,000 feet of lumber will be used in the slaughter house and cold storage rooms now building ... The galvanized iron work ... is now being done",high
+1885-02-12,4,railroad bridge,NP,mention (ice gorge),,,,,Medora,A gorge was formed above the bridge,high
+1885-02-12,4,Roberts & Co.'s hall,Roberts & Co.,mention (gun club meeting),,,,,Medora,meeting for the organization of a gun club was held last night in Roberts & Co.'s hall,high
+1885-02-12,4,Fisher skating rink and shooting gallery (planned),J. C. Fisher,planned,30x80,,,,Medora,"J. C. Fisher intends building a skating rink and shooting gallery 30x80 feet, provided negotiations now pending are successful",high
+1885-02-19,4,new roller rink (Fisher),J. C. Fisher [proprietors],lumber ordered,,,,,Medora,The lumber for the new roller rink has been ordered ... the rink will be in running order about March 1,high
+1885-02-19,4,Hotel de Mores,Marquis,remodel begun,,,,,Medora,"The work of refitting the hotel de Mores has been begun in good earnest ... names mentioned [as proprietor]: H. M. Jorgens, S. G. Smith and Arch Boyd",high
+1885-02-19,4,sidewalks (proposed),town,proposed,,,gravel or scoria,,Medora,Side walks are being talked of in places about town ... Gravel or scoria make very good walk,high
+1885-02-26,1,new roller rink (planned),n/a,planned,,,,,Medora,there is soon to be a new roller rink built at Medora,high
+1885-02-26,4,slaughter house,NPRC,accident (scaffolding),,,,,Medora,"A scaffolding broke on the slaughter house, Monday, and severely injured ...",high
+1885-02-26,4,Pyramid Park Hotel,J. B. Walker (new); Arch Boyd leaving,change of proprietor,,,,,Little Missouri,J. B. Walker went to Mandan to purchase an outfit for the Pyramid Park hotel ... Arch Boyd intends leaving the Pyramid Park hotel the first of March,high
+1885-02-26,4,Paddock livery stable,E. G. Paddock,planned,88x50,,frame; drop siding; battlement front; 2-in ground floor; matched flooring to hay loft,Third street between Third avenue and Broadway,Medora,"Paddock will immediately begin the erection of a first-class livery stable, 88x50 feet ... located on Third street between Third avenue and Broadway",high
+1885-03-05,4,Paddock livery stable,E. G. Paddock; builder Jim Butler,begun (soon),,,,,Medora,Jim Butler will begin the erection of E. G. Paddock's livery stable as soon as he finishes the skating rink,high
+1885-03-05,4,new roller rink (Fisher),builder Jim Butler; manager Deffebach,nearly finished,,,,,Medora,The new roller rink is rapidly nearing completion and will be opened with a dance some evening next week ... managed by Mr. Deffebach,high
+1885-03-05,4,Hotel de Mores,Marquis,foundations laid,,,,,Medora,"Most of the foundations have been laid under the hotel de Mores, the partitions have been knocked out",high
+1885-03-12,1,street grading at [Third?] avenue and Main street,town,graded,,,,[?] avenue and Main street,Medora,A little grading materially improved the appearance [of the corner of ...] avenue and Main street,low
+1885-03-12,4,Metropolitan Hotel,Fitzgerald,mention,,,,,Medora,there was an arrival at the Metropolitan ... Mrs. Fitzgerald is the happy mother,high
+1885-03-12,4,new slaughter house,NPRC,flood threat,,,,,Medora,[water] came up to the foundations of the new slaughter house,medium
+1885-03-12,4,roller rink (Fisher),Fisher / Deffebach,opened,,,,,Medora,The opening ball at the skating rink was a complete success. About twelve sets were danced,high
+1885-03-12,4,town buildings (planned),n/a,mention,,,,,Medora,[several] buildings will be put up immediately and others will follow later ... there is pressing demand for store rooms,low
+1885-03-12,4,rifle target / butte,n/a,mention,,,,,Medora,digging bullets out of the butte back of the target,medium
+1885-03-19,4,company barn (additional),"[NPRC? ""Co.""]",built (in progress),,,,south of the old one,Medora,[?] Co. is building an additional barn south of the old one,low
+1885-03-19,4,slaughter house and other buildings,NPRC; John Wardenburg painter,painted,,,,,Medora,John Wardenburg and his men have been engaged painting the slaughter house and other buildings lately,high
+1885-03-19,4,Pyramid Park Hotel,J. B. Walker,mention,,,,,Little Missouri,J. B. Walker is running the Pyramid Park hotel up to a high standard,high
+1885-03-19,4,Paddock livery stable,E. G. Paddock,construction,,,,,Medora,E. G. Paddock's livery stable is under weigh and will soon be completed,high
+1885-03-19,4,slaughter house elevators,NPRC,machinery,,,,,Medora,lot of other machinery and the two elevators for the slaughter-house were [received],medium
+1885-03-19,4,Hotel de Mores,Marquis,remodel,,,veneered and plastered,,Medora,"a substantial foundation has been built. The building will be veneered and plastered, porches built on the west and south sides and additions for kitchen and laundry built on the north side",high
+1885-03-19,4,slaughter house capacity,NPRC,mention,,,,,Medora,capacity of the house being nine hundred head [a week],high
+1885-03-19,4,"cattle barn 10,000 head (planned)",NPRC,planned,,,,,Medora,"the Co. will soon begin the erection of a barn capable of holding 10,000 cattle",medium
+1885-03-26,4,slaughter house tanks,NPRC,machinery,,,,,Medora,Both the new tanks have been put in position and the old one is now in the new slaughter-house,high
+1885-03-26,4,Hotel de Mores addition / slaughter-house smoke-stack / Chateau cellar,contractor Peter Book,contracts,,,brick,,Medora,"Peter Book has secured contracts for the addition to the hotel, for the slaughter-house smoke-stack and for a cellar in the Marquis' house to contain heating apparatus",high
+1885-03-26,4,roller rink,n/a,"mention (sermon, carnival)",,,,,Medora,The Rev. Schaffner ... will preach at the roller rink,high
+1885-03-26,4,railroad bridge,NP,mention,,,,,Medora,running his horse across the railroad bridge ... holes where his cayuse's foot went through,high
+1885-03-26,4,Pryor boot and shoe shop,W. B. Pryor of Dickinson,lot bought,,,,near the church,Medora,He has bought a lot near the church and will build a shop,high
+1885-03-26,4,Hotel de Mores,Arch Boyd lessee,construction,,,,,Medora,The hotel is rapidly progressing but will hardly be completed under a month ... Arch Boyd has leased it,high
+1885-03-26,4,slaughter house roof raised,NPRC,altered,,,,,Medora,The roof of the slaughterhouse has been raised five feet to admit of easy access to the ice-boxes,high
+1885-04-02,1,"stockyards (planned near old ""Y"")",NP,planned,,,,"near the old ""Y""",Medora,"the new stock yards for this station are to be built near the old ""Y"" and will be large enough to hold 5000 cattle",high
+1885-04-02,4,Pryor shoe store,W. B. Pryor,built,,,,,Medora,W. B. Pryor is erecting a new shoe store and will be ready for business in a few days,high
+1885-04-02,4,Pyramid Park Hotel,J. B. Walker,mention (stockmen's ball),,,,,Little Missouri,The stockmen's ball last night at the Pyramid Park hotel,high
+1885-04-02,4,Paddock livery and sale stable,E. G. Paddock,nearly finished,,,,,Medora,E. G. Paddock's new livery and sale stable is nearly completed and will be a great convenience as well as an ornament to the town,high
+1885-04-02,4,confectionery and news depot,?,mention,,,,,Medora,masks for sale at the confectionery and news depot,medium
+1885-04-09,4,Catholic church,Father Martin; Jim Butler,pews,,,,,Medora,"Father Martin has made arrangements with Jim Butler, by which new pews will soon adorn the Catholic church",high
+1885-04-09,4,Fisher shooting gallery (in rink),J. C. Fisher,mention,,,,,Medora,best scores made before May 1st in his shooting gallery at the rink,medium
+1885-04-09,4,Hotel de Mores,Marquis; Peter Book brickwork,brick veneer nearly done,,,pressed brick veneer,,Medora,"The brick work on the hotel will be almost completed this week and with the exception of the roof, will be as neat looking building as could be wished ... Peter Book is displaying his pressed brick",high
+1885-04-09,4,Catholic church,Marquise de Mores,cross on steeple,,,,,Medora,A tasty gilt cross now adorns the steeple of the Catholic church,high
+1885-04-09,4,Jorgens drug store (new building),Dr. H. M. Jorgens,built (in progress),,,,,Medora,Jorgens is putting up a new building for his drug store as his present quarters are too small. He will probably branch out into the crockery business,medium
+1885-04-16,1,Jorgens drug store (new building),Dr. H. M. Jorgens,finished/moving,21x32,,frame; full glass front,,Medora,Dr. Jorgens will move into his new building the first of next week ... The building is 21x32 and is to have a full glass front,high
+1885-04-16,4,stage barn (new),Medora & Black Hills stage co.,nearly finished,,,,,Medora,A new barn for the accommodation of stage and other stock is nearly completed,high
+1885-04-16,4,Bob Roberts building,Bob Roberts; tenant Sam Whitney,occupied (housekeeping),,,,,Medora,Sam Whitney ... has gone to housekeeping in Bob Roberts' building,high
+1885-04-16,4,Paddock livery stable,E. G. Paddock,finished/opened,,,,,Medora,E. G. Paddock's livery stable is completed and ... is by no means a detriment to the looks of the town. He has already opened up,high
+1885-04-16,4,coal mine,[N. P. Coal Co. / Marquis],improvements,,,,,Medora,"Much improvement work is being done at the coal mine. An air shaft is being tunnelled, a new chute built, tracks and coal buggy added",high
+1885-04-16,4,stockyards (NP),NP,planned,50x50 then 100x100 (uncertain),,,,Medora,uncertainty in reference to the stockyards to be built here ... the corral was contracted 50x50 feet. This was again changed to a hundred feet square,high
+1885-04-16,4,roller rink,n/a,"mention (church services, organ)",,,,,Medora,Rev. J. B. Schaffner preached again last Sunday night at the rink ... his organ will be in the rink,high
+1885-04-23,4,stockyards (NP),NP,finished,,,,,Medora,The stock-yards are completed but are scarcely large enough to receive three car-loads of cattle,high
+1885-04-23,4,corrals (company),NPRC,built,,,,Medora and Sully creek,Medora,Large corrals have been built both here and on Sully creek,high
+1885-04-23,4,post office,postmaster Fisher [?],moved,,,,back to company's store (from rink),Medora,The post-office has been again moved to its old location in the Co's store ... Mr. Fisher ... had gone to considerable expense in fitting up the office in the rink,high
+1885-04-30,4,Kimer [?] dwelling,E. Kimer [Elmer?],built (in progress),,,,on Williamson & Copland's lot,Medora,E. [Kimer] is building a dwelling house on Williamson & Copland's lot,medium
+1885-04-30,4,Book dwelling house,Peter Book,built (in progress),,,"frame, to be brick-veneered",near his brick kiln,Medora,Peter Book is building a fine dwelling house near his brick kiln. He will veneer it as soon as he can make the brick,high
+1885-04-30,4,Paddock livery stable,E. G. Paddock,addition planned,,,,,Medora,his livery barn is altogether too small ... intends immediately to about double its size,high
+1885-04-30,4,Jordan dwelling,Mr. Jordan,built (in progress),,,,,Medora,"the family will go to keeping house as soon as [the] dwelling, already begun, is completed",medium
+1885-04-30,4,Jorgens drug store (new store room),Dr. Jorgens and Mr. Martin,moved,,,frame; painted light colors; full glass front,,Medora,"Dr. Jorgens and Mr. Martin have been busy moving the drug store ... nearly settled in the best store room in town. It is of good size, painted in light colors and has a full glass front",high
+1885-04-30,4,Hotel de Mores,Marquis,veranda plan changed,,,,,Medora,The plans for the hotel have been changed and the veranda will be built as at first intended,medium
+1885-04-30,4,bank building (planned),"Stebbins, Mund & Co.",planned,,,,on the vacant hotel square,Medora,"A bank building will soon be put up on the vacant hotel square ... a branch of Stebbins, Mund & Co.",high
+1885-04-30,4,lodging house for slaughter-house men (planned),NPRC,planned,,,brick,,Medora,"the Co. [intends] to put up a large lodging house, capable of accommodating all the slaughter-house men ... as soon as the brick can be made",high
+1885-04-30,4,Marquis' house force-pump,Marquis,mention (fire protection),,,,Chateau de Mores (Marquis residence),Medora,The force-pump and pipe at the Marquis' house may also be brought into requisition,high
+1885-04-30,4,"Jorgens' old ""historical shack""",Dr. Jorgens,re-rented,,,,,Medora,The historical shack just vacated by Dr. Jorgens is already rented for a dry goods and clothing store,high
+1885-04-30,4,stockyards across the river (old NP yards),NP,mention,,,,across the river (west side),Little Missouri,"The stock-yards across the river are of very little use, being entirely too small. They should be four times as large and have a good branding chute",high
+1885-05-07,1,street grading,town,graded,,,,,Medora,Considerable grading has been done lately ... materially improves the appearance of our streets,high
+1885-05-07,1,lodging houses (planned),NPRC,planned,,,,on the vacant lots north of the hotel,Medora,Large lodging houses will soon be built on the vacant lots north of the hotel for the accommodation of the Co's men,high
+1885-05-07,1,town re-survey / re-plat,Marquis / townsite,re-platted,,,,"south side: side-track near the bluff extending to the brick-yard, lots next the river to face the river; north side: side-track next the butte, lots next to right of way to face the railroad",Medora,As a result of the recent surveying work the lots on the south side of the track will be [changed] ... side-track to be built near the bluff and extending to the brick-yard. The streets will also be changed ...,high
+1885-05-07,4,company offices / post office boxes,NPRC,improved,,,,,Medora,Several improvements have been made in the Co's. offices and the P. O. boxes used in the rink have been put up in the present quarters of the office,high
+1885-05-07,4,"pottery works (proposed, kaolin)",Marquis,proposed,,,,,Medora,streak of whitish clay ... has turned out to be kaoline ... the Marquis will put up large works,high
+1885-05-07,4,streets (scoria macadam),Bob Roberts,proposed improvement,,,scoria,,Medora,"grading and otherwise improving the streets. Bob Roberts has proved beyond doubt that scoria, when beaten down and mixed with the clay and sand makes a first-rate macadam",high
+1885-05-07,4,"Gordon clothing, boot and shoe store (branch)",T. W. Gordon manager (firm of 631 Broadway NY),opened,,,,,Medora,"clothing, boot and shoe store opened up in good shape last Friday ... the resident manager T. W. Gordon",high
+1885-05-14,1,Sully Creek corrals and scales,NPRC,built,,,stockade corrals; scales 40x11,on the bottom this side of the Custer Trail ranch,outside town,Two large corrals have been built on the bottom this side of the Custer Trail ranch ... on the stockade plan ... capable of holding about a thousand cattle each ... weighed on scales 40x11 connecting the two corrals,high
+1885-05-14,1,Book's coal mine,Peter Book,mention,,,,up the river from town,Medora,The bottoms up the river from Pete Book's coal mine are being entirely cleared of trees and underbrush,high
+1885-05-14,1,soap works and tannery (proposed),NPRC,proposed,,,,,Medora,It is now almost certain that soap works and a tannery will be built here this summer,medium
+1885-05-14,4,Pyramid Park Hotel,?,mention (boarders),,,,,Little Missouri,now boarding at the Pyramid Park hotel,medium
+1885-05-14,4,old slaughter-house cold-storage room,NPRC,rebuilt,,,,,Medora,The cold-storage room in the old slaughter-house has been entirely torn out and will be rebuilt on the plan of those in the new house,high
+1885-05-14,4,Hotel de Mores,Arch Boyd proprietor,nearly finished,,,,,Medora,"The hotel will be all finished, furnished and ready for business by June 1. Arch Boyd, the proprietor",high
+1885-05-14,4,slaughter house well tank,NPRC,built,,,boiler plate,,Medora,A large tank made of boiler plates has been sunk in the well at the slaughter house,high
+1885-05-14,4,Fitzgerald old dwelling -> Banan barber shop,E. G. Paddock; Fred Banan,moved,,,,from the west side of the river to next to Paddock's barn on the east (Medora) side,Medora,E. G. Paddock has bought Geo. Fitzgerald's old dwelling on the other side of the river and set it up next his barn on this side. Fred Banan will occupy it as a barber shop,high
+1885-05-14,4,railroad right of way park (planned),"NPRC / Marquis [""the Co.""]",planned,,,,"along railroad right of way, buildings to face the road",Medora,[turn the] railroad right of way into a park. Room [will] then be left for a wide street and [the Co.] will erect buildings facing the road,medium
+1885-05-14,4,town clean-up / shade trees,the Co.,improvement,,,,,Medora,"evidences of its previous condition in the sage brush, growing on the side lots and streets ... shade trees ... being set out",medium
+1885-05-14,4,brickyard,Peter Book,season started,,,brick,,Medora,Peter Book commenced making brick ...,medium
+1885-05-14,4,Cook store awning,Chas. Cook,built,,,,in front of his store,Medora,"Chas. Cook has put up a much-needed awning in front of his store, an example for others to follow",high
+1885-05-14,4,drug store,Martin; Bassie Deffebach (temp.),mention,,,,,Medora,Bassie Deffebach is taking his place in the drug store,high
+1885-05-14,4,fire department (east/west side chiefs),town,organized,,,,west side: J. A. Ferris and J. B. Walker; east side: A. T. Packard and Bob Roberts,unknown,Chief[s] of the fire department were then elected as follows J. A. Ferris and J. B. Walker on the west side of the river and A. T. Packard and Bob. Roberts on the east side,high
+1885-05-21,4,Hotel de Mores (rebuilt),Peter Book contractor; Arch Boyd,finished,,,brick veneer,,Medora,The work on the new hotel is completed. Everything was done in first class shape by Peter Book and Arch Boyd will soon have things in running order,high
+1885-05-28,4,"Hotel de Mores / ""Hotel De Boyd""",Arch Boyd,opening,,,,,Medora,Hotel De Boyd [?] will open up June 1st,medium
+1885-05-28,4,new slaughter-house,NPRC; supt Frank D. Foster,mention,,,,,Medora,Nine butchers arrived from Chicago ... employed in the new slaughter-house,high
+1885-05-28,4,McKenzie & O'Brien blacksmith shop,McKenzie & O'Brien,moved,,,,to the north side of the track,Medora,McKenzie & O'Brien have moved their blacksmith shop to the north side of the track,high
+1885-05-28,4,Oyster Grotto restaurant,J. S. Warn,addition planned,,,,,Medora,J. S. Warn ... will soon enlarge his restaurant and make the Oyster Grotto the best place in the northwest,high
+1885-05-28,4,Watson feed stable,Fred Watson,painted (carmine),,,,west side (Little Missouri),Little Missouri,Fred Watson has started in to paint the west side a violent carmine hue beginning with the front of his feed stable,high
+1885-05-28,4,new brick hotel (Hotel de Mores),n/a,mention,,,brick,,Medora,Pete ... wears the white apron at the new brick hotel,high
+1885-05-28,4,slaughter house engine,NPRC; George Wilkes,machinery,,,Buckeye engine,,Medora,The new engine at the slaughter house turned the first wheel this morning ... of the Buckeye pattern,high
+1885-05-28,4,Marquis de Mores residence (Chateau),Marquis,lightning damage,,,plastered; chimney; well water pipe,,Medora,"The lightning struck a chimney on the residence of the Marquis and ran down to the water pipe leading to the well ... Plastering torn off, mirrors broken and a large hole knocked in the outer wall ... hole ...",high
+1885-06-04,1,news depot,?,mention,,,,,Medora,Made a raid on the news depot,high
+1885-06-04,4,Kiefer house,John Kiefer,built (in progress),,,,on Third avenue,Medora,John Kiefer is erecting a mansion on Third avenue,medium
+1885-06-04,4,Northern Pacific Hotel (renamed Hotel de Mores),John Monro bar,renamed,,,brick,,Medora,John Monro will run the bar in the Northern Pacific Hotel. The brick hotel will be known hereafter as the Northern Pacific,high
+1885-06-04,4,abattoir (new),NPRC,opened,,,,,Medora,"The machinery at the new abattoir was set in motion by the Marquise, who turned on the steam when business began last Tuesday morning ... Slaughtering began ... June 2nd. Seventy cattle were killed",high
+1885-06-04,4,Lignite Kiln,Peter Book,patent,,,,,Medora,Peter Book has patented his new device for burning brick with lignite coal. It will be called the Lignite Kiln,high
+1885-06-04,4,Ferris new store (planned; moving from west side),Joe Ferris,contract let,,,,moving from Little Missouri (west side) to Medora (east side),Medora,"Joe [Ferris] has finally decided to follow suit, and instead of trying to do business across the bloody chasm is coming over to our side. The contract is let for a building that will be an ornament to the town",medium
+1885-06-11,4,O'Sullivan barber shop,John O'Sullivan,closed (moved to Anaconda),,,,,Medora,"John O'Sullivan has moved west to Anaconda, Mont., where he will open a barbershop",high
+1885-06-11,4,west side (Little Missouri),n/a,mention,,,,,Little Missouri,The boys over on the west side ... Little Missouri for missionary work,high
+1885-06-11,4,railroad bridge / ford,n/a,mention,,,,,Medora,As he was fording the river just above the bridge on horse-back,high
+1885-06-11,4,"company office well and ""the Park""",NPRC,force pump installed,,,,by the company's office,Medora,"The well by the company's office has been supplied with a force pump ... water on trees and grass that have lately been planted in ""the Park""",high
+1885-06-18,4,slaughter-house smokestack,NPRC; Peter Book,finished,,,brick,,Medora,The smokestack at the slaughter-house was completed yesterday,high
+1885-06-18,4,Paddock building for Gordon clothing store,E. G. Paddock; tenant T. W. Gordon,built,,,,,Medora,"Carpenters have been busy ... putting up a building for E. G. Paddock, which will be occupied by T. W. Gordon the enterprising clothing merchant",high
+1885-06-18,4,"Ferris store (new, planned)",J. A. Ferris,begun (cellar),25x75 (store); cellar 25x60,,,on his lot on Main street,Medora,"J. A. Ferris has set men to work digging a cellar twenty-five by sixty feet, on his lot on Main street, where he intends to erect a store building twenty-five by seventy-five feet",high
+1885-06-18,4,rink,Frank Smith manager,mention (stockmen's ball),,,,,Medora,The stockmen's ball last evening at the rink,high
+1885-06-25,4,company offices platform scales,NPRC,installed,,,,in front of the Co's. offices,Medora,A Howe platform scales has been placed in front of the Co's. offices,high
+1885-06-25,4,Paddock building for Boston clothing house,E. G. Paddock; T. W. Gordon,nearly finished,,,,,Medora,"E. G. Paddock's new building, to be occupied by the Boston clothing house is nearing completion",high
+1885-06-25,4,Northern Pacific Hotel (ex-Hotel de Mores),Arch Boyd and wife,mention,,,,,Medora,the able manner in which Arch Boyd and wife conduct the Northern Pacific hotel,high
+1885-07-02,4,Metropolitan Hotel,C. H. Dyer jeweler tenant,mention,,,,,Medora,"C. H. Dyer is prepared to do all kinds of repairing on clocks, watches and jewelry at the Metropolitan hotel",high
+1885-07-02,4,Cantonment,Jack McGregor,occupied,,,,,Medora,Jack McGregor has moved his household goods from the ranch to the Cantonment and he and his wife will keep house there during the summer,high
+1885-07-02,4,race track / old powder house,n/a,mention,,,,from the old powder-house north of the railroad track to Main street opposite the Northern Pacific [hotel],Medora,The race track begins at the old powder-house north of the railroad track and ends at Main street opposite the Northern Pacific,high
+1885-07-02,4,lime kiln trial,Peter Book,mention,,,,just west of the brick kiln,Medora,Peter Book is burning some rock he discovered just west of the brick kiln,high
+1885-07-02,4,slaughter-house (new),contractor John McGee,finished,,,,,Medora,Contractor McGee finishes the work on the slaughter-house to-day. The building is pronounced ... equal to any building of its kind in the United States,high
+1885-07-02,4,[sale corral?] next to Paddock's livery,?,built,,,,next to Paddock's livery stable,Medora,[...] next Paddock's livery stable. This is a great improvement as stock can be shown to much better advantage,low
+1885-07-02,4,Metropolitan Hotel,Fitzgerald,lightning strike,,,,,Medora,"a bolt of lightning [struck] the Metropolitan hotel, not however doing serious damage",medium
+1885-07-02,4,lumber yard,C. F. Ellison (from the company),change of owner,,,,,Medora,"C. F. Ellison will hereafter run the lumber yard, the company giving up their lumber business to him",high
+1885-07-02,4,Ferris store (new),Joe Ferris,construction,25x60 [?],2,,,Medora,"Joe Ferris' building when completed will be [25]x60, two stories high. He expects to be moved into his new quarters in about three weeks",medium
+1885-07-02,4,Pyramid Park Hotel,?,mention,,,,,Little Missouri,He was brought to town and is now at the Pyramid Park hotel,high
+1885-07-02,4,barber shop,?,fire (stove-pipe),,,stove-pipe chimney,,Medora,the barbershop catching afire ... owing to a stove-pipe being used in place of a brick chimney,high
+1885-07-02,4,skating rink,n/a,mention (meeting),,,,,Medora,met according to call in the skating rink last Friday evening,high
+1885-07-09,4,Malloy building (on Ferris lot),Mrs. Malloy; Joe Ferris,built,,,,on one of Joe Ferris' lots,Medora,Mrs. Malloy will soon occupy the building built for her on one of Joe Ferris' lots. Work has already begun on Joe's building,medium
+1885-07-16,4,The Elk saloon,?,mention,,,,,Little Missouri,"The Elk is still the favorite place in Little Missouri to ""moisten.""",high
+1885-07-16,4,Malloy building (new hotel/boarding),Mrs. Malloy,opened,,,,on Main street,Medora,Mrs. Malloy moved yesterday from the Western house to her new building on Main street. Supper was served at the new hotel last evening,high
+1885-07-16,4,Western House,?,mention,,,,,unknown,moved ... from the Western house,medium
+1885-07-16,4,"brick store room (branch, firm unnamed)",[firm from Miles City],built (in progress),,,brick,,Medora,the branch will be removed here on or about August 10. The firm is now building a brick storeroom for ...,low
+1885-07-16,4,Roberts saloon -> skating rink,Bob Roberts,move planned; rink refinished,,,"ceiled, papered, painted; glass front",,Medora,"Bob Roberts will soon move his saloon into the skating rink. The rink will be refinished throughout, ceiled, papered, painted and fitted with a glass front",high
+1885-07-16,4,Northern Pacific Hotel,n/a,mention,,,,,Medora,registered at the Northern Pacific,high
+1885-07-23,4,depot,NP,telephone installed,,,,,Medora,"A telephone has been put in at the depot, connecting with the Co's. system",high
+1885-07-23,4,Deffebach house,Dave Sweet (tenant),occupied,,,,,Medora,Dave Sweet and wife have moved into the house recently vacated by Bassie Deffebach,high
+1885-07-23,4,slaughter-house,NPRC,photographed,,,,,Medora,D. F. Barry came up from Bismarck last night to photograph the Co's. slaughter-house,high
+1885-07-23,4,Ferris store (new),Joe Ferris,nearly finished,,,,,Medora,"Joe Ferris intends, before the counters are put into his new store room, to give an opening dance",high
+1885-07-30,4,Ferris store (new),J. A. Ferris,nearly finished,,,,,Medora,J. A. Ferris' store room will be ready for occupancy the last of next week,high
+1885-07-30,4,Cantonment,Fred Willard (custodian); Bellows & Co. attachment,attached / custodian,,,,,Medora,The Cantonment property has been put in charge of Fred Willard ... served an attachment on the Cantonment property ... original title to the property is in dispute [Commodore Gorringe],high
+1885-07-30,4,O'Hara house (Little Missouri),Pat O'Hara,sold,,,,,Little Missouri,"Pat O'Hara has sold his house in Little Missouri, formerly occupied by Mrs. Lason",high
+1885-07-30,4,rink,n/a,improvements; services moved to depot waiting room,,,,,Medora,owing to the improvements going on in the rink. Next Sunday evening service will be held in the depot waiting room,high
+1885-07-30,4,Ferris new store,Jos. Ferris,house-warming,,,,,Medora,"There will be a house-warming in the shape of a dance, in Jos. Ferris' new store, next Tuesday evening",high
+1885-08-06,4,Sully creek bridges,n/a,washed out,,,,Sully creek,outside town,The bridges on Sully creek have all or nearly all been washed out,high
+1885-08-06,4,Lamb ranch building,B. F. Lamb,built,,,,four miles down the river,outside town,B. F. Lamb has completed a fine ranch building four miles down the river,high
+1885-08-06,4,rink -> Roberts saloon,Bob Roberts,refitted,,,,,Medora,The rink is being refurnished in good shape ... Bob Roberts will move in as soon as it is finished,high
+1885-08-06,4,Middle Grand stage station,stage co.,burned,,,,Grand River,outside town,The middle Grand stage station has been burned,high
+1885-08-06,4,Ferris new store,Joe Ferris,nearly finished; house-warming held,,,,,Medora,Joe Ferris' store-room is nearly completed and he will probably move in next week. A very pleasant house-warming took place in Joe Ferris' store Tuesday night,high
+1885-08-13,1,branch store moving to Miles City,"[clothing firm, 631 Broadway NY]",moved,,,,Medora -> Miles City,Medora,On or about August 10 we will remove to our new building in Miles City,low
+1885-08-13,4,Roberts & Co. saloon,Roberts & Co.,moved,,,,to the old skating rink,Medora,Roberts & Co. are moving their saloon to-day to the old skating rink,high
+1885-08-13,4,Ferris store (new),Joe Ferris,finished/opened,,,,,Medora,Joe Ferris is moving his stock of goods into his new store to-day. The building is completed with the exception of the second story and is the best store building in Medora,high
+1885-08-13,4,MacDonald's restaurant,MacDonald,mention,,,,,Medora,cutting down the hammock in which he was sleeping [in MacDonald's restaurant],high
+1885-08-13,4,Northern Pacific Hotel,n/a,mention (arrivals),,,,,Medora,arrivals at the Northern Pacific hotel,high
+1885-09-03,1,Pennell's hall,Joe Pennell,mention (stockmen's assn. meeting),,,,,Medora,"a meeting of the Little Missouri River Stockmen's Association, to be held in Pennell's hall, Medora, Saturday September 5",high
+1885-09-03,4,depot platform,NP,mention,,,,,Medora,barrels and a crate of crockery on the depot platform,high
+1885-09-10,1,Roberts & Co.'s old hall,Roberts & Co.,mention (stockgrowers' meeting),,,,,Medora,"met for the regular fall meeting in Roberts & Co's. old hall, last Saturday morning",high
+1885-09-10,4,slaughter-house,John McGee contractor,finished,,,,,Medora,John McGee left ... having concluded the finishing touches on the slaughter-house,high
+1885-09-10,4,North Grand stage station,stage co.,burned,,,,Grand River,outside town,the North Grand stage station is burned,high
+1885-09-10,4,Kennedy oyster restaurant (moved building),Gill Kennedy,moved,,,,from the west side of the river to his lot on the east side where John Warn's restaurant stood,Medora,"Gill Kennedy has moved his building from the other side of the river to his lot on this side where John Warn's restaurant stood. He intends opening up a restaurant, dealing principally in oysters",high
+1885-09-10,4,school,Marquise de Mores (pays teacher),mention,,,,,Medora,The Marquise has generously donated the teacher's salary,high
+1885-09-17,4,O'Sullivan house (for sale),John O'Sullivan,for sale,,,,"lot eleven, block nineteen",Medora,"For sale. Lot eleven, in block nineteen and house thereon, property of John O'Sullivan",high
+1885-09-17,4,Jorgens drug store,Dr. Jorgens,addition (dwelling),,,,,Medora,[Jorgens] is building an addition to his drug store for dwelling purposes,medium
+1885-09-17,4,Cook store (closing),Chas. Cook,closing sale,,,,,Medora,"Previous to my removal from Medora, I will sell all goods in my store ... at cost for cash",medium
+1885-09-24,4,Rocky Ridge stage station,stage co.,burned (prairie fire),,,,near Chalk Buttes,outside town,burning the Rocky Ridge stage station on Monday,high
+1885-09-24,4,cottage formerly occupied by Dr. Jorgens,newly married couple,occupied,,,,,Medora,will go immediately to housekeeping in the cottage formerly occupied by Dr. Jorgens,medium
+1885-09-24,4,Metropolitan Hotel,Geo. Fitzgerald,improvements,,,,,Medora,Geo. Fitzgerald is making a number of improvements in his hotel,high
+1885-09-24,4,Kimer [Elmer] cottage,E. [Kimer/Elmer],brick veneered,,,brick veneer,,Medora,E. [Kimer] has veneered his cottage with brick and is now ready to go into winter quarters,high
+1885-09-24,4,brick cottages,Mr. and Mrs. Fortier,occupied,,,brick,,Medora,Mr. and Mrs. Fortier will keep house in one of the brick cottages,high
+1885-09-24,4,"stockyards (new, planned)",NP; Supt. Green,planned,,,,,Medora,"Supt. Green will be here ... to locate new stock yards, capable of holding a large number of cattle ... present yards are but little better than a nuisance",high
+1885-10-01,1,Cantonment,T. R. Selmes attorney,sale,,,,,Medora,"attending the Cantonment sales, he being attorney for the estate",high
+1885-10-01,4,NPRC general offices,NPRC,moved (from St. Paul to Medora),,,,,Medora,The general offices of the Ref. Car Co. have been moved from St. Paul to Medora,high
+1885-10-01,4,Cantonment,sheriff,sheriff's sale,,,,,Medora,sheriff's sale of the Cantonment took place last Monday,medium
+1885-10-01,4,Co's general store,NPRC; Geo. Porter,mention,,,,,Medora,Geo. Porter left last week ... on his annual purchasing tour for the Co's. general store,high
+1885-10-15,4,Metropolitan Hotel,J. B. Walker (new landlord),change of proprietor,,,,,Medora,"The Metropolitan hotel will receive a house-warming to-night ... given by the new landlord, J. B. Walker",high
+1885-10-15,4,stockyards (new) and side-track,NP; Thayer and Newpiece; grading Lloyd Roberts,construction,,,,,Medora,The side-track to the new stock-yards is nearly laid and the work on the yards themselves will be finished in a few days,high
+1885-10-22,4,river dam (new),NPRC,rebuilt,,,flood-gates,,Medora,Crews of men are still at work on the dam ... Flood-gates have been constructed,high
+1885-10-22,4,Cantonment,Wright and Beers; sheriff,turned over to sheriff,,,,,Medora,They have turned over the Cantonment to the sheriff to satisfy a number of attachments upon it,high
+1885-10-22,4,stockyards (new),NP; Supt. Green,finished,,,,"near the brick-kiln butte; river on left, buttes on right, railroad in front",Medora,"When they round the butte at the brick-kiln, the cattle are hemmed in by the river on the left, the buttes and the wing of the yards extending to them on the right and the railroad in front",high
+1885-10-29,4,Catholic church,Rev. Father Paul,mention (monthly service),,,,,Medora,service in the Catholic church on the first Sunday of every month,high
+1885-10-29,4,stockyards (new),NP,first used,,,,,Medora,"The new stock-yards were broken in Saturday, by the shipment of three cars of cattle",high
+1885-10-29,4,room vacated by Roberts & Co. (proposed school),n/a,proposed school room,,,,,Medora,The room recently vacated by Roberts & Co. will make a first-rate school-room,high
+1885-11-19,1,Ferris & Fisher feed stable,Jos. Ferris and J. C. Fisher,opened,,,,back of Ferris' grocery,Medora,"Jos. Ferris and J. C. Fisher have opened up a feed stable, back of Ferris' grocery",high
+1885-11-26,1,Marquis' residence (Chateau) and slaughtering establishment (view from butte),Marquis de Mores,description,,"Chateau: green sides, red roof",,Chateau on a plateau about fifty feet above the town across the valley,Medora,"Down in the valley lies the town, a toy city ... The most conspicuous object [in] the group [of] buildings comprised in the slaughtering establishment of the Marquis de Mores ... Across the valley and upon a plateau about ...",medium
+1885-11-26,4,"Ellison house (new, by Catholic church)",C. F. Ellison,built (in progress),,,,by the Catholic church,Medora,"the new house now going up by the Catholic church, will soon be occupied by C. F. Ellison and wife",high
+1885-11-26,4,the hall,n/a,mention (sale),,,,,Medora,The sale of J. B. Walker's effects took place yesterday morning in the hall,medium
+1885-12-17,4,Willard & Keeler meat market,Willard & Keeler,opened,,,,in the building formerly occupied by Chas. Cook [Fisher building],Medora,We have opened a first-class meat market in the building formerly occupied by Chas. Cook,high
+1885-12-17,4,Ellison dwelling,C. F. Ellison,nearly finished,,,,,Medora,C. F. Ellison has almost completed his cozy dwelling house,high
+1885-12-17,4,Willard residence,Fred Willard; contractors Copeland & Williamson,built (in progress),,,,,Medora,Fred Willard's residence will be finished in about two weeks ... Copeland & Williamson have the contract,high
+1885-12-24,4,Kennedy ice-house,Gill Kennedy,built,,,,"on his lot, south of his restaurant",Medora,"Gill Kennedy is building an ice-house on his lot, south of his restaurant",high
+1885-12-24,4,Wells Fargo express office,J. N. Maxwell,moved,,,,to Willard & Keeler's meat market,Medora,J. N. Maxwell has removed the Wells Fargo express office to Willard & Keeler's meat market,high
+1885-12-24,4,Northern Pacific Hotel,n/a,mention (hop),,,,,Medora,A social hop will be given at the Northern Pacific hotel Christmas night,high
+1886-01-21,4,ice houses,NPRC,filled,,,,ice-house not adjacent to the dam,Medora,"The ice was all put up by Saturday night, making the total amount in the houses here about 10,000 tons ... except in the mere fact of having the ice-house nearer the dam",medium
+1886-01-28,4,railroad bridge,NP; A. Thayer bridge crew,repaired,,,,,Medora,A. Thayer and his bridge crew are here repairing the bridge which was drawn out of shape by the cold weather,high
+1886-02-04,4,depot (ice storage),NP,altered use,,,,,Medora,"The railroad company are filling the lower part of the depot with ice, to be used next summer by the stations between Belfield and Glendive",medium
+1886-02-11,4,freight warehouse (west end used for ice),NP,altered use,,,,,Medora,The railroad company finished putting up their ice Monday. About two hundred tons were stored in the west end of the freight ware-house,medium
+1886-02-18,4,depot,n/a,mention (church services),,,,,Medora,Rev. Wm. Cooke ... preached last Sunday in the depot,high
+1886-03-18,1,Town Hall,Billings County / town,mention (stockgrowers' meeting Apr 13),,,,,Medora,a meeting of the above association at Medora ... held in the Town Hall,high
+1886-03-18,4,Willard corral,Fred Willard Sr. [?],built,,,,in front of his house,Medora,"the corral that Fred, Sr. is building in front of his house",medium
+1886-03-18,4,depot,n/a,mention (Sunday school),,,,,Medora,A Sunday school was organized ... held every Sunday forenoon at the depot,high
+1886-03-25,1,Main Street block (fire risk),Mrs. Malloy's hotel; Bob Roberts' saloon; Fitzgerald's hotel; Catholic church,mention,,,,same block on [Main] street: Malloy's hotel ... Roberts' saloon; next Fitzgerald's hotel; toward the Catholic church,Medora,"a fire starting on [Main] street, anywhere between Mrs. Malloy's hotel and Bob. Roberts' saloon, would make a clean sweep of the whole block. It might also jump to Fitzgerald's hotel and from there, burn clear to the Catholic church",medium
+1886-03-25,4,Paddock livery barn office,E. G. Paddock,mention (polling place),,,,,Medora,open the polls in Paddock's livery barn office,high
+1886-04-01,1,Paddock's livery barn (polling place),E. G. Paddock,mention,,,,,Medora,"the polling place, Paddock's livery barn",high
+1886-04-01,1,old target range hurdles,W. F. Van Driesche,built,,,,on the old target range,Medora,exercising them over hurdles built on the old target range,high
+1886-04-01,4,Northern Pacific Hotel bar,Ed Simmons,mention,,,,,Medora,Ed Simmons took charge of the N. P. Hotel bar today,medium
+1886-04-15,1,Town hall / Paddock's livery office,n/a,"mention (election, county seat)",,,,,Medora,"The polls opened promptly at eight o'clock in Paddock's livery office ... COUNTY SEAT—MEDORA ... called to order by Chairman Theodore Roosevelt, at the town hall",high
+1886-05-06,1,Northern Pacific Hotel (Boyd),Arch Boyd,mention (shot through plaster),,,"brick, plastered",,Medora,"The bullet went through the plastering from the brick to the floor ... in the hall in front of Dr. Williamson's room, which was the farthest removed in the hotel from the dining-room",medium
+1886-05-06,4,Kiefer property (foreclosure),John & Mary J. Kiefer; NPRC,foreclosure sale,,,,"Lots 13 and 14, Block 9, plat of the town of Medora",Medora,"Lots number Thirteen (13) and Fourteen (14) in Block number nine (9), as laid down and designated on the plat of the town of Medora",high
+1886-05-13,4,freight house,Medora Forwarding / NPRC,underpinned,,,,built across Quick creek,Medora,"The freight-house has been thoroughly underpinned and is now ready to stand any raise of Quick creek, across which it is built",high
+1886-06-17,4,Van Driesche building (ex-Kiefer),Wm. Van Driesche,mention,,,,,Medora,"Wm. Van Driesche's building, formerly owned by John Kiefer",medium
+1886-06-17,4,Northern Pacific Hotel,Arch Boyd,mention (dance),,,,,Medora,A dance will be given by Arch Boyd at the Northern Pacific hotel,high
+1886-07-08,4,Sweet cottage,Mrs. Malloy,occupied,,,,,Medora,Mrs. Malloy has moved to the cottage formerly occupied by D. O. Sweet. She still continues to take boarders,high
+1886-07-15,1,Roberts building leased for county purposes,R. Roberts; county commissioners,lease,,,,,Medora,"The lease of building for county purposes, from R. Roberts to county commissioners was submitted and consideration deferred",high
+1886-08-19,4,Northern Pacific Hotel,n/a,hail damage,,,,,Medora,Sixty-eight panes of glass were broken out of the Northern Pacific hotel,high
+1886-08-26,1,Cantonment,Harry Barker and wife,occupied,,,,,Medora,The newly married couple have gone to housekeeping at the Cantonment,high
+1886-08-26,4,Jorgens drug store,Dr. Jorgens,mention,,,,,Medora,allowed to sit unironed in front of Jorgens' drug store,high
+1886-09-02,4,Elk restaurant / Elk saloon,?,mention,,,,Little Missouri? (The Elk),Little Missouri,You can get a first-class sirloin or porterhouse steak at the Elk Restaurant,medium
+1886-09-09,4,Town hall,n/a,mention (caucus),,,,,Medora,caucus ... at the Town hall in Medora,high
+1886-09-23,4,court house jail cells,Billings County,built,,,fire-proof cells,,Medora,The jail cells have been completed at the court house ... They are fire-proof but lack lots of being warm,medium
+1886-10-07,1,McKenzie blacksmith shop and property,Dan McKenzie -> Alex Morton,sold,,,,,Medora,Dan McKenzie yesterday completed the sale of his blacksmith shop and the rest of his Medora property to Alex Morton,high
+1886-10-07,4,Malloy building -> Boyd hotel,Arch Boyd,re-use,,,,,Medora,Arch Boyd is moving his furniture to the building formerly occupied by Mrs. Malloy and will probably fit up rooms for the accommodation of guests,high
+1886-10-14,4,Town hall,n/a,mention (convention),,,,,Medora,a convention will be held in the Town hall,high
+1886-10-14,4,Knott store building,Mike Knott,traded,,,,,Medora,Mike Knott has traded his store building for Tompkins' ranch down the river,high
+1886-10-14,4,McKenzie building,Alex Morton (bought from Wm. McKenzie),occupied,,,,,Medora,keeping house in the building purchased from Wm. McKenzie,high
+1886-10-14,4,Ferris stable,Joe Ferris,mention,,,,,Medora,in Joe Ferris' stable,medium
+1886-10-21,1,Court House (Medora),Billings County,mention (polling place),,,,,Medora,All voters in this precinct will vote at the Court House in Medora,high
+1886-10-21,1,Co.'s horse corral below Lamb's ranch; Logging Camp,NPRC,mention (precinct boundaries),,,,north of Medora (below Lamb's ranch); Logging Camp south,outside town,precinct ... begins on a line running east and west near the Co.'s horse corral below Lamb's ranch ... a point about a quarter of a mile north of the Logging Camp,high
+1886-10-21,4,Eaton barn (ranch),Howard Eaton,burned,,,,Custer Trail ranch,outside town,"the burning of fifty tons of hay, a barn and some fencing",high
+1886-10-28,1,slaughter-house (closing for Kansas City),NPRC,workforce moved,,,,,Medora,"the force of men at the slaughter-house here will then be moved to Kansas City, where work will begin Dec. 1",high
+1886-11-11,1,depot,n/a,mention (services),,,,,Medora,Services were held in the depot last Sunday evening,high
+1886-11-18,4,Morton cottage,Alex Morton,addition,,,,,Medora,Alex Morton is building an addition to his cottage,high
+1886-12-23,4,Coleman building -> Norris restaurant,M. M. Coleman; John Norris,opened,,,,,Medora,"John Norris, who formerly cooked for Gill Kennedy, has opened a restaurant in M. M. Coleman's building",high

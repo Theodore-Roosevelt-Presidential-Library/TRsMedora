@@ -93,9 +93,18 @@ Updated October 15, 2026, after an online sweep of photos, maps, written sources
 | ND 1957–62 statewide aerials; USGS 3DEP lidar (ND_SouthWest_2021_D21); 1970 Medora 7.5′ quad | Terrain and older channel | ☐ next phase |
 | Sanborn maps | None before 1965 | ✅ ruled out |
 
+## Added Oct 15 (late)
+
+- **NPS "Tour of Medora," Aug 1957** (NMP-TR-7008, in NPSHB 1962 p. 54). Scaled map with north arrow. Marks the site of Little Missouri, the packing-plant foundation, ice house, holding pens and the town sites.
+- **1956 Chimney Park site plan** (NMP-TR 3002-A, BROOKS57 Fig. 6).
+- **"Medora about 1900"** annotated photo (BROOKS57 Fig. 8). Shows the packing plant, Rough Rider, Ferris store, Von Hoffman House, stage company, courthouse and twin NP water tanks.
+- **Montana Historical Society:** six Huffman 1886 Medora prints online, including the new find "Marquis de Mores" ([72166](https://www.mtmemory.org/nodes/view/72166)). The full Haynes 1880 and 1881 Little Missouri runs are online.
+- **W. R. Cross stereo, c.1880, "Cantonment, on Little Missouri River. N.P.R.R. Crossing"** (Black Hills State Univ., [digitized](http://explore.digitalsd.org/cdm/ref/collection/WRCross/id/47)).
+- **Minnesota Historical Society NP records:** nothing on Medora is digitized. See [archive-requests.md](archive-requests.md).
+- **Drone models** of the Chateau and Chimney Park (Sketchfab, 2023), cleared for Library use and shown on the map.
+
 ## Written sources still to read
 
-- BROOKS57: the scans were OCR'd during the sweep but not yet read through. It includes a 1956 Chimney Park site plan and an annotated c.1900 photo.
 - Goplen 1939 NPS restoration report and his research papers (SHSND Mss 10037, Box 3: "Town of Medora").
 - Vyzralek 1995, *The Marquis de Mores, His Dakota Experiences and His Enterprises* (SHSND report).
 - *North Dakota History* 46.3 ("Cantonment Bad Lands"), 48.3 (Medora architecture), 62.1 (Chateau).

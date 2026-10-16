@@ -85,7 +85,7 @@ TRACK_BEARING = (math.degrees(math.atan2(NW[0], NW[1])) + 360) % 360
 def along(m, side=0.0):
     """Point m metres north-west of the 1883 river crossing along the track, `side` metres to the north side."""
     return off(CROSS, east=m * NW[0] + side * PERP_N[0], north=m * NW[1] + side * PERP_N[1])
-LM_DEPOT = along(110)
+LM_DEPOT = along(150)   # 1957 NPS "Tour of Medora" map and BROOKS57 put Little Missouri at the west end of the old US 10 bridge, near today's Chateau Road
 
 # ---------------------------------------------------------------- spec
 # Dates: built/removed as decimal years (None = unknown / still standing). Grades A-D (see README).
@@ -137,43 +137,43 @@ add(id='lm-depot', name='Little Missouri depot', aka='"depot" shack', town='Litt
     built=1880.5, built_text='1880 (HMdb 87982)', removed=1884.5, removed_text='replaced when NP trains began stopping at Medora (1884); later sold and moved to the HT Ranch',
     use='railroad station; NP Express and Western Union office', material='frame', stories='1',
     loc='C', form='B', method='relative', geom=rect(LM_DEPOT, 20, 40, TRACK_BEARING),
-    evidence='Beside the track on the west bank. Fitzgerald\'s shack was "directly to the east, on the brink of the river" (HAG), so the depot was close to the river; placed 110 m NW of the 1883 crossing. Size is a placeholder.',
+    evidence='Beside the track on the west bank. Fitzgerald\'s shack was "directly to the east, on the brink of the river" (HAG), so the depot was close to the river; placed 150 m NW of the 1883 crossing, near where the 1957 NPS Tour of Medora map marks the site of Little Missouri (west end of the old US 10 bridge). Long side parallel to the track, as in Haynes\'s 1881 photo. Size is a placeholder.',
     sources='HAG ch. I; LANG; HMdb 87982; Dickinson Press 1883-09-22 ("the new depot will soon be completed")',
     photos='mhs:108837 (Haynes "Bad Land City," fall 1881); shsnd:00119-00017; shsnd:2003-P-010-00092b (after its move to the HT Ranch)',
     notes='"Too wide to fit through the railroad bridges," so it was sold rather than moved (HMdb 87982). A "new depot" was being finished in Sept 1883, so there may have been two buildings.')
 add(id='pyramid-park-hotel', name='Pyramid Park Hotel', aka='Moore\'s hotel; the loft was "the bull-pen"', town='Little Missouri', bank='west',
     kind='building', built=1880.85, built_text='completed Nov 1880 by Frank Moore & Co. (HM52); "will soon be enlarged" (Bismarck Tribune 1882-10-06)',
     use='hotel', material='frame', stories='2 (loft with 14 beds upstairs, HAG)',
-    loc='C', form='B', method='relative', geom=rect(along(95, 38), 30, 50, TRACK_BEARING),
+    loc='C', form='B', method='relative', geom=rect(along(135, 38), 30, 50, TRACK_BEARING),
     evidence='"stood immediately north of the tracks" (HAG); T.R. walked "northeastward" to it from the depot (HAG). Haynes\'s 1881 photo shows it beside the depot.',
     sources='HAG ch. I; AUTO ch. IV [P]; LANG; HM52; Bismarck Tribune 1882-10-06, 1883-06-15 (holds 30-40); TRC-CANT; HMdb 154619',
     photos='mhs:108837 (Haynes, fall 1881: two-story frame building with porch); shsnd:00119-00017; npshb:thro10.jpg',
     notes='T.R.\'s first night in the Badlands, Sept 7-8, 1883. Fate unknown. Size is a placeholder until the Haynes photo is studied.')
 add(id='lm-roberts-saloon', name='Saloon beside the hotel ("Bill Williams\'s" in Hagedorn)', aka='"Big-Mouthed Bob\'s Bug-Juice Dispensary" (Lang)',
     town='Little Missouri', bank='west', kind='building', built=1880.6, built_text='by 1881', removed=1885.0, removed_text='proprietor moved to Medora (date uncertain)',
-    use='saloon', material='frame', stories='1 (HAG)', loc='C', form='D', method='relative', geom=rect(along(120, 38), 20, 40, TRACK_BEARING),
+    use='saloon', material='frame', stories='1 (HAG)', loc='C', form='D', method='relative', geom=rect(along(160, 38), 20, 40, TRACK_BEARING),
     evidence='"beside it [the hotel] stood the one-story palace of sin" (HAG); "near it stood Big-Mouthed Bob\'s" (LANG).',
     sources='HAG ch. I; LANG',
     notes='Hagedorn says "one, who shall, for the purposes of this story, be known as Bill Williams" - a pseudonym. Lang\'s "Big-Mouthed Bob" and the Roberts & Co. saloon at Medora (burned Jan 1885) suggest the real owner was Robert Roberts. Inference; verify.')
 add(id='nelson-store', name="Johnny Nelson's store", town='Little Missouri', bank='west', kind='building', built=1883.0, built_text='by Sept 1883',
-    use='store', loc='C', form='D', method='relative', geom=rect(along(110, -30), 20, 36, TRACK_BEARING),
+    use='store', loc='C', form='D', method='relative', geom=rect(along(150, -30), 20, 36, TRACK_BEARING),
     evidence='"South of the track" (HAG ch. I). Lang: "three or four rough shacks" across the track at the base of "Graveyard Butte."', sources='HAG ch. I; LANG')
 add(id='mcgeeney-boarding-house', name="Mrs. McGeeney's boarding house", town='Little Missouri', bank='west', kind='building', built=1883.0, built_text='by Sept 1883',
-    use='boarding house', loc='C', form='D', method='relative', geom=rect(along(88, -30), 20, 30, TRACK_BEARING),
+    use='boarding house', loc='C', form='D', method='relative', geom=rect(along(128, -30), 20, 30, TRACK_BEARING),
     evidence='"next door" to Nelson\'s store; within fifty feet of Mrs. Fitzgerald (HAG ch. I, III).', sources='HAG ch. I and III')
 add(id='fitzgerald-shack', name="Section foreman Fitzgerald's shack", town='Little Missouri', bank='west', kind='building', built=1881, built_text='by Sept 1883',
-    use='dwelling', loc='C', form='D', method='relative', geom=rect(along(70, -28), 16, 20, TRACK_BEARING),
+    use='dwelling', loc='C', form='D', method='relative', geom=rect(along(105, -28), 16, 20, TRACK_BEARING),
     evidence='"Directly to the east, on the brink of the river" (HAG). Within 50 ft of McGeeney\'s, so placed south of the track.', sources='HAG ch. I and III')
 add(id='maunders-shack', name="Jake Maunders's shack", town='Little Missouri', bank='west', kind='building', built=1881, built_text='by Sept 1883',
-    use='dwelling', loc='C', form='D', method='relative', geom=rect(along(70, 28), 16, 20, TRACK_BEARING),
+    use='dwelling', loc='C', form='D', method='relative', geom=rect(along(105, 28), 16, 20, TRACK_BEARING),
     evidence='"At a corresponding place on the other side of the track" from Fitzgerald (HAG ch. I).', sources='HAG ch. I')
 add(id='section-house', name='NP section house and water tank', town='Little Missouri', bank='west', kind='building group', built=1880.5, built_text='1880',
-    use='railroad', loc='D', form='D', method='schematic', geom=Point(along(330, -20)),
+    use='railroad', loc='D', form='D', method='schematic', geom=Point(along(370, -20)),
     evidence='"A little further along the track to the westward, stood a section house and water tank" (LANG). The 1879 Cantonment reserve map ties its bounds to the NP water tank (SHSND MAP.032-00111) - that map can fix this point.',
     sources='LANG; HMdb 87982; SHSND MAP.032-00111')
 add(id='malloy-hotel', name="Peter Malloy's hotel (the Western House?)", town='Little Missouri', bank='west', kind='building', built=1883.75,
     built_text='contract to James Collister Aug 1883; C. E. Cook carpenter (Dickinson Press)', use='hotel', loc='D', form='D', method='schematic',
-    geom=Point(along(150, 55)),
+    geom=Point(along(190, 60)),
     evidence='"James Collister has the contract for erecting a fine hotel for Peter Malloy at Little Missouri" (Dickinson Press 1883-08-18). Location not given.',
     sources='Dickinson Press 1883-08-18, 09-15, 09-22; Bad Lands Cow Boy 1885-07-16',
     notes='Possibly the "Western House" Mrs. Malloy left in July 1885 for a new building on Main Street, Medora. The "Malloy building at Medora" was torn down and moved to Dickinson in June 1887 (Dickinson Press 1887-06-18). HAG calls the owner "P. McGeeney" when quoting the same 1883 note - check.')
@@ -187,7 +187,7 @@ add(id='chateau-de-mores', name='Chateau de Mores', aka='the Marquis\'s house', 
     evidence='Standing on its original site on the second terrace above the river, about half a mile WSW of Medora (NRHP).',
     sources='NRHP 75001299; SHSND Chateau history; SAH ND-01-BI8; PLAT1883 ("Marquis de Mores")',
     photos='shsnd:00042-00152; shsnd:00042-00158 (Ingersoll 1883); shsnd:00042-00157 (1884); shsnd:00042-00196/-00197 (1886); mhs:72389; mhs:72403 (Huffman 1886); houghton:3013538; shsnd:1972.91 (Medora de Mores watercolor)',
-    notes='Sketchfab photogrammetry model exists (user ajkclark, 2023): sketchfab.com/3d-models/chateau-de-mores-cd022732d9544bcca665760204975d53 - ask the owner.')
+    notes='Drone photogrammetry model of the Chateau today (Sketchfab, 2023) - cleared for Library use.')
 add(id='chateau-outbuildings', name='Chateau outbuildings (coachman\'s house, carriage shed, stable, corral; woodshed)', town='Chateau', bank='west',
     kind='building group', built=1883.6, built_text='1883-84', use='service buildings', material='frame',
     loc='C', form='D', method='relative', geom=Point(off((CH.centroid.x, CH.centroid.y), east=70, north=-60)),
@@ -211,7 +211,7 @@ add(id='demores-packing-plant', name='De Mores packing plant (abattoir)', aka='N
     evidence='Chimney and foundations survive in Chimney Park (SHSND), at the "Slaughter House" drawn on the 1883 plat beside the track. Building footprints not yet laid out; the 1956 De Haven site plan in BROOKS57 p. 25 shows the abattoir site, a separate packing-house foundation and the holding pens.',
     sources='NRHP 75001300; PLAT1883; HAG; BROOKS57; HMdb 87796, 87799; Bad Lands Cow Boy 1884-12-04, 1885-01-01, 1885-04-16; Dickinson Press 1883-09-22; St. Paul Daily Globe 1885-06-05',
     photos='shsnd:00042-00153; shsnd:00042-00150; shsnd:00042-00188 (Ingersoll 1883); shsnd:00042-00074/-00075 (1885); mhs:72460 (Huffman 1886); houghton:3013535; houghton:3013543 (ruins c.1919)',
-    notes='Capacity varies by source: 100 head/day (HAG), 150 (NRHP), 200 (Dickinson Press 1883 claim). Spring 1887 flood surrounded the slaughter houses (Bismarck Weekly Tribune 1887-03-18). Photogrammetry: sketchfab.com/3d-models/chimney-park-medora-nd-889a6ec71b514d2cb59c1423647a6fd3.')
+    notes='Capacity varies by source: 100 head/day (HAG), 150 (NRHP), 200 (Dickinson Press 1883 claim). Spring 1887 flood surrounded the slaughter houses (Bismarck Weekly Tribune 1887-03-18). Drone photogrammetry model of Chimney Park today (Sketchfab, 2023) - cleared for Library use.')
 DEPOT_M = (-103.5262926, 46.913509)    # Medora Convenience Store (OSM) - HMdb 87986 puts the depot near it
 add(id='medora-depot', name='Northern Pacific depot, Medora', town='Medora', bank='east', kind='building', built=1884.3, built_text='1884 (NP trains began stopping at Medora)',
     removed=1925.5, removed_text='burned 1925', use='railroad station', material='frame', stories='1 (verify)', loc='B', form='C', method='address',
@@ -306,18 +306,144 @@ add(id='brickyard', name="Peter Book's brickyard", town='Medora', bank='east', k
     evidence='About 0.9 mile south of Medora by the river road, east bank; circular kiln base visible in 1957 at the town dump (BROOKS57). Placed 0.9 mi south of town centre.',
     sources='BROOKS57; Bad Lands Cow Boy 1884-04-03, 1884-05-08, 1884-05-22; NRHP 77001018')
 
+# ================================================================ 2026-10-15 evening: Cow Boy full pass, BROOKS57, 1957 NPS maps
+def upd(fid, **k):
+    """Override or extend fields of an existing feature. Text values starting with '+' are appended."""
+    for f in F:
+        if f['id'] == fid:
+            for key, val in k.items():
+                if isinstance(val, str) and val.startswith('+'):
+                    f[key] = (f.get(key) or '') + (' ' if f.get(key) else '') + val[1:]
+                else:
+                    f[key] = val
+            return
+    raise KeyError(fid)
+
+upd('pyramid-park-hotel', footprint_ft='not recorded; Haynes 1881 photo shows a 2-story front-gabled main block with a 2-story gabled block attached behind (L or T plan)',
+    notes='+Still operating 1884-85: second floor cut into rooms (Cow Boy 1884-02-28); reopened by Boyd & Alexander Oct 1884; Arch Boyd early 1885; J. B. Walker from March 1885 (Cow Boy). Lang calls it "recently erected" in April 1883 - perhaps the 1882-83 enlargement. In 1883 Moore also let rooms in the old Cantonment officers\' quarters (Mandan Daily Pioneer 1883-07-17, in HM52).',
+    sources='+; Bad Lands Cow Boy 1884-02-28, 1884-10, 1885-03; HM52 pp. 20, 25-26; BROOKS57 Fig. 3')
+upd('lm-roberts-saloon', name='Pennell & Roberts\'s saloon and billiard hall, Little Missouri ("Bill Williams\'s" in Hagedorn)', removed=1884.51,
+    removed_text='Roberts & Co. moved the billiard hall to Roberts Hall in Medora, July 3, 1884 (Cow Boy)',
+    notes='+Pennell & Roberts\'s hall at Little Missouri hosted the stockmen\'s meetings of Feb and Apr 1884 (Cow Boy).',
+    sources='+; Bad Lands Cow Boy 1884-02, 1884-04, 1884-07-03')
+upd('nelson-store', notes='Joe Ferris\'s dry-goods store opened in "the former John Nelson building" (Cow Boy 1884-03-27), apparently on the west side; Ferris added a large addition (June 1884) and a warehouse (Oct 1884), then moved to his new Medora store in Aug 1885.',
+    removed=1885.6, removed_text='Ferris left for Medora, Aug 1885', sources='+; Bad Lands Cow Boy 1884-03-27, 1884-06-26, 1884-10-02')
+upd('cantonment', notes='+Cow Boy 1884-85: the buildings housed the Hyde, Hannigan, Butler, McGregor and Barker families and contractor J. A. Freeze; attached and sold by the sheriff July-Oct 1885; sold at sheriff\'s sale to Beckett & Foote of Dickinson 1888-89 (Dickinson Press, in HM52). BROOKS57: state highway gravel operations "destroyed the site" before 1952. A sutler\'s store (Frank Moore) stood on the parade ground: "long and low," with an L used as a bar and sleeping quarters behind (Huidekoper, in HM52).')
+upd('chateau-de-mores', notes='+Color conflict: Cow Boy 1885-11-26 describes "green sides and red roof"; the 1974 NRHP gives "French grey" siding with red roof and shutters (the 1930s restoration color). Windmill added 1884; Peter Book built a cellar for the heating plant in 1885 (Cow Boy).',
+    sources='+; Bad Lands Cow Boy 1884-06, 1885-03, 1885-11-26', model='cd022732d9544bcca665760204975d53')
+upd('demores-packing-plant', name='De Mores packing plant: chimney', built=1885.46,
+    built_text='brick smokestack built by Peter Book, finished June 18, 1885 (Cow Boy); the plant itself: first abattoir Oct 1883, new plant opened June 2, 1885',
+    footprint_ft='chimney only; see the other packing-plant features',
+    notes='+BROOKS57: the new plant was finished about mid-April 1885 "except for the smoke stack," so an 1883-84 view should not show the chimney. Capacity 900 head a week (Cow Boy).',
+    sources='+; Bad Lands Cow Boy 1885-03-26, 1885-06-18; BROOKS57 pp. 4, 17-19 and Fig. 6', model='889a6ec71b514d2cb59c1423647a6fd3')
+upd('hotel-de-mores', geom=rect((-103.5262, 46.91395), 25, 100, 0),
+    evidence='"a few steps from the depot" (Fitzgerald\'s ad, Cow Boy 1884); the race track ran to "Main street opposite the Northern Pacific hotel" (Cow Boy), so it fronted Main Street. HMdb 88037: north of the depot, faced north. Placed on Main Street just north of the depot site, long side along the street. Orientation conflicts with HMdb - check the 1885 overview photos.',
+    notes='+1885 rebuild (Cow Boy, Feb-May 1885): new foundations, brick veneer by Peter Book, porches on the west and south sides, kitchen and laundry additions on the north side; lessee Arch Boyd; renamed the Northern Pacific Hotel June 4, 1885. Earlier managed by G. W. Fitzgerald. Arson attempt Oct 23, 1884.',
+    sources='+; Bad Lands Cow Boy 1884-10-23, 1885-02 to 1885-06-04')
+upd('medora-depot', notes='"A few steps" from the Hotel de Mores (Cow Boy). Used for church services and Sunday school. The perpendicular orientation (HMdb) is unusual - the Little Missouri depot ran parallel to the track - so check it against Huffman\'s 1886 photo (MHS 72461).',
+    sources='+; Bad Lands Cow Boy 1884-08-28, 1885-01-08, 1885-07-23')
+upd('metropolitan-hotel', built_text='lumber arrived Dec 11, 1884; "ready for occupancy" Feb 12, 1885 (Cow Boy)',
+    notes='+Brick veneer and a long front porch were planned. Landlord J. B. Walker from Oct 15, 1885. The 1957 photo (BROOKS57) shows about 10 by 4 window bays, consistent with 35x80. Leave the later 1-story end wing and asphalt siding out of an 1885 model.')
+upd('ferris-store', built=1885.62, built_text='cellar 25x60 and store 25x75 begun June 1885 on his Main Street lot; opened Aug 13, 1885 with the second story unfinished (Cow Boy); medora.com gives Aug 4',
+    notes='+"Best store building in Medora" (Cow Boy). BROOKS57: exterior stair on the side wall to a second-floor door; T.R. stayed in the southeast corner room upstairs. Feed stable with Fisher behind the grocery (Nov 1885).',
+    sources='+; Bad Lands Cow Boy 1885-06-18, 1885-07-02, 1885-08-13, 1885-11-19; BROOKS57 pp. 22-23')
+upd('roller-rink', geom=rect(off((FS.centroid.x, FS.centroid.y), north=24), 30, 80, 90),
+    evidence='"next to Joe\'s store, opposite the office of the Bad Lands Cowboy" (HAG). The Cow Boy\'s 1886 fire warning runs along Main Street from Mrs. Malloy\'s hotel to Bob Roberts\'s saloon (which moved into "the old skating rink" in Aug 1885), so both were on the Ferris block. Placed north of the store on Main Street.',
+    notes='Built by Jim Butler; opened about March 11, 1885; post office briefly inside; church services held there. From Aug 1885 it was Bob Roberts\'s saloon - ceiled, papered, painted, glass front (Cow Boy).',
+    sources='+; Bad Lands Cow Boy 1885-08, 1886-03-25')
+upd('cowboy-office', geom=rect(off((FS.centroid.x, FS.centroid.y), east=-48, north=20), 20, 30, 0),
+    evidence='Opposite Fisher\'s rink and Joe Ferris\'s store (HAG) - placed across Main Street. A saloon stood "next door to the Cow Boy office" and a frame building to rent south of it (Cow Boy 1884-04-24).',
+    notes='+Painted April 1884 (Cow Boy).')
+upd('jorgens-drug-store', evidence='Opened "on the corner of Third avenue and Third street" in Nov 1884 (Cow Boy); HMdb 88066 puts a drug store on the NW corner of 3rd Street. Placed on the NW corner of today\'s 3rd Ave and 3rd St. The new 21x32 building of April 1885 has no stated location.',
+    notes='Earlier (Sept 1884) a temporary building moved "next to the company\'s store." The old "historical shack" was later rented to a clothing store (Cow Boy).')
+upd('fisher-stores', notes='First planned May 1884 with Van Driesche as a three-store-room building. Tenants: Charles Cook, confectioner, and J. D. Garver, tinsmith (Nov 1884); later the Willard & Keeler meat market and Wells Fargo office (Dec 1885).',
+    sources='+; Bad Lands Cow Boy 1884-05-15, 1884-11-13, 1884-11-20, 1885-12')
+upd('paddock-livery', notes='Built by Jim Butler, finished April 16, 1885; size to be doubled (April 30). Livery office was the 1886 polling place. Paddock also moved Fitzgerald\'s old west-side dwelling next to his barn as Fred Banan\'s barber shop (May 1885).',
+    sources='+; Bad Lands Cow Boy 1885-04-16, 1885-04-30, 1885-05-14')
+upd('courthouse-cottages', built=1884.85, built_text='two brick cottages for the company, finished and accepted Nov 6, 1884 (Cow Boy)',
+    notes='Lived in by the Hannigans and the Fortiers. Hipped roofs like the Von Hoffman House (BROOKS57). A central frame addition in the early 1900s made them the courthouse wings.',
+    sources='+; Bad Lands Cow Boy 1884-11-06; BROOKS57 pp. 29-32')
+upd('freight-house', footprint_ft='240 x 42 (planned 100 x 32 in March 1884)',
+    evidence='"on the south side of the track near the bluff... as near as possible to the butte," built "across Quick creek" (Cow Boy 1884-05-01, 05-08, 1886-05-13). Quick creek not yet identified; placed south of the track east of the depot.',
+    notes='Held 225 carloads; west end split into three rooms with a platform and derrick (Aug 1884); J. C. Fisher\'s office partitioned off inside (Sept 1884); underpinned May 1886.')
+upd('brickyard', evidence='"south of town where the Deadwood trail separates from the river" (Cow Boy 1884-04-24); ".9 of a mile south by river road from U.S. Highway 10 at Medora on the east bank... Section 34" (BROOKS57 p. 33). Placed in Sec. 34 about 0.9 mi south.',
+    notes='Book patented a "lignite kiln" (1885). Book\'s house near the kiln, to be brick-veneered (1885); lime burned just west of the kiln (1885); a side-track along the bluff to the yard was planned (1885). New stockyards were built at "the brick-kiln butte" in Oct 1885 (Cow Boy).')
+
+CHIM = SLAUGHTER
+FT = 0.3048
+def at(bearing_deg, dist_ft):
+    b = math.radians(bearing_deg)
+    return off(CHIM, east=dist_ft * FT * math.sin(b), north=dist_ft * FT * math.cos(b))
+PP_SRC = 'NPS "Tour of Medora" map, Aug 1957 (NMP-TR-7008, in NPSHB 1962 p. 54, 0-600 ft scale); 1956 site plan NMP-TR 3002-A (BROOKS57 Fig. 6); NRHP 75001300; Bad Lands Cow Boy 1884-12-04'
+add(id='pp-foundation', name='Packing plant: main packing-house foundation', town='Medora', bank='east', kind='building', built=1885.3,
+    built_text='new plant, spring 1885', removed=1907.21, removed_text='burned March 17, 1907; foundation remains',
+    use='slaughter and packing house', material='heavy timber frame on sandstone and brick foundations', footprint_ft='~110-130 x 14-24 as drawn in 1956-57 (foundation remnant); NRHP gives the abattoir as 105 x 180',
+    loc='C', form='C', method='plat', geom=rect(at(155, 110), 20, 120, 90),
+    evidence='Long east-west foundation drawn about 100-125 ft south-southeast of the chimney on both 1950s NPS plans; scaled from the 1957 Tour map.',
+    sources=PP_SRC, photos='mhs:72460 (Huffman 1886); shsnd:00042-00074', model='889a6ec71b514d2cb59c1423647a6fd3')
+add(id='pp-ice-house', name='Packing plant: ice house', town='Medora', bank='east', kind='building', built=1884.9,
+    built_text='company ice houses held 4,000 tons by Dec 1884, about 10,000 tons by Jan 1886 (Cow Boy)', removed=1907.21, removed_text='burned 1907 (inferred)',
+    use='ice storage', material='frame; shingled roof (Cow Boy)', footprint_ft='~107 x 43 as drawn in 1957; NRHP: three ice houses 40 x 100',
+    loc='C', form='C', method='plat', geom=rect(at(247, 210), 43, 107, 90),
+    evidence='Dashed "ICE HOUSE" outline about 210 ft west-southwest of the chimney on the 1957 Tour map. NRHP says three ice houses adjoined the plant; only one is drawn.',
+    sources=PP_SRC + '; Bad Lands Cow Boy 1884-12, 1886-01')
+add(id='pp-east-building', name='Packing plant: building east of the chimney (unidentified)', town='Medora', bank='east', kind='building', built=1885.3,
+    built_text='part of the 1885 plant (inferred)', removed=1907.21, removed_text='burned 1907 (inferred)', use='unknown - perhaps refrigerator or cooling building',
+    footprint_ft='~100 x 95 as drawn in 1957', loc='C', form='D', method='plat', geom=rect(at(90, 195), 95, 100, 0),
+    evidence='Unlabelled dashed rectangle about 195 ft east of the chimney on the 1957 Tour map. Cow Boy (Dec 1884): main refrigerator building 40x130, corridor about 36x180, passage 18x80.',
+    sources=PP_SRC)
+add(id='pp-holding-pens', name='Packing plant: holding pens', town='Medora', bank='east', kind='landmark', built=1883.8,
+    built_text='1883-86', removed=1887.0, removed_text='plant closed Nov 1886', use='cattle pens', material='timber fences', footprint_ft='~220 ft wide, 4-5 pens',
+    loc='C', form='C', method='plat', geom=rect(at(45, 840), 160, 220, 0),
+    evidence='Dash-dot enclosure divided into 4-5 pens about 840 ft northeast of the chimney on the 1957 Tour map and 1956 site plan.',
+    sources=PP_SRC)
+add(id='river-dam', name="The Marquis's dam (ice pond)", town='Between', bank='river', kind='landmark', built=1884.35,
+    built_text='built May 1884 just below the railroad bridge; rebuilt with flood-gates Oct 1885', use='ice harvesting; protected the slaughter house',
+    loc='C', form='D', method='relative', geom=Point(off(CROSS, north=60, east=12)),
+    evidence='"below the railroad bridge" (Cow Boy 1884-05-08); the river flows north, so below = just north of the bridge. Huffman\'s 1886 "Packing House" shows a pond in front of the plant.',
+    sources='Bad Lands Cow Boy 1884-05-08, 1885-10-22; HAG', photos='mhs:72460')
+MAIN_N = (FS.centroid.x, FS.centroid.y)
+add(id='malloy-medora', name="Mrs. Malloy's hotel (Medora)", town='Medora', bank='east', kind='building', built=1885.54,
+    built_text='built on one of Joe Ferris\'s lots on Main Street; Mrs. Malloy moved in July 15, 1885', removed=1887.46,
+    removed_text='"the Malloy building at Medora" torn down and moved to Dickinson, June 1887', use='hotel',
+    loc='C', form='D', method='relative', geom=rect(off(MAIN_N, north=62), 24, 50, 90),
+    evidence='On Main Street on a Ferris lot (Cow Boy 1885-07-16). The 1886 fire warning ran "between Mrs. Malloy\'s hotel and Bob Roberts\' saloon," so it is placed at the other end of the Ferris block.',
+    sources='Bad Lands Cow Boy 1885-07-16, 1886-03-25, 1886-10; Dickinson Press 1887-06-18', notes='Taken over by Arch Boyd Oct 1886.')
+K9 = [f for f in PAR['features'] if f['properties']['Block'] == '9' and f['properties']['Lot'] == '13-18']
+if K9:
+    add(id='kiefer-house', name="John Kiefer's house", town='Medora', bank='east', kind='building', built=1885.45, built_text='built about June 1885 on Third Avenue',
+        use='residence', loc='C', form='D', method='address', geom=shape(K9[0]['geometry']).centroid,
+        evidence='Lots 13-14, Block 9, foreclosed 1886 (Cow Boy); house on Third Avenue (Cow Boy 1885-06). Placed on today\'s Block 9 lots 13-18 parcel.',
+        sources='Bad Lands Cow Boy 1885-06, 1886')
+add(id='pioneer-hotel', name='Pioneer Hotel, Little Missouri', town='Little Missouri', bank='west', kind='building', built=1884.0, built_text='advertised 1884',
+    use='hotel', loc='D', form='D', method='schematic', geom=Point(along(175, -55)),
+    evidence='"close to the depot" (Cow Boy ad, 1884). Placeholder near the depot.', sources='Bad Lands Cow Boy 1884')
+add(id='tiser-house', name='Tiser House ("only original building of the town of Little Missouri")', town='Little Missouri', bank='west', kind='building',
+    built=1882.0, built_text='dated by old-timers to 1881-86 (BROOKS57)', use='dwelling', material='frame', loc='D', form='D', method='schematic',
+    geom=Point(along(250, 60)),
+    evidence='"about .1 of a mile west of the Medora bridge" in 1957 (BROOKS57 p. 32). Placed roughly 0.1 mi west of the river on the north side; the 1957 bridge position needs fixing from the 1957-62 aerials.',
+    sources='BROOKS57 p. 32', notes='Standing in 1957, occupied by the Ira Tiser family.')
+
 # --- known but not yet located
 UNPLACED = [
-    ('demores-company-store', 'De Mores company office and store', '1883', 'Photographed winter 1883-84 (houghton:3013533); labelled "company store" in the 1919 panorama (HAG plate p. 402). Locate from the panorama and the 1885-86 overviews.'),
-    ('stage-company', 'Medora Stage & Forwarding Co. office, warehouse and baggage room', '1884', 'Line ran Oct 1884-May 1885 (HMdb 88033, 303699). One building on its original site in 1957 (BROOKS57).'),
+    ('company-store-offices', 'De Mores company office and store (NPRC store, post office, meat market, offices)', '1883-85', 'Photographed winter 1883-84 (houghton:3013533); labelled "company store" in the 1919 panorama. Former carriage-house store room (Cow Boy 1884-05-15); plank sidewalk in front of "the Co\'s stores" (1885-02-05); Howe scales in front of the offices (1885-06-25); NPRC general offices moved here from St. Paul, Oct 1885.'),
+    ('medora-hotel', 'Medora Hotel (Coleman & Brown boarding house and restaurant)', '1884', 'Lot bought June 19, 1884; nearly done July 3; ad Nov 20, 1884 (Cow Boy).'),
+    ('company-barns', 'Company barn, stable and corral (Deffebach livery)', '1884-85', 'Rented to Bassie Deffebach as a livery (May 1884); additional barn south of the old one (March 1885) (Cow Boy).'),
+    ('kennedy-restaurant', "Gill Kennedy's oyster restaurant", '1885', 'Building moved from the west side to John Warn\'s old lot, Sept 1885; ice-house south of it (Cow Boy).'),
+    ('osullivan-barber', "John O'Sullivan's barber shop and house", '1884', 'Lot 11, Block 19 (Cow Boy 1885-09), "next to John Warn\'s" restaurant. Block 19 is not in today\'s parcel layer.'),
+    ('mckenzie-blacksmith', "McKenzie & O'Brien blacksmith shop", '1885', 'Moved to the north side of the track, May 1885; sold to Alex Morton 1886 (Cow Boy).'),
+    ('pryor-shoe-shop', "W. B. Pryor's shoe shop", '1885', 'On a lot "near the church," March-April 1885 (Cow Boy).'),
+    ('grymes-house', "E. Grymes's brick dwelling", '1884', 'Cow Boy 1884-10-16.'),
+    ('ellison-house', "C. F. Ellison's house by the Catholic church", '1885', 'Cow Boy, Nov-Dec 1885.'),
+    ('np-coal-mine-powder-house', 'NP coal mine and powder house', '1884-85', 'Coal mine roof caving in (Cow Boy 1884-06-12); old powder-house north of the track.'),
+    ('bank-lots', 'Merchants National Bank (planned)', '1884', 'Four lots at the corner of Third Street and Broadway bought April 1884; again planned "on the vacant hotel square" in 1885; never reported built (Cow Boy).'),
+    ('stage-company', 'Medora Stage & Forwarding Co. office, warehouse and baggage room', '1884', 'Line ran Oct 1884-May 1885 (HMdb 88033, 303699). Three buildings on a triangular block beside the tracks and old US 10, west of De Mores Park; in 1957 one stood on its original site and two had been moved a few feet (BROOKS57 pp. 19, 22 and Fig. 8). Place from the 1957 Tour map once it is fitted.'),
     ('medora-school', 'Medora school', '1885', '"A new school building has been erected" (Bismarck Weekly Tribune 1885-11-20); photo shsnd:00042-00037 "new schoolhouse".'),
-    ('stockyards', 'Stockyards', '1885', 'Pens planned 50x50, then 100 ft square (Cow Boy 1885-04-16); NP to build large stock yards (Dickinson Press 1885-01-03).'),
-    ('malloy-main-st', "Malloy's new building on Main Street", '1885', 'Mrs. Malloy moved from the Western House to her new building on Main St, July 1885 (Cow Boy 1885-07-16); torn down and moved to Dickinson June 1887.'),
+    ('stockyards', 'Stockyards', '1885', 'Old NP yards "across the river" were too small; a small yard 50x50, then 100x100 (Cow Boy 1885-04-16); new yards at "the brick-kiln butte" with the river, butte and railroad as pen walls (Oct 1885).'),
     ('paddock-boston-house', "Paddock's building for the Boston clothing house", '1885', 'Nearly finished June 1885 (Cow Boy 1885-06-25); Paddock\'s residence moved to Dickinson in sections June 1887.'),
     ('sylvane-ferris-house', "Sylvane Ferris's house", '1885', 'Two-story section with bay window and porch wing (shsnd:00129-00012).'),
     ('demores-houses', 'De Mores rental houses ("Houses to be let")', '1884-85', 'shsnd:00042-00030 etc.; St. Paul Daily Globe 1884-02-13 mentions "numerous small residence houses."'),
     ('brick-block', 'De Mores brick business block (planned)', '1884', 'Two store rooms below, offices above (St. Paul Daily Globe 1884-02-13). Was it built?'),
-    ('ice-dam', "The Marquis's ice dam", '1884-85', '"the Marquis built a dam nearby for the purpose of securing ice" near the trestle (HAG).'),
     ('lm-shipping-corrals', 'Railroad shipping corrals', 'by 1884', '"the shipping corrals near the Cantonment" (HAG).'),
     ('lm-gifford-store', 'Gifford Bros. & Co. general store, Little Missouri', '1883', 'To open June 1883 (Dickinson Press 1883-06-16).'),
     ('lm-saloons-1883', 'Other 1883 Little Missouri saloons (Smith & Stevens; Edgar & Saebastian; J. J. Smith)', '1883', 'Dickinson Press ads, July 1883.'),
@@ -345,7 +471,7 @@ for k in F:
     g = k['geom']
     props = {c: k.get(c) for c in ('id', 'name', 'aka', 'town', 'bank', 'kind', 'built_text', 'removed_text', 'use', 'material', 'stories',
                                    'footprint_ft', 'evidence', 'sources', 'photos', 'notes')}
-    props.update(built=k['built'], removed=k['removed'], method=k['method'], loc=k['loc'], form=k['form'])
+    props.update(built=k['built'], removed=k['removed'], method=k['method'], loc=k['loc'], form=k['form'], model=k.get('model', ''))
     feats.append({'type': 'Feature', 'properties': props, 'geometry': mapping(g)})
 os.makedirs(R('map', 'data'), exist_ok=True)
 json.dump({'type': 'FeatureCollection', 'features': feats}, open(R('map', 'data', 'historic_features.geojson'), 'w'))

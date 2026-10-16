@@ -4,7 +4,7 @@ Visualizing what Medora looked like during Theodore Roosevelt's time.
 
 This is an internal experiment by the Theodore Roosevelt Presidential Library. It rebuilds the two towns of Roosevelt's ranching years as a map, with a simple 3D model to follow. Those towns are Little Missouri on the west bank of the Little Missouri River and Medora on the east bank, plus the Chateau de Mores. The map shows how they changed from his arrival in September 1883 to the hard winter of 1886–87.
 
-**Map:** `map/index.html`, served with GitHub Pages at `/map/`.
+**Map:** https://trsmedora.labs.trlibrary.com/map/ (source in `map/`).
 
 ## What is here
 
@@ -12,6 +12,7 @@ This is an internal experiment by the Theodore Roosevelt Presidential Library. I
 |---|---|
 | `map/` | The 2D map: four dates, the 1883 plat fitted to today's map, the 1883 river channel, today's lots, and building details with sources |
 | `data/buildings.csv` | Gazetteer: every known structure with dates, form, placement method, confidence grades, evidence, sources and photos. **Generated, so edit `tools/build_features.py` instead.** |
+| `data/sources/cowboy_building_mentions_1884-1886.csv` | Every building mention in the *Bad Lands Cow Boy*, 1884–86 (446 rows, OCR-checked) |
 | `data/photos_trc_ranching_in_dakota.csv` | The 209 Harvard "Ranching in Dakota" photos, tagged and linked to buildings |
 | `data/reference/` | Today's lots (ND GIS Hub), survey sections, OpenStreetMap extract, and the plat fit (control points) |
 | `tools/build_features.py` | The single spec for all historic features; writes the gazetteer and the map data |
@@ -19,6 +20,7 @@ This is an internal experiment by the Theodore Roosevelt Presidential Library. I
 | `docs/timeline.md` | How the towns changed, 1879–1888 |
 | `docs/geography-and-overlay.md` | How the plat was fitted and how each building is placed |
 | `docs/sources.md` | Source keys, archives, photos, maps and what is still to read |
+| `docs/archive-requests.md` | Exact citations to request from SHSND, MHS, MNHS and others |
 | `docs/arrival-train.md` | The train T.R. arrived on, and images of it |
 | `docs/modeling-approach.md` | Plan for the map and the 3D model |
 

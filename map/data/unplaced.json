@@ -1,15 +1,75 @@
 [
  {
-  "id": "demores-company-store",
-  "name": "De Mores company office and store",
-  "when": "1883",
-  "evidence": "Photographed winter 1883-84 (houghton:3013533); labelled \"company store\" in the 1919 panorama (HAG plate p. 402). Locate from the panorama and the 1885-86 overviews."
+  "id": "company-store-offices",
+  "name": "De Mores company office and store (NPRC store, post office, meat market, offices)",
+  "when": "1883-85",
+  "evidence": "Photographed winter 1883-84 (houghton:3013533); labelled \"company store\" in the 1919 panorama. Former carriage-house store room (Cow Boy 1884-05-15); plank sidewalk in front of \"the Co's stores\" (1885-02-05); Howe scales in front of the offices (1885-06-25); NPRC general offices moved here from St. Paul, Oct 1885."
+ },
+ {
+  "id": "medora-hotel",
+  "name": "Medora Hotel (Coleman & Brown boarding house and restaurant)",
+  "when": "1884",
+  "evidence": "Lot bought June 19, 1884; nearly done July 3; ad Nov 20, 1884 (Cow Boy)."
+ },
+ {
+  "id": "company-barns",
+  "name": "Company barn, stable and corral (Deffebach livery)",
+  "when": "1884-85",
+  "evidence": "Rented to Bassie Deffebach as a livery (May 1884); additional barn south of the old one (March 1885) (Cow Boy)."
+ },
+ {
+  "id": "kennedy-restaurant",
+  "name": "Gill Kennedy's oyster restaurant",
+  "when": "1885",
+  "evidence": "Building moved from the west side to John Warn's old lot, Sept 1885; ice-house south of it (Cow Boy)."
+ },
+ {
+  "id": "osullivan-barber",
+  "name": "John O'Sullivan's barber shop and house",
+  "when": "1884",
+  "evidence": "Lot 11, Block 19 (Cow Boy 1885-09), \"next to John Warn's\" restaurant. Block 19 is not in today's parcel layer."
+ },
+ {
+  "id": "mckenzie-blacksmith",
+  "name": "McKenzie & O'Brien blacksmith shop",
+  "when": "1885",
+  "evidence": "Moved to the north side of the track, May 1885; sold to Alex Morton 1886 (Cow Boy)."
+ },
+ {
+  "id": "pryor-shoe-shop",
+  "name": "W. B. Pryor's shoe shop",
+  "when": "1885",
+  "evidence": "On a lot \"near the church,\" March-April 1885 (Cow Boy)."
+ },
+ {
+  "id": "grymes-house",
+  "name": "E. Grymes's brick dwelling",
+  "when": "1884",
+  "evidence": "Cow Boy 1884-10-16."
+ },
+ {
+  "id": "ellison-house",
+  "name": "C. F. Ellison's house by the Catholic church",
+  "when": "1885",
+  "evidence": "Cow Boy, Nov-Dec 1885."
+ },
+ {
+  "id": "np-coal-mine-powder-house",
+  "name": "NP coal mine and powder house",
+  "when": "1884-85",
+  "evidence": "Coal mine roof caving in (Cow Boy 1884-06-12); old powder-house north of the track."
+ },
+ {
+  "id": "bank-lots",
+  "name": "Merchants National Bank (planned)",
+  "when": "1884",
+  "evidence": "Four lots at the corner of Third Street and Broadway bought April 1884; again planned \"on the vacant hotel square\" in 1885; never reported built (Cow Boy)."
  },
  {
   "id": "stage-company",
   "name": "Medora Stage & Forwarding Co. office, warehouse and baggage room",
   "when": "1884",
-  "evidence": "Line ran Oct 1884-May 1885 (HMdb 88033, 303699). One building on its original site in 1957 (BROOKS57)."
+  "evidence": "Line ran Oct 1884-May 1885 (HMdb 88033, 303699). Three buildings on a triangular block beside the tracks and old US 10, west of De Mores Park; in 1957 one stood on its original site and two had been moved a few feet (BROOKS57 pp. 19, 22 and Fig. 8). Place from the 1957 Tour map once it is fitted."
  },
  {
   "id": "medora-school",
@@ -21,13 +81,7 @@
   "id": "stockyards",
   "name": "Stockyards",
   "when": "1885",
-  "evidence": "Pens planned 50x50, then 100 ft square (Cow Boy 1885-04-16); NP to build large stock yards (Dickinson Press 1885-01-03)."
- },
- {
-  "id": "malloy-main-st",
-  "name": "Malloy's new building on Main Street",
-  "when": "1885",
-  "evidence": "Mrs. Malloy moved from the Western House to her new building on Main St, July 1885 (Cow Boy 1885-07-16); torn down and moved to Dickinson June 1887."
+  "evidence": "Old NP yards \"across the river\" were too small; a small yard 50x50, then 100x100 (Cow Boy 1885-04-16); new yards at \"the brick-kiln butte\" with the river, butte and railroad as pen walls (Oct 1885)."
  },
  {
   "id": "paddock-boston-house",
@@ -52,12 +106,6 @@
   "name": "De Mores brick business block (planned)",
   "when": "1884",
   "evidence": "Two store rooms below, offices above (St. Paul Daily Globe 1884-02-13). Was it built?"
- },
- {
-  "id": "ice-dam",
-  "name": "The Marquis's ice dam",
-  "when": "1884-85",
-  "evidence": "\"the Marquis built a dam nearby for the purpose of securing ice\" near the trestle (HAG)."
  },
  {
   "id": "lm-shipping-corrals",

@@ -13,6 +13,21 @@ Research note, October 15, 2026. Train name and equipment are **not yet confirme
 - **The dining car is uncertain.** Hagedorn's scene of a gunman demanding "cow-grease" in the dining car describes the Villard excursion train the night before, not T.R.'s train. The NP's through dining-car service in the West began September 12, 1883 (Railway Age), after T.R. arrived.
 - **Locomotive and cars:** NP passenger trains of 1883 were pulled by 4-4-0 "American" engines from several builders, including Baldwin, Portland, Taunton, Hinkley and Manchester. They hauled coaches and Pullman sleepers.
 
+## New evidence: the timetable at Medora (added Oct 15, 2026, evening)
+
+The *Bad Lands Cow Boy* printed a "Northern Pacific Time Table" at the head of its local page from its first issues. The times below are OCR readings:
+
+| Issue | Westbound | Eastbound |
+|---|---|---|
+| Feb 14, 1884 | **Pacific Express No. 1, 4:01 a.m.** | Atlantic Express No. 2, about 10:20 p.m. |
+| June 26, 1884 | No. 1, 6:07 p.m. | No. 2, about 8:2x a.m. |
+| Apr–July 1885 | No. 1, 6:47 p.m. | No. 2, 8:48 a.m. |
+| July–Dec 1886 | No. 1, 6:45 p.m. | No. 2, 8:35 a.m. |
+
+Five months after T.R.'s arrival, the westbound through train was **Pacific Express No. 1** and reached the station around 4 a.m. That fits his "about three in the morning" in September 1883 and makes "Pacific Express" the likely name.
+
+It is still not proof. The schedule changed often; it moved to the evening by mid-1884. The September 1883 time card is still to be found, in the September 1883 issues of the *Bismarck Tribune* (inside pages, Sept 7–28) or the *Dickinson Press* (Sept 8–29).
+
 ## Best images
 
 | Image | What it shows | How close | Where |
