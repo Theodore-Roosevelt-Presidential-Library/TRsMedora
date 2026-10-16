@@ -1,5 +1,17 @@
 # Research log
 
+## 2026-10-16: Harvard photos checked through the browser
+
+**Done**
+- Viewed the Houghton (Harvard) Medora photos in Chrome through Harvard's image server. That server supports zoomed crops of the full-resolution images, up to 5000 px.
+- Re-solved SHSND 00042-00193: the camera stood on the butte top southeast of town, and the scan is **not** mirrored (Harvard's copy 3013473 matches it). The first attempt had mistaken St. Mary's side wall for a fence.
+- Tried to solve Hagedorn's 1919 overview (3013472). It didn't fit well, so it is used for relative positions only.
+
+**Findings**
+- **Roberts Hall:** Hagedorn's "Bill Williams' saloon" (1919) is a two-story frame hall. In his 1919 overview a building of that form stands where D2 is, and the Roberts Hall marker is about 10 m from D2. Location raised to B.
+- **Hotel de Mores:** Harvard's photos (3013534, 1895 3013559) confirm the long brick building with a tall gabled end block is the hotel. That matches D's tall east gable in the 1885 view. Location raised to B.
+- **Group E** matches Harvard 3013533, "the office and company store of the Marquis" (1883): three joined front-gabled buildings. It is now placed as the company office and store, which the stage company probably used later.
+
 ## 2026-10-15 (late night): Every reachable photo checked
 
 **Done**

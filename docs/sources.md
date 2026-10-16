@@ -105,9 +105,9 @@ Updated October 15, 2026, after an online sweep of photos, maps, written sources
 
 ## Added Oct 15 (night): photo pass
 
-- Every image reachable online is in `data/photo_catalog_1880s.csv`, with what it was used for. Harvard's server refuses requests from the workspace, so open those images in a browser.
+- Every image reachable online is in `data/photo_catalog_1880s.csv`, with what it was used for. Harvard's server refuses requests from the workspace; the Harvard images were checked in a browser on Oct 16.
 - **BROOKS57 Fig. 8 ("Medora about 1900")** labels the Medora Stage & Forwarding Co. and the court house. The 1957 Tour map puts the stage company on the triangular block west of De Mores Memorial Park.
-- **SHSND 00042-00193** may be a mirror-image scan (see [photo-matching.md](photo-matching.md)).
+- **SHSND 00042-00193** is not mirrored after all (Harvard's 3013473 shows the same view the same way round). Harvard's images can be viewed, and cropped at full resolution, through ids.lib.harvard.edu in a browser; see [photo-matching.md](photo-matching.md).
 
 ## Written sources still to read
 
