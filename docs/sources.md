@@ -103,6 +103,12 @@ Updated October 15, 2026, after an online sweep of photos, maps, written sources
 - **Minnesota Historical Society NP records:** nothing on Medora is digitized. See [archive-requests.md](archive-requests.md).
 - **Drone models** of the Chateau and Chimney Park (Sketchfab, 2023), cleared for Library use and shown on the map.
 
+## Added Oct 15 (night): photo pass
+
+- Every image reachable online is in `data/photo_catalog_1880s.csv`, with what it was used for. Harvard's server refuses requests from the workspace, so open those images in a browser.
+- **BROOKS57 Fig. 8 ("Medora about 1900")** labels the Medora Stage & Forwarding Co. and the court house. The 1957 Tour map puts the stage company on the triangular block west of De Mores Memorial Park.
+- **SHSND 00042-00193** may be a mirror-image scan (see [photo-matching.md](photo-matching.md)).
+
 ## Written sources still to read
 
 - Goplen 1939 NPS restoration report and his research papers (SHSND Mss 10037, Box 3: "Town of Medora").

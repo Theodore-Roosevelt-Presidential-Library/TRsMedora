@@ -1,5 +1,21 @@
 # Research log
 
+## 2026-10-15 (late night): Every reachable photo checked
+
+**Done**
+- Downloaded and reviewed 52 SHSND Photobook images and 9 Montana Historical Society images from TR's years. Each is listed with its outcome in `data/photo_catalog_1880s.csv`.
+- Solved three more cameras: SHSND 00042-00195 and -00194 (one camera spot on the hillside southeast of town, within 4 m) and the c.1905 postcard SHSND 00259-00003. Partly solved Huffman's 1886 "Medora from railway bridge."
+- Added triangulation (crossing sight lines from two or three photos) to `tools/photomatch/`. Four buildings are now placed this way.
+- Could not solve: 00042-00193 (it fits only mirrored, and the dates don't add up), 00042-00151 (ground level, 1883), Haynes's 1881 Little Missouri stereo, and 00042-00176.
+
+**Findings**
+- **Hotel de Mores** is probably building "D": a long two-story building about 60 m north-east of the depot, with its long side facing north and its west end on Main Street. It is gone in the c.1905 postcard; the hotel burned in 1897. It looks white in the 1885–86 views despite the 1885 brick veneer, which is unresolved.
+- **Roberts Hall** is possibly building "D2": two stories, about 80 ft, with few upper windows, beside today's Old Town Hall Theater. It still stands in the c.1905 postcard. This conflicts with the *Cow Boy*'s "lot 7, block 17".
+- **Medora Stage & Forwarding Co.** is probably the row of three matching gabled buildings ("E") on the west side of Main Street, where the 1957 NPS Tour map puts it.
+- **Metropolitan Hotel** is pinned by three photos to the south end of today's Rough Riders complex.
+- **Depot**: Huffman's 1886 photo shows its long side along the track, not perpendicular to it as HMdb says.
+- **Caption conflicts**: SHSND 00042-00184 and 00097-00045 are the same stage-coach photo, catalogued as Medora 1883 and Dickinson 1885. SHSND 00042-00194 and -00195 were taken from the same spot, despite their 1886 and 1885 dates.
+
 ## 2026-10-15 (night): Photo matching begins
 
 **Done**
@@ -73,7 +89,7 @@
 
 ## Next steps
 1. Order the high-resolution plat scan (SHSND 00042-00183) and re-fit it.
-2. Photo matching: 00042-00071 done. Next: SHSND 00042-00151 (1883) and Huffman 72459 (1886, for triangulation), then 00042-00195/-00193/-00194. Identify buildings D and D2.
+2. Photo matching: all online SHSND/MHS images done (see `data/photo_catalog_1880s.csv`). Next: view the Harvard 1885 and 1919 town photos in a browser to confirm Roberts Hall; ask SHSND about the 00042-00193 scan orientation.
 3. Read BROOKS57 in full and place the stage company buildings and the brickyard.
 4. Request:
    - from SHSND: the 2025 Cantonment survey and the Goplen papers;

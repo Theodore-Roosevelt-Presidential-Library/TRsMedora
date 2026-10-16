@@ -424,37 +424,46 @@ add(id='tiser-house', name='Tiser House ("only original building of the town of 
     evidence='"about .1 of a mile west of the Medora bridge" in 1957 (BROOKS57 p. 32). Placed roughly 0.1 mi west of the river on the north side; the 1957 bridge position needs fixing from the 1957-62 aerials.',
     sources='BROOKS57 p. 32', notes='Standing in 1957, occupied by the Ira Tiser family.')
 
-# --- 1885 bird's-eye photo (SHSND 00042-00071), camera solved against the 2021 lidar terrain
-# See docs/photo-matching.md. Base points were back-projected to the ground; expect about +/-25 m,
-# mostly along the line of sight (east-west). Identities below are inferences, not labels on the photo.
-PH71 = 'shsnd:00042-00071 (1885 bird\'s-eye, camera solved)'
-add(id='photo85-d2', name='Large two-story building (1885 photo, building "D2")', town='Medora', bank='east', kind='building',
-    built=1885.0, built_text='standing in the 1885 photo', use='unknown: candidates are Roberts Hall or the Hotel de Mores', material='frame, light-coloured',
-    stories='2', footprint_ft='about 25 x 80 (scaled from the photo)', loc='B', form='B', method='photo',
-    geom=rect((-103.524783, 46.913921), 25, 80, 0),
-    evidence='Back-projected from the 1885 photo (base of east face, pixel 660,995; about 490 m from the camera). Long side faces the camera, so the long axis runs roughly north-south. A taller gabled block (D) stands directly behind it to the west and may be attached.',
-    sources='SHSND 00042-00071; this project\'s camera solution (docs/photo-matching.md)', photos=PH71,
-    notes='Size (about 80 ft long, two full stories) fits Roberts Hall (24 x 75, Cow Boy) and sits next to today\'s Old Town Hall Theater, but the Cow Boy puts Roberts Hall on lot 7, block 17 - about 300 m southeast. Also a candidate for the Hotel de Mores (100 x 25, north of the depot). Check against SHSND 00042-00076 (Hotel de Mores, 1885).')
-add(id='photo85-d', name='Tall gabled building behind D2 (1885 photo, building "D")', town='Medora', bank='east', kind='building',
-    built=1885.0, built_text='standing in the 1885 photo', use='unknown: likely the Hotel de Mores or part of it', stories='2-3 (gable end)',
-    footprint_ft='about 25 x 40 (placeholder)', loc='C', form='C', method='photo',
-    geom=rect((-103.5254, 46.91389), 25, 40, 90),
-    evidence='Back-projected from the 1885 photo. Its base is hidden behind D2, so the true spot lies between D2 and the back-projected point (-103.525717, 46.913863); placed midway. About 70 m north of the depot, consistent with the Hotel de Mores ("a few steps from the depot").',
-    sources='SHSND 00042-00071; docs/photo-matching.md', photos=PH71,
-    notes='The 1885 hotel rebuild added kitchen and laundry wings on the north side (Cow Boy), so D and D2 may be one hotel complex. Unresolved.')
-add(id='photo85-e', name='Row of three white gabled buildings (1885 photo, "E")', town='Medora', bank='east', kind='building group',
-    built=1885.0, built_text='standing in the 1885 photo', use='unknown (dwellings or company houses?)', material='frame, white', stories='1 1/2-2',
-    footprint_ft='row about 90 ft long (placeholder)', loc='B', form='C', method='photo',
-    geom=rect((-103.526357, 46.914082), 30, 90, 0),
-    evidence='Back-projected from the 1885 photo (pixel 782,895; about 610 m from the camera), on today\'s Block 12. Three matching front-gabled buildings facing east.',
-    sources='SHSND 00042-00071; docs/photo-matching.md', photos=PH71,
-    notes='Matching buildings suggest a single builder - perhaps de Mores company housing. Look for them in the Cow Boy and the Vallombrosa album.')
-upd('hotel-de-mores', notes='+1885 photo check (docs/photo-matching.md): the large buildings "D" and "D2" stand 40-90 m east of this placement; one of them is probably the hotel. Placement left unchanged until the identification is settled.')
-upd('roberts-hall', notes='+1885 photo check: a two-story building of about the right size ("D2") stands next to today\'s Old Town Hall Theater, near the Hotel de Mores as HMdb says. If D2 is Roberts Hall, the block 17 reading is wrong or the block numbers changed.')
-upd('ferris-store', notes='+Confirmed in the 1885 photo: a two-story gabled building back-projects within about 25 m of this placement (docs/photo-matching.md).', photos='+; '+PH71)
-upd('metropolitan-hotel', notes='+Confirmed in the 1885 photo: a flat-roofed two-story building ("J") back-projects onto the Rough Riders Hotel site (docs/photo-matching.md).', photos='+; '+PH71)
-upd('medora-depot', notes='+1885 photo: a depot-sized building and loading sheds back-project to within about 15-45 m of this placement, near today\'s convenience store (docs/photo-matching.md).', photos='+; '+PH71)
-upd('pp-ice-house', notes='+1885 photo: the plant\'s large building back-projects within about 15 m of this placement (docs/photo-matching.md).', photos='+; '+PH71)
+# --- Photo matching (docs/photo-matching.md)
+# Cameras solved against the 2021 lidar terrain for SHSND 00042-00071 (1885), 00042-00195 and -00194
+# (1885-86, one camera station SE of town) and the c.1905 postcard SHSND 00259-00003. A building seen in two
+# or three of these photos is placed where the sight lines cross ("triangulated"). Identities are inferences.
+PH71 = "shsnd:00042-00071 (1885 bird's-eye, camera solved)"
+PH195 = 'shsnd:00042-00195 (1885-86 overview, camera solved)'
+PH194 = 'shsnd:00042-00194 (1885-86 overview, same camera station as -00195)'
+PH259 = 'shsnd:00259-00003 (c.1905 postcard, camera solved)'
+TRI = 'Triangulated from two or more solved photos; sight lines cross within about 1-3 m, so the position is good to roughly +/-10 m once picking error is allowed for.'
+
+upd('hotel-de-mores', geom=rect((-103.525635, 46.913867), 25, 100, 90), loc='C', method='photo',
+    evidence='Probably building "D" of the 1885 bird\'s-eye view, triangulated from SHSND 00042-00071 and 00042-00195; the reprojected base agrees with both photos (5 px and 2 px), and swapping D with D2 fails that test by about 60 px. ' + TRI +
+             ' Why the hotel: (1) a long two-story building with evenly spaced windows on both floors, the shape of the 1883 frame hotel (SHSND 00042-00149); (2) about 60 m north-east of the depot site - "a few steps from the depot" (Fitzgerald\'s ad, Cow Boy 1884); (3) long side facing north (HMdb 88037: "faced north"), with its west end on Main Street, which fits the race track running to "Main street opposite the Northern Pacific hotel" (Cow Boy) and the 1885 porch on the west side; (4) gone in the c.1905 postcard - the hotel burned in 1897. Location graded C because it rests on this identification.',
+    notes='+Open conflict: in the 1885-86 overviews this building reads as white or light-painted, with an outside stair at its east end, while the Cow Boy says the hotel was brick-veneered in spring 1885 and SHSND 00042-00076 shows a long brick building. Either the overviews predate the veneer, the brick read light, or the brick building is a different structure. The site falls on the block the 1957 NPS Tour map shows as De Mores Memorial Park; whether the memorial park was laid out on the old hotel site is worth checking.',
+    sources='+; SHSND 00042-00149, 00042-00071, 00042-00195 (camera solutions, docs/photo-matching.md); Bad Lands Cow Boy 1884-02-07 (Fitzgerald ad)',
+    photos='+; ' + PH71 + '; ' + PH195 + '; ' + PH194)
+upd('roberts-hall', geom=rect((-103.524683, 46.913916), 24, 75, 0), loc='C', method='photo',
+    evidence='Possibly building "D2" of the 1885 bird\'s-eye view, triangulated from three photos (SHSND 00042-00071, 00042-00195 and the c.1905 postcard 00259-00003; the three sight lines agree within 0.5 degrees). ' + TRI +
+             ' Why Roberts Hall: two full stories about 80 ft long as scaled from the photo (the footprint uses the Cow Boy\'s 24 x 75) with few upper windows (a hall, not hotel rooms), a raised front on its south end, long axis north-south; still standing about 1905 (Roberts Hall stood until 1923, while the hotel burned in 1897); next to today\'s Old Town Hall Theater (Roberts Hall may be the "town hall" of a 1903 stereo, still to be checked); near the hotel and in view of the railroad (HMdb).',
+    notes='+Location graded C because the identification is inferred and conflicts with the Cow Boy\'s "lot 7, block 17" (today\'s Block 17 is about 300 m southeast). The earlier placement on Block 17 is replaced; check the plat\'s block numbering on the high-resolution scan, and the 1919 Hagedorn photos (Houghton 3013539, 3013472-75), which should still show it.',
+    photos='+; ' + PH71 + '; ' + PH195 + '; ' + PH259)
+upd('metropolitan-hotel', geom=rect((-103.524125, 46.91485), 35, 80, 0), method='photo',
+    sources='+; SHSND 00042-00071, 00042-00195, 00259-00003 (camera solutions, docs/photo-matching.md)',
+    evidence='Same site as today\'s Rough Riders Hotel (HMdb 87499). Triangulated from three photos: the dark, flat-roofed two-story building with rows of windows in SHSND 00042-00071 ("J") and 00042-00195, and the same building, white-painted, in the c.1905 postcard (00259-00003), where it is the Rough Riders Hotel. The three sight lines agree within 0.06 degrees (in the 00042-00071 photo the reprojected base sits about 40 px below the picked base, a known depth bias of that camera at the north end of town). ' + TRI + ' It stands about 30 m south of the centre of today\'s (much larger) Rough Riders complex, i.e. at its south end.',
+    photos='+; ' + PH71 + '; ' + PH195 + '; ' + PH259)
+add(id='stage-company', name='Medora Stage & Forwarding Co. buildings (probable): three matching gabled buildings', town='Medora', bank='east', kind='building group',
+    built=1884.75, built_text='stage line ran Oct 1884-May 1885 (HMdb 88033, 303699); buildings standing in the 1885 photos', use='office, warehouse and baggage room of the Medora-Deadwood stage line (NPSHB), if the identification holds', material='frame, white-painted', stories='1 1/2-2',
+    footprint_ft='row about 90 ft long (placeholder)', loc='C', form='C', method='photo',
+    geom=rect((-103.526333, 46.914082), 30, 90, 0),
+    evidence='Building group "E" of the 1885 bird\'s-eye view, triangulated from SHSND 00042-00071 and 00042-00195. ' + TRI + ' Three matching front-gabled buildings facing east, on the west side of Main Street.',
+    sources='SHSND 00042-00071, 00042-00195; HMdb 88033, 303699; NPSHB p. 58 and the 1957 NPS "Tour of Medora" map (site 3); BROOKS57 pp. 19, 22 and Fig. 8', photos=PH71 + '; ' + PH195,
+    notes='Identification is inferred: the 1957 Tour map puts the Medora Stage & Forwarding Co. (described as three buildings - office, warehouse and baggage room) on the small triangular block west of De Mores Memorial Park, which is where this group stands. In 1957 one stood on its original site and two had been moved a few feet (BROOKS57 pp. 19, 22). Location graded C because it rests on this identification.')
+upd('ferris-store', notes='+1885 photo: a two-story gabled building ("H") back-projects within about 25 m of this placement; its match in the other photos is not certain, so it is not triangulated.', photos='+; ' + PH71)
+upd('medora-depot', geom=rect(off(DEPOT_M, north=8), 24, 60, TRACK_BEARING % 180), form='B', stories='1 1/2',
+    evidence='"near today\'s Medora Convenience Store" (HMdb 87986). Huffman\'s 1886 photo (MHS 72461) shows a one-and-a-half-story board-and-batten depot with its long side along the track, a bay window for the agent facing the track, a "MEDORA" sign with mileboards, and a covered freight end; HMdb\'s "perpendicular to the tracks" does not fit that photo. In the 1885-86 overviews a depot-sized building and loading sheds back-project within about 15-45 m of this spot.',
+    notes='"A few steps" from the Hotel de Mores (Cow Boy). Used for church services and Sunday school. Size still a placeholder (about 24 x 60 ft from the photo\'s proportions). MHS dates its Huffman print to 1886 but the caption says "North Dakota" (statehood 1889), so the caption at least is later; confirm the date of the negative.', photos='+; ' + PH71)
+upd('pp-ice-house', notes='+1885 photo: the plant\'s large building back-projects within about 15 m of this placement (docs/photo-matching.md).', photos='+; ' + PH71)
+upd('courthouse-cottages', notes='+SHSND 00042-00176 (1883-86) shows the Von Hoffman House with a one-story, low-roofed house with a front porch to its right against the east bluff - probably one of the brick cottages. BROOKS57 Fig. 13 ("Medora 1886") shows the two cottages; Fig. 8 (about 1900) labels the court house.',
+    photos='+; shsnd:00042-00176')
+upd('demores-packing-plant', notes='+SHSND 00042-00153 is captioned "de Mores Packing Plant, Medora, N.D. 1883" on the card but shows a tall stack; either the caption date is later than the photo, or the 1883 plant had a stack of its own before Peter Book\'s 1885 chimney. Huffman 1886 (MHS 72460, 72459) and SHSND 00042-00074/-00075 (1885) show the finished plant.')
 
 # --- known but not yet located
 UNPLACED = [
@@ -469,7 +478,6 @@ UNPLACED = [
     ('ellison-house', "C. F. Ellison's house by the Catholic church", '1885', 'Cow Boy, Nov-Dec 1885.'),
     ('np-coal-mine-powder-house', 'NP coal mine and powder house', '1884-85', 'Coal mine roof caving in (Cow Boy 1884-06-12); old powder-house north of the track.'),
     ('bank-lots', 'Merchants National Bank (planned)', '1884', 'Four lots at the corner of Third Street and Broadway bought April 1884; again planned "on the vacant hotel square" in 1885; never reported built (Cow Boy).'),
-    ('stage-company', 'Medora Stage & Forwarding Co. office, warehouse and baggage room', '1884', 'Line ran Oct 1884-May 1885 (HMdb 88033, 303699). Three buildings on a triangular block beside the tracks and old US 10, west of De Mores Park; in 1957 one stood on its original site and two had been moved a few feet (BROOKS57 pp. 19, 22 and Fig. 8). Place from the 1957 Tour map once it is fitted.'),
     ('medora-school', 'Medora school', '1885', '"A new school building has been erected" (Bismarck Weekly Tribune 1885-11-20); photo shsnd:00042-00037 "new schoolhouse".'),
     ('stockyards', 'Stockyards', '1885', 'Old NP yards "across the river" were too small; a small yard 50x50, then 100x100 (Cow Boy 1885-04-16); new yards at "the brick-kiln butte" with the river, butte and railroad as pen walls (Oct 1885).'),
     ('paddock-boston-house', "Paddock's building for the Boston clothing house", '1885', 'Nearly finished June 1885 (Cow Boy 1885-06-25); Paddock\'s residence moved to Dickinson in sections June 1887.'),
