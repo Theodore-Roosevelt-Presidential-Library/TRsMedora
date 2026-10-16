@@ -1,0 +1,61 @@
+{
+ "affine_px_to_lonlat": [
+  [
+   6.333702855774296e-05,
+   -2.7904164452546373e-08
+  ],
+  [
+   -3.657071553865217e-07,
+   -4.465270936953814e-05
+  ],
+  [
+   -103.54412121022301,
+   46.92636664947642
+  ]
+ ],
+ "gcp": [
+  [
+   [
+    301.7,
+    179.3
+   ],
+   [
+    -103.525078,
+    46.918352
+   ]
+  ],
+  [
+   [
+    302.0,
+    504.7
+   ],
+   [
+    -103.525178,
+    46.903822
+   ]
+  ],
+  [
+   [
+    136.7,
+    179.0
+   ],
+   [
+    -103.5355285,
+    46.918369999999996
+   ]
+  ]
+ ],
+ "image": {
+  "title": "Plat of Medora, Billings County, D.T., 1883",
+  "repository": "State Historical Society of North Dakota, Marquis de Mores Collection 00042, item 00042-00183",
+  "web_image": "https://history.nd.gov/exhibits/gardening/images/popups/medora-plat.jpg",
+  "web_image_size_px": [
+   469,
+   525
+  ],
+  "exhibit_page": "https://history.nd.gov/exhibits/gardening/pop_medora-plat.html"
+ },
+ "control_points_note": "Pixel coordinates are on the 469x525 SHSND web image. Ground coordinates are PLSS section corners from the ND GIS Hub PLSS Sections layer (T140N R102W, 5th PM): corner of Secs 22/23/26/27, corner of Secs 26/27/34/35, and the north quarter corner of Sec 27 (midpoint of the 21/22/27/28 and 22/23/26/27 corners). The plat marks section corners with circled crosses and draws section and quarter lines.",
+ "fit_note": "Three-point affine (exact fit). Check: the modern Northern Pacific/BNSF track and the modern Block 15 parcels (Von Hoffman House) fall on the plat's track and north grid within a few pixels (~15 m).",
+ "scale_ft_per_px": 16.25
+}

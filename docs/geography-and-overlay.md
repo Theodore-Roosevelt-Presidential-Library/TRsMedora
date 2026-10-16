@@ -1,62 +1,71 @@
 # Geography and overlay
 
-## The basic layout
+## The layout
 
-The Little Missouri River flows north. The Northern Pacific crossed it on a trestle of about 300 feet (HAG ch. I).
+The Little Missouri River flows north. The Northern Pacific crossed it on a timber bridge of about 300 feet.
 
-- **West bank:** Little Missouri, the Cantonment, and the Chateau de Mores on the bench above.
-- **East bank:** Medora, built on "the flat under the bluff" (HAG ch. I), with the packing plant at its west edge near the river (NRHP 75001300).
+- **West bank:** Little Missouri grew up around the depot, about half a mile southeast of the 1879 Cantonment. The Chateau sits on a terrace to the south.
+- **East bank:** Medora was platted on the flat under the bluff, with the packing plant at its west edge by the track.
 
-There were no road bridges. People forded "a hundred yards north of the trestle," or walked the trestle at high water (HAG).
+There was no road bridge. People forded "a hundred yards north of the trestle," or walked the trestle at high water (HAG).
 
-## Little Missouri in September 1883, per Hagedorn
+## Fitting the 1883 plat to today's map
 
-Hagedorn's chapter I reads almost like a site plan. It was compiled from interviews with residents. Positions relative to the depot shack:
+The plat (SHSND 00042-00183) is drawn north-up at 1 inch to 400 feet. It shows:
+- section and quarter-section lines;
+- circled crosses at the section corners.
 
-| Feature | Position given |
-|---|---|
-| Pyramid Park Hotel | "immediately north of the tracks"; T.R. walked "northeastward" to it from the depot |
-| Bill Williams's saloon (one story) | "beside" the hotel |
-| Johnny Nelson's store | "South of the track" |
-| Mrs. McGeeney's boarding house | "next door" to Nelson's; within 50 feet of Mrs. Fitzgerald |
-| Fitzgerald's shack | "Directly to the east, on the brink of the river" |
-| Jake Maunders's shack | "At a corresponding place on the other side of the track" |
-| The Cantonment | "A quarter of a mile west of" Maunders, "in a grove of cottonwood trees" |
-| Miners' shacks | "under the butte to the south" |
+Two of those corners are one mile apart on the line between Sections 26 and 27, T140N R102W. That gives the scale (about 16 ft per pixel on the 469×525 web image) and confirms north.
 
-This is enough for a **grade C (inferred)** schematic of Little Missouri once the 1883 track alignment and the riverbank are fixed.
+**Control points**, with today's positions from the ND GIS Hub PLSS layer:
 
-## Medora: the original plat appears to still be in use
-
-Two National Register nominations locate surviving 1884 buildings by today's street addresses and by the **Original Plat of Medora**:
-
-- Von Hoffman House: Lots 7–10, Block 15, Original Plat, at Broadway and Fifth Street (NRHP 77001018).
-- St. Mary's Church: Fourth Street and Third Avenue (NRHP, 1977).
-
-If de Mores's 1883–84 plat is the same grid as today's, the Medora overlay becomes a matter of matching lots, not warping a map. That is **inferred; it needs confirming** against the recorded plat at the Billings County Register of Deeds.
-
-## Fixed points for georeferencing
-
-| Point | Why it is reliable | Coordinates |
+| Plat pixel | Survey point | Lon, lat |
 |---|---|---|
-| Packing plant chimney and foundations | Survive; WPA corner markers; NRHP boundary | NRHP boundary approx. 46°54'56"–46°55'06" N, 103°31'29"–103°31'52" W (Sec. 27, T140N R102W) |
-| Chateau de Mores | Standing | TBD (survey from imagery) |
-| St. Mary's Church | Standing, original site | TBD |
-| Von Hoffman House | Standing, original lots | TBD |
-| Joe Ferris store (Ferris Inn) | Standing | TBD |
-| Metropolitan / Rough Riders Hotel | Standing but expanded; original footprint TBD | TBD |
-| Railroad crossing | Alignment probably unchanged since the 1880s (verify) | TBD |
+| 301.7, 179.3 | Corner of Secs. 22/23/26/27 | −103.525078, 46.918352 |
+| 302.0, 504.7 | Corner of Secs. 26/27/34/35 | −103.525178, 46.903822 |
+| 136.7, 179.0 | North quarter corner, Sec. 27 | −103.535529, 46.918370 |
 
-## Overlay plan
+A three-point affine fit is stored in `data/reference/plat_1883_georef.json`. Two independent checks:
 
-1. **Base:** current Medora parcel and street data (Billings County GIS or OpenStreetMap), plus USGS 3DEP lidar terrain and NAIP imagery.
-2. **Survey layer:** the General Land Office township plat for T140N R102W and the surveyor's field notes. These come from the BLM GLO Records site and are already within scope of the Library's **Homestead** repo. They show the 1880s river channel, the railroad and sometimes buildings.
-3. **Town plat:** the recorded Original Plat of Medora, georeferenced to the surviving buildings above.
-4. **Photo positions:** for each town-view photo, estimate where the camera stood and its direction, using butte skylines matched against the lidar terrain. Hagedorn's 1919 panorama, with its labeled buildings, is the anchor image.
-5. **Buildings:** place each `buildings.csv` row as a footprint polygon with its grade.
+- **Today's lots match the plat's north grid.** Today's parcels north of the track fall on the plat's blocks. Block 15 is where the 1977 National Register nomination puts the Von Hoffman House (lots 7–10). So the 1883 north grid is today's town, and the block numbers appear to carry over.
+- **The track matches west of the river.** Today's BNSF (former NP) track lies on the plat's track there.
 
-## Watch for
+## What the overlay shows
 
-- **The river has moved.** The Little Missouri migrates. The 1880s bank lines, fords and the ice dam need the GLO plat or old photos, not today's channel.
-- **"Southwest" and "west bank" for the Chateau.** Sources agree. Keep the camera notes ("from the eastern bank") as a check.
-- **Little Missouri's exact site.** The town's location on the west bank is clear, but no plat or footprint has been found yet. It is the biggest gap.
+- **The river has moved.** In 1883 the channel ran east of today's. It bent close under the north end of Medora and crossed the track a little east of where the river is today. The 1883 channel on the map is traced from the plat and is approximate.
+- **The southern grid is gone.** The plat's rotated grid of about 40 blocks south of the track does not survive in today's lots. Was it vacated, replatted or never built on? Ask the Billings County Recorder.
+- **East of the river the plat draws the track up to about 100 m south of today's line.** It is either schematic there or the line was later moved. NP valuation and right-of-way maps at the Minnesota Historical Society would settle it.
+- **The Cantonment is drawn on the plat** as eight building symbols about half a mile northwest of the crossing. They are schematic. The 1879 reserve map (SHSND MAP.032-00111) and SHSND's 2025 remote-sensing survey can pin down the real buildings.
+
+## How each building is placed
+
+Every feature in `data/buildings.csv` records its method:
+
+| Method | Meaning | Typical grade |
+|---|---|---|
+| osm | Footprint of a surviving building on its original site | A |
+| plat | Read off the fitted 1883 plat | B |
+| address | Street corner or lot and block from a period source, matched to today's streets and lots | B–C |
+| relative | Worked out from a written description relative to another feature (for example "north of the depot") | C |
+| schematic | Near where sources put it; the spot itself is a guess | D |
+
+**Little Missouri.** Placed from Hagedorn's description of September 1883 (hotel north of the track, store and boarding house south, shacks on the riverbank). It is anchored on the depot, 110 m northwest of the 1883 crossing. That spot is a reasoned guess. The Haynes 1881 photo and the Cantonment reserve map are the best ways to improve it.
+
+**Medora.** Uses the period street names that survive today: Third Avenue, Third Street, Main Street and Broadway (*Cow Boy*, 1884–85).
+
+## Fixed points
+
+| Point | Basis | Position |
+|---|---|---|
+| Packing plant chimney | Survives; WPA corner markers; NRHP boundary | −103.52779, 46.91608 (OSM ruins node) |
+| Chateau de Mores | Standing | OSM footprint |
+| St. Mary's, Von Hoffman House, Joe Ferris store | Standing on original sites | OSM footprints |
+| Medora depot site | "near today's Medora Convenience Store" (HMdb 87986) | −103.52629, 46.91351 |
+| Section corners | ND GIS Hub PLSS | table above |
+
+## Next improvements
+
+1. Re-fit with a high-resolution scan of the plat and many more control points (block corners).
+2. Compare the TRMF-01 1883 "Map of Medora with Lot Prices."
+3. Fit the 1884 GLO township plat: river, railroad and perhaps buildings.
+4. Place unlocated buildings from the 1883–86 overview photos by matching butte skylines against lidar terrain.

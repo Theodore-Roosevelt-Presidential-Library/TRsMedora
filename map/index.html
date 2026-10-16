@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roosevelt's Medora</title>
+<meta name="description" content="Little Missouri and Medora, Dakota Territory, 1883 to 1887, mapped over today's Medora. An internal Theodore Roosevelt Presidential Library experiment.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --paper:#E7EBE3; --paper-2:#DCE2D8; --ink:#1E2B31; --ink-2:#4A5A60; --rule:#B9C3BA;
+  --clinker:#7E2A1E; --river:#3E6E86; --modern:#6F7F78; --map-bg:#D9DED4;
+  --serif:"Libre Caslon Text", Georgia, serif; --sans:"IBM Plex Sans", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans)}
+.app{display:grid;grid-template-columns:380px 1fr;height:100vh;height:100dvh}
+#map{background:var(--map-bg);height:100%}
+aside{overflow:auto;border-right:1px solid var(--rule);padding:22px 22px 40px;background:var(--paper)}
+h1{font:700 30px/1.1 var(--serif);margin:0 0 4px;letter-spacing:-.01em}
+.sub{font:italic 15px/1.45 var(--serif);color:var(--ink-2);margin:0 0 18px;max-width:34em}
+h2{font:700 16px/1.3 var(--serif);margin:22px 0 8px}
+p{margin:0 0 10px}
+.small{font-size:13px;color:var(--ink-2)}
+label{display:flex;gap:8px;align-items:center;font-size:14px;margin:5px 0;cursor:pointer}
+input[type=checkbox]{accent-color:var(--ink);width:16px;height:16px}
+input[type=range]{accent-color:var(--ink);width:100%}
+select{font:14px var(--sans);padding:5px 6px;border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:3px;width:100%}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--clinker);outline-offset:2px}
+
+/* chain line of dates over the map */
+.chain{position:absolute;z-index:500;left:50%;transform:translateX(-50%);top:14px;display:flex;align-items:flex-start;
+  background:rgba(231,235,227,.94);border:1px solid var(--rule);border-radius:4px;padding:10px 18px 8px;box-shadow:0 1px 0 rgba(30,43,49,.15)}
+.chain ol{list-style:none;margin:0;padding:0;display:flex;position:relative}
+.chain ol::before{content:"";position:absolute;left:40px;right:40px;top:9px;border-top:2px dashed var(--ink-2)}
+.chain li{position:relative;width:120px;text-align:center}
+.chain button{background:none;border:0;cursor:pointer;padding:0 4px;display:flex;flex-direction:column;align-items:center;gap:4px;width:100%}
+.chain .stake{width:16px;height:16px;border:2px solid var(--ink);background:var(--paper);transform:rotate(45deg);position:relative;z-index:1}
+.chain .when{font:700 14px/1.15 var(--serif)}
+.chain .what{font-size:12px;color:var(--ink-2);line-height:1.2}
+.chain button[aria-pressed=true] .stake{background:var(--clinker);border-color:var(--clinker)}
+.chain button[aria-pressed=true] .when{color:var(--clinker)}
+
+.legend-row{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;margin:6px 0;font-size:14px}
+.legend-row svg{display:block}
+.legend-row b{font-weight:600}
+
+.detail{border-top:2px solid var(--ink);margin-top:20px;padding-top:14px}
+.detail h3{font:700 21px/1.2 var(--serif);margin:0 0 2px}
+.detail .aka{font:italic 14px/1.4 var(--serif);color:var(--ink-2);margin:0 0 10px}
+.detail dl{display:grid;grid-template-columns:96px 1fr;gap:4px 10px;margin:0 0 12px;font-size:14px}
+.detail dt{color:var(--ink-2)}
+.detail dd{margin:0}
+.detail .block{margin:0 0 12px;font-size:14px}
+.detail .block strong{display:block;font:700 14px var(--serif);margin-bottom:2px}
+.detail a{color:var(--river)}
+.grade{display:inline-block;font-weight:600}
+.empty{font:italic 15px var(--serif);color:var(--ink-2)}
+details{margin-top:6px}
+summary{cursor:pointer;font:700 16px var(--serif);margin:22px 0 6px}
+.unplaced li{margin:0 0 8px;font-size:14px}
+.unplaced b{font-family:var(--serif)}
+.count{font-size:13px;color:var(--ink-2);margin:4px 0 0}
+
+.leaflet-tooltip.tip{font:600 13px var(--sans);background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:3px;box-shadow:none}
+.leaflet-tooltip.tip::before{display:none}
+.leaflet-container{font-family:var(--sans)}
+.leaflet-control-attribution{font-size:11px}
+
+@media (max-width:820px){
+  .app{grid-template-columns:1fr;grid-template-rows:58vh auto;height:auto}
+  #mapwrap{order:-1;height:58vh;position:relative}
+  aside{border-right:0;border-top:1px solid var(--rule)}
+  .chain{top:8px;left:auto;right:8px;transform:none;padding:8px 8px 6px;max-width:calc(100% - 64px)}
+  .chain li{width:70px}
+  .chain .what{display:none}
+  .chain ol::before{left:30px;right:30px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside aria-label="Map controls and details">
+    <h1>Roosevelt's Medora</h1>
+    <p class="sub">Little Missouri and Medora, Dakota Territory, as Theodore Roosevelt knew them from 1883 to 1887, laid over the town today.</p>
+
+    <p class="small">Pick a date on the chain line above the map. Click a building for what is known about it and where the evidence comes from.</p>
+
+    <h2>How sure we are</h2>
+    <div class="legend-row"><svg width="44" height="18" aria-hidden="true"><rect x="2" y="2" width="40" height="14" fill="#1E2B31" fill-opacity=".55" stroke="#1E2B31" stroke-width="2"/></svg><span><b>Documented.</b> Survives, or measured and photographed.</span></div>
+    <div class="legend-row"><svg width="44" height="18" aria-hidden="true"><rect x="2" y="2" width="40" height="14" fill="#1E2B31" fill-opacity=".25" stroke="#1E2B31" stroke-width="2"/></svg><span><b>Supported.</b> Period photo or a specific written description.</span></div>
+    <div class="legend-row"><svg width="44" height="18" aria-hidden="true"><rect x="2" y="2" width="40" height="14" fill="#1E2B31" fill-opacity=".1" stroke="#1E2B31" stroke-width="2" stroke-dasharray="6 4"/></svg><span><b>Inferred.</b> Reasoned from written sources.</span></div>
+    <div class="legend-row"><svg width="44" height="18" aria-hidden="true"><rect x="2" y="2" width="40" height="14" fill="none" stroke="#1E2B31" stroke-width="2" stroke-dasharray="1.5 4" stroke-linecap="round"/></svg><span><b>Conjectural.</b> Known to exist; position is a placeholder.</span></div>
+    <p class="small">The grade shown on the map is for location. Each building's detail gives a separate grade for its size and shape.</p>
+
+    <h2>Layers</h2>
+    <label><input type="checkbox" id="lyr-plat" checked> 1883 plat of Medora</label>
+    <div style="margin:2px 0 8px 24px"><label for="plat-op" class="small" style="margin:0">Plat opacity</label><input type="range" id="plat-op" min="0" max="1" step="0.05" value="0.8"></div>
+    <label><input type="checkbox" id="lyr-river" checked> River channel in 1883 (traced from the plat)</label>
+    <label><input type="checkbox" id="lyr-hist" checked> Buildings and features, 1883–87</label>
+    <label><input type="checkbox" id="lyr-modern"> Today's lots, streets and buildings</label>
+    <div style="margin-top:10px"><label for="base" class="small" style="margin:0 0 4px">Background</label>
+      <select id="base"><option value="img">Aerial imagery today</option><option value="osm">Street map today</option><option value="none">Plain</option></select></div>
+
+    <div class="detail" id="detail" aria-live="polite">
+      <p class="empty">No building selected.</p>
+    </div>
+
+    <details>
+      <summary>Known, but not yet placed</summary>
+      <ul class="unplaced" id="unplaced" style="padding-left:18px"></ul>
+    </details>
+
+    <h2>About this map</h2>
+    <p class="small">The 1883 plat (State Historical Society of North Dakota, de Mores Collection 00042-00183) is fitted to today's survey corners. Today's lots line up with its north-side grid. East of the river the plat draws the track somewhat south of today's line. Buildings placed from written descriptions are educated guesses and are marked that way.</p>
+    <p class="small">Research notes, sources and the data behind this map are in the <a href="https://github.com/Theodore-Roosevelt-Presidential-Library/TRsMedora">TRsMedora repository</a>. An internal experiment of the Theodore Roosevelt Presidential Library.</p>
+    <p class="count" id="count"></p>
+  </aside>
+  <div id="mapwrap" style="position:relative;height:100%">
+    <nav class="chain" aria-label="Choose a date">
+      <ol id="chain"></ol>
+    </nav>
+    <div id="map" role="region" aria-label="Map of Medora and Little Missouri"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const SLICES = [
+  {t:1883.69, when:'Sept. 1883', what:'Roosevelt arrives'},
+  {t:1884.6,  when:'Summer 1884', what:'Medora booms'},
+  {t:1885.6,  when:'Summer 1885', what:'At its height'},
+  {t:1887.3,  when:'Spring 1887', what:'After the hard winter'}
+];
+const GRADE = {A:'Documented', B:'Supported', C:'Inferred', D:'Conjectural'};
+const STYLE = {
+  A:{fillOpacity:.55, dashArray:null},
+  B:{fillOpacity:.25, dashArray:null},
+  C:{fillOpacity:.1,  dashArray:'6 4'},
+  D:{fillOpacity:0,   dashArray:'1.5 5'}
+};
+const INK = '#1E2B31', CLINKER = '#7E2A1E', RIVER = '#3E6E86';
+
+const PHOTO = {
+  houghton: id => ['Harvard Houghton Library', 'https://nrs.harvard.edu/urn-3:FHCL.HOUGH:' + id],
+  mhs: id => ['Montana Historical Society', 'https://www.mtmemory.org/nodes/view/' + id],
+  trc: id => ['Theodore Roosevelt Digital Library', 'https://www.theodorerooseveltcenter.org/digital-library/' + id],
+  npshb: id => ['NPS Historical Handbook', 'https://npshistory.com/handbooks/cooperating_associations/thro/images/' + id],
+  shsnd: id => ['State Historical Society of ND', 'https://statemuseum.nd.gov/photobook?CollectionNmbr=' + id.split('-')[0]],
+  dh: id => ['Digital Horizons', 'https://digitalhorizonsonline.org/digital/collection/ndshs-dm/search/searchterm/' + encodeURIComponent(id)]
+};
+
+let slice = 2, sel = null;
+const map = L.map('map', {zoomControl:true, minZoom:13, maxZoom:19}).setView([46.9145, -103.5275], 16);
+const bases = {
+  img: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'Imagery: Esri, Maxar, Earthstar Geographics'}),
+  osm: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; OpenStreetMap contributors'}),
+  none: L.layerGroup()
+};
+let base = bases.img.addTo(map);
+map.attributionControl.addAttribution('1883 plat: State Historical Society of North Dakota (00042-00183)');
+
+const panes = ['plat','river','modern','hist'];
+panes.forEach((p,i)=>{ map.createPane(p); map.getPane(p).style.zIndex = 410 + i*10; });
+
+function el(tag, attrs={}, ...kids){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)) { if (k==='text') e.textContent=v; else e.setAttribute(k,v); }
+  kids.forEach(k => k && e.append(k));
+  return e;
+}
+
+Promise.all(['config.json','historic_features.geojson','river_1883.geojson','modern.geojson','unplaced.json']
+  .map(f => fetch('data/'+f).then(r => { if(!r.ok) throw new Error(f); return r.json(); })))
+.then(([cfg, hist, river, modern, unplaced]) => {
+  const plat = L.imageOverlay(cfg.plat_image, cfg.plat_bounds, {pane:'plat', opacity:.8, interactive:false, alt:'1883 plat of Medora'}).addTo(map);
+  const riverL = L.geoJSON(river, {pane:'river', style:{color:RIVER, weight:9, opacity:.45, lineCap:'round'}}).addTo(map);
+
+  const modernL = L.geoJSON(modern, {pane:'modern', style: f => {
+    const p = f.properties;
+    if (p.layer==='parcel') return {color:'#F4F6F1', weight:1, opacity:.9, fill:false};
+    if (p.kind==='building') return {color:'#F4F6F1', weight:1, fillColor:'#F4F6F1', fillOpacity:.25};
+    if (p.kind==='road') return {color:'#F4F6F1', weight:2, opacity:.6};
+    if (p.kind==='rail') return {color:'#F4F6F1', weight:2, dashArray:'2 6'};
+    return {color:'#9CC3D5', weight:1, fillOpacity:.15};
+  }, interactive:false});
+
+  function styleFor(f){
+    const p = f.properties, s = STYLE[p.loc] || STYLE.D, on = sel && sel===p.id;
+    const c = on ? CLINKER : INK;
+    if (f.geometry.type.includes('Line')) return {color: p.kind==='railroad'||p.kind==='bridge' ? INK : c, weight: p.kind==='bridge'?6:3, dashArray:s.dashArray, opacity:.9};
+    return {color:c, weight:on?3:2, fillColor:c, fillOpacity:Math.max(s.fillOpacity, on?.35:0), dashArray:s.dashArray};
+  }
+  const histL = L.geoJSON(hist, {
+    pane:'hist', style:styleFor,
+    pointToLayer:(f,ll)=> L.circleMarker(ll,{radius:8}),
+    onEachFeature:(f,l)=>{
+      l.bindTooltip(f.properties.name, {className:'tip', direction:'top', sticky:true});
+      l.on('click', ()=> select(f.properties.id));
+      l.on('keypress', e => { if (e.originalEvent.key==='Enter') select(f.properties.id); });
+    }
+  });
+  const byId = {}; histL.eachLayer(l => byId[l.feature.properties.id] = l);
+  const shown = L.layerGroup().addTo(map);
+
+  function visible(p, t){ return p.built <= t && (p.removed===null || p.removed > t); }
+  function render(){
+    const t = SLICES[slice].t; shown.clearLayers(); let n = 0;
+    histL.eachLayer(l => { if (visible(l.feature.properties, t)) { l.setStyle(styleFor(l.feature)); shown.addLayer(l); n++; } });
+    document.getElementById('count').textContent = n + ' features shown for ' + SLICES[slice].when + '.';
+    if (sel && byId[sel] && !visible(byId[sel].feature.properties, t)) showDetail(byId[sel].feature.properties, true);
+  }
+
+  function linkList(str){
+    const frag = document.createDocumentFragment();
+    str.split(';').map(s=>s.trim()).filter(Boolean).forEach((s,i)=>{
+      if (i) frag.append('; ');
+      const m = s.match(/^(houghton|mhs|trc|npshb|shsnd|dh):(\S+)(.*)$/);
+      if (m && PHOTO[m[1]]) {
+        const [repo, url] = PHOTO[m[1]](m[2].replace(/[,)]$/,''));
+        frag.append(el('a',{href:url, target:'_blank', rel:'noopener', text: repo + ' ' + m[2]}), m[3]);
+      } else frag.append(s);
+    });
+    return frag;
+  }
+  function showDetail(p, gone){
+    const d = document.getElementById('detail'); d.replaceChildren();
+    d.append(el('h3',{text:p.name}));
+    if (p.aka) d.append(el('p',{class:'aka', text:'Also: ' + p.aka}));
+    if (gone) d.append(el('p',{class:'small', text:'Not standing at the date you picked.'}));
+    const dl = el('dl');
+    const row = (k,v) => { if (v) dl.append(el('dt',{text:k}), el('dd',{text:v})); };
+    row('Where', p.town + (p.bank && p.bank!=='both' && p.bank!=='river' ? ', ' + p.bank + ' bank' : ''));
+    row('Built', p.built_text); row('Gone', p.removed_text || (p.removed===null ? '' : ''));
+    row('Use', p.use); row('Built of', p.material); row('Stories', p.stories); row('Size (ft)', p.footprint_ft);
+    row('Location', GRADE[p.loc] + ' (' + p.loc + ')'); row('Shape', GRADE[p.form] + ' (' + p.form + ')');
+    d.append(dl);
+    const block = (title, node) => { if (!node || (typeof node==='string' && !node)) return; const b = el('div',{class:'block'}, el('strong',{text:title})); b.append(node); d.append(b); };
+    block('How it is placed', p.evidence);
+    if (p.notes) block('Notes', p.notes);
+    if (p.photos) block('Images', linkList(p.photos));
+    block('Sources', p.sources);
+  }
+  function select(id){
+    sel = id; const l = byId[id]; render();
+    showDetail(l.feature.properties, false);
+    if (window.matchMedia('(max-width:820px)').matches) document.getElementById('detail').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  // chain line of dates
+  const chain = document.getElementById('chain');
+  SLICES.forEach((s,i)=>{
+    const b = el('button',{type:'button','aria-pressed': String(i===slice)}, el('span',{class:'stake','aria-hidden':'true'}), el('span',{class:'when',text:s.when}), el('span',{class:'what',text:s.what}));
+    b.addEventListener('click', ()=>{ slice=i; chain.querySelectorAll('button').forEach((x,j)=>x.setAttribute('aria-pressed', String(j===i))); render(); });
+    chain.append(el('li',{}, b));
+  });
+
+  // controls
+  const tog = (id, layer) => document.getElementById(id).addEventListener('change', e => e.target.checked ? layer.addTo(map) : map.removeLayer(layer));
+  tog('lyr-plat', plat); tog('lyr-river', riverL); tog('lyr-hist', shown); tog('lyr-modern', modernL);
+  document.getElementById('plat-op').addEventListener('input', e => plat.setOpacity(+e.target.value));
+  document.getElementById('base').addEventListener('change', e => { map.removeLayer(base); base = bases[e.target.value].addTo(map); });
+
+  const ul = document.getElementById('unplaced');
+  unplaced.forEach(u => ul.append(el('li',{}, el('b',{text:u.name}), document.createTextNode(' (' + u.when + '). ' + u.evidence))));
+
+  render();
+}).catch(err => {
+  document.getElementById('detail').replaceChildren(el('p',{class:'empty', text:'The map data did not load (' + err.message + '). Open this page from a web server, such as GitHub Pages, rather than as a local file.'}));
+});
+</script>
+</body>
+</html>

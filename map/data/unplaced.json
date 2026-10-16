@@ -1,0 +1,86 @@
+[
+ {
+  "id": "demores-company-store",
+  "name": "De Mores company office and store",
+  "when": "1883",
+  "evidence": "Photographed winter 1883-84 (houghton:3013533); labelled \"company store\" in the 1919 panorama (HAG plate p. 402). Locate from the panorama and the 1885-86 overviews."
+ },
+ {
+  "id": "stage-company",
+  "name": "Medora Stage & Forwarding Co. office, warehouse and baggage room",
+  "when": "1884",
+  "evidence": "Line ran Oct 1884-May 1885 (HMdb 88033, 303699). One building on its original site in 1957 (BROOKS57)."
+ },
+ {
+  "id": "medora-school",
+  "name": "Medora school",
+  "when": "1885",
+  "evidence": "\"A new school building has been erected\" (Bismarck Weekly Tribune 1885-11-20); photo shsnd:00042-00037 \"new schoolhouse\"."
+ },
+ {
+  "id": "stockyards",
+  "name": "Stockyards",
+  "when": "1885",
+  "evidence": "Pens planned 50x50, then 100 ft square (Cow Boy 1885-04-16); NP to build large stock yards (Dickinson Press 1885-01-03)."
+ },
+ {
+  "id": "malloy-main-st",
+  "name": "Malloy's new building on Main Street",
+  "when": "1885",
+  "evidence": "Mrs. Malloy moved from the Western House to her new building on Main St, July 1885 (Cow Boy 1885-07-16); torn down and moved to Dickinson June 1887."
+ },
+ {
+  "id": "paddock-boston-house",
+  "name": "Paddock's building for the Boston clothing house",
+  "when": "1885",
+  "evidence": "Nearly finished June 1885 (Cow Boy 1885-06-25); Paddock's residence moved to Dickinson in sections June 1887."
+ },
+ {
+  "id": "sylvane-ferris-house",
+  "name": "Sylvane Ferris's house",
+  "when": "1885",
+  "evidence": "Two-story section with bay window and porch wing (shsnd:00129-00012)."
+ },
+ {
+  "id": "demores-houses",
+  "name": "De Mores rental houses (\"Houses to be let\")",
+  "when": "1884-85",
+  "evidence": "shsnd:00042-00030 etc.; St. Paul Daily Globe 1884-02-13 mentions \"numerous small residence houses.\""
+ },
+ {
+  "id": "brick-block",
+  "name": "De Mores brick business block (planned)",
+  "when": "1884",
+  "evidence": "Two store rooms below, offices above (St. Paul Daily Globe 1884-02-13). Was it built?"
+ },
+ {
+  "id": "ice-dam",
+  "name": "The Marquis's ice dam",
+  "when": "1884-85",
+  "evidence": "\"the Marquis built a dam nearby for the purpose of securing ice\" near the trestle (HAG)."
+ },
+ {
+  "id": "lm-shipping-corrals",
+  "name": "Railroad shipping corrals",
+  "when": "by 1884",
+  "evidence": "\"the shipping corrals near the Cantonment\" (HAG)."
+ },
+ {
+  "id": "lm-gifford-store",
+  "name": "Gifford Bros. & Co. general store, Little Missouri",
+  "when": "1883",
+  "evidence": "To open June 1883 (Dickinson Press 1883-06-16)."
+ },
+ {
+  "id": "lm-saloons-1883",
+  "name": "Other 1883 Little Missouri saloons (Smith & Stevens; Edgar & Saebastian; J. J. Smith)",
+  "when": "1883",
+  "evidence": "Dickinson Press ads, July 1883."
+ },
+ {
+  "id": "lm-paddock-cabin",
+  "name": "Paddock's cabin and livery, Little Missouri",
+  "when": "1880",
+  "evidence": "\"'Little Misery.' Paddock's cabin in foreground, 1880\" (Haynes, in NPSHB)."
+ }
+]
