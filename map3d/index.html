@@ -322,8 +322,12 @@ for (const f of scene0.features){
     const cap=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.0,0.6,24), bm); cap.position.set(c[0], z0+hgt+0.2, -c[1]); grp.add(cap);
     const base=new THREE.Mesh(new THREE.BoxGeometry(3.6,2.2,3.6), bm); base.position.set(c[0], z0+1.1, -c[1]); base.castShadow=true; base.userData=f; pickable.push(base); grp.add(base);
   } else if (f.geom==='point'){
-    const g=new THREE.CylinderGeometry(1.2,1.2,6,8); g.translate(f.point[0], f.ground+3, -f.point[1]);
-    const mesh=new THREE.Mesh(g, material(0x7e2a1e, grade)); mesh.userData=f; pickable.push(mesh); grp.add(mesh);
+    // known only as a place (no footprint): a survey stake and a confidence pin, never a see-through block
+    if (f.id==='chateau-outbuildings') { scene.add(grp); groups.push(grp); continue; }   // modelled as chateau-outbuilding-east and chateau-stable
+    const g=new THREE.CylinderGeometry(.08,.08,1.6,6); g.translate(f.point[0], f.ground+.8, -f.point[1]);
+    const mesh=new THREE.Mesh(g, new THREE.MeshStandardMaterial({color:0x8a7a62})); mesh.userData=f; pickable.push(mesh); grp.add(mesh);
+    const hit=new THREE.Mesh(new THREE.CylinderGeometry(3,3,4,8), new THREE.MeshBasicMaterial({visible:false})); hit.position.set(f.point[0], f.ground+2, -f.point[1]); hit.userData=f; pickable.push(hit); grp.add(hit);
+    const mk=gradeMarker(grade); mk.position.set(f.point[0], f.ground+4, -f.point[1]); mk.userData={f, grade}; grp.add(mk); markers.push(mk);
   } else if (f.ring){
     const z0 = f.ground; const mg=new THREE.Group(); const grpReal=grp; if (det) { grp.add(mg); detailGroups[detailGroups.length-1][1]=mg; }
     { const grp = det ? mg : grpReal;
