@@ -41,6 +41,43 @@ def utm_geom(g):
         g = max(g.geoms, key=lambda p: p.area)
     return ('poly', [T.transform(*c) for c in g.exterior.coords])
 
+# ---------------------------------------------------------------- building pads
+# The 3 m bare-earth terrain is too coarse for buildings on slopes (the Chateau sits on a bluff edge), so each
+# building gets a level pad: the ground inside its footprint (plus 1.5 m) is set to one height, and the ground
+# within the next 8 m blends back to the natural surface. The pad height is the median ground around the building
+# (the lidar ground class at the Chateau gives 709.9 m, which this reproduces).
+from shapely.geometry import shape as _shape
+from matplotlib.path import Path as _Path
+_cols, _rows, _res = meta['cols'], meta['rows'], meta['res']
+_xc = meta['x0'] + (np.arange(_cols) + 0.5) * _res; _yc = meta['y1'] - (np.arange(_rows) + 0.5) * _res
+_XX, _YY = np.meshgrid(_xc, _yc)
+_Zorig = Z.copy()
+for f in json.load(open(R('map', 'data', 'historic_features.geojson')))['features']:
+    pr = f['properties']; g = _shape(f['geometry'])
+    if g.geom_type not in ('Polygon', 'MultiPolygon') or pr['kind'] in ('landmark', 'railroad', 'bridge'): continue
+    if (pr.get('massing') or {}).get('roof') in ('none',): continue
+    if g.geom_type == 'MultiPolygon': g = max(g.geoms, key=lambda q: q.area)
+    gu = Polygon([T.transform(*c) for c in g.exterior.coords])
+    if gu.area > 4000: continue
+    x0, y0, x1, y1 = gu.buffer(10).bounds
+    c0, c1 = int((x0 - meta['x0']) / _res), int((x1 - meta['x0']) / _res) + 1
+    r0, r1 = int((meta['y1'] - y1) / _res), int((meta['y1'] - y0) / _res) + 1
+    if c0 < 0 or r0 < 0 or c1 > _cols or r1 > _rows: continue
+    sx, sy = _XX[r0:r1, c0:c1], _YY[r0:r1, c0:c1]
+    ring = gu.buffer(4).exterior
+    pz = float(np.median([zat(*ring.interpolate(d).coords[0]) for d in np.linspace(0, ring.length, 40)]))
+    # inside the footprint use the median of the natural ground there if the surrounding ring is far off (cut into slope)
+    inner = _Path(np.array(gu.buffer(1.5).exterior.coords)).contains_points(np.c_[sx.ravel(), sy.ravel()]).reshape(sx.shape)
+    if inner.any():
+        pz = float(np.median(_Zorig[r0:r1, c0:c1][inner])) if pr['id'] != 'chateau-de-mores' else 709.9
+    from shapely import distance as _dist, points as _pts
+    d = _dist(gu, _pts(sx.ravel(), sy.ravel())).reshape(sx.shape)
+    w = np.clip(1 - (d - 1.5) / 8.0, 0, 1)
+    blk = Z[r0:r1, c0:c1]
+    Z[r0:r1, c0:c1] = np.where(w > 0, blk * (1 - w) + pz * w, blk)
+q = np.round((Z - meta['z0']) / meta['scale']).clip(0, 65535).astype('<u2')
+q.tofile(R('map3d', 'data', 'terrain_pads.bin'))
+
 out = {'origin': {'utm13n': ORIGIN[:2], 'z0': ORIGIN[2]}, 'features': []}
 H = json.load(open(R('map', 'data', 'historic_features.geojson')))
 for f in H['features']:
@@ -73,7 +110,7 @@ _, pts = utm_geom(shape(riv['geometry']))
 line = LineString(pts); dense = [line.interpolate(d) for d in np.arange(0, line.length, 6.0)]
 out['river_1883'] = [loc(q.x, q.y) + [round(zat(q.x, q.y) - ORIGIN[2] + 0.3, 2)] for q in dense]
 out['terrain'] = {'x0': meta['x0'] - ORIGIN[0], 'y1': meta['y1'] - ORIGIN[1], 'res': meta['res'], 'cols': meta['cols'], 'rows': meta['rows'],
-                  'z0': meta['z0'] - ORIGIN[2], 'scale': meta['scale'], 'file': 'terrain.bin'}
+                  'z0': meta['z0'] - ORIGIN[2], 'scale': meta['scale'], 'file': 'terrain_pads.bin'}
 
 # ---------------------------------------------------------------- appearance (for the detailed 3D models)
 # wall: clapboard | drop | brick | yellowbrick | boardbatten | log ;  roof: shingle | tin | sod
@@ -101,9 +138,9 @@ STYLE = {
  'courthouse-cottages': dict(wall='brick', wall_color='#ad6248', trim='#efe9dc', roof='shingle', front='W', ridge='hip', stories=1, bays=3, gable_bays=2,
         porch=[dict(side='W', depth=2.0)], chimneys=1, split=dict(n=2, gap=0.3),
         basis='SHSND 00042-00195 (two matching hipped one-story cottages) and the courthouse panel; brick from the Cow Boy'),
- 'chateau-de-mores': dict(wall='clapboard', wall_color='#7d8b61', trim='#e9e3d2', roof='shingle', roof_color='#8b3a2c', front='E', ridge='long', stories=2, bays=6, gable_bays=3,
-        porch=[dict(side='E', depth=2.6)], chimneys=3,
-        basis='Cow Boy 1885-11-26: "green sides and red roof"; form from the standing building (simplified to two blocks); veranda side simplified'),
+ 'chateau-de-mores': dict(wall='clapboard', wall_color='#a3a29b', trim='#8b2e24', roof='shingle', roof_color='#7c3428', front='E', ridge='long', stories=2, bays=6, gable_bays=3,
+        porch=[dict(side='E', depth=3.0), dict(side='S', depth=3.0)], chimneys=3,
+        basis='Colours follow the building as the State Historical Society of North Dakota maintains it today (grey siding with red roof and trim; the 1974 National Register nomination describes "French grey" siding with a red roof and shutters). The Cow Boy of Nov. 26, 1885 described "green sides and red roof"; the 1883-86 photographs show light walls and a dark roof, which fits either. Form: two-story main block, lower rear wing, one-story veranda on the river (east) and south sides, simplified'),
  'company-store-offices': dict(wall='clapboard', wall_color='#f0ebdf', trim='#ffffff', roof='shingle', front='E', ridge='front', stories=1.5, bays=3, gable_bays=2,
         storefront=True, split=dict(n=3, gap=0.0), chimneys=1, basis='Houghton 3013533 (1883: three joined front-gabled frame buildings, white)'),
  'medora-depot': dict(wall='boardbatten', wall_color='#cbb68c', trim='#6b4a32', roof='shingle', front='S', ridge='long', stories=1.5, bays=5, gable_bays=2,
@@ -120,12 +157,15 @@ STYLE = {
         barn=True, basis='Cow Boy (240 x 42 freight house); appearance a guess'),
  'cantonment': dict(wall='log', wall_color='#8a7357', trim='#5b4a3a', roof='sod', front='S', ridge='long', stories=1, bays=4, gable_bays=1, chimneys=2,
         basis='Haynes 1880 (MHS 91738) and HM52: cedar-log army buildings; roof covering a guess'),
- 'pp-foundation': dict(wall='clapboard', wall_color='#d9d3c6', trim='#f0ece2', roof='shingle', front='S', ridge='long', stories=2, bays=10, gable_bays=2,
-        cupola=True, basis='SHSND 00042-00074/-00075 and Huffman 72460 (large light-coloured frame plant buildings with cupolas); details a guess'),
- 'pp-ice-house': dict(wall='clapboard', wall_color='#d6cfc1', trim='#f0ece2', roof='shingle', front='S', ridge='long', stories=2, bays=0, gable_bays=0,
-        cupola=True, basis='SHSND 00042-00188 (ice house under construction, cupola); siding a guess'),
- 'pp-east-building': dict(wall='clapboard', wall_color='#d3ccbd', trim='#f0ece2', roof='shingle', front='S', ridge='long', stories=1.5, bays=6, gable_bays=2,
-        basis='unidentified plant building; appearance a guess'),
+ 'pp-foundation': dict(wall='boardbatten', wall_color='#9e9586', trim='#8a8173', roof='tin', roof_color='#77736c', front='S', ridge='flat', stories=3, bays=0, gable_bays=0,
+        size=[46, 18], parapet=0.4, monitor=True, gallery=dict(side='S', levels=3, frac=0.35), runway=dict(end='W', len=34), chimneys=0, eave=9.0,
+        basis='SHSND 00042-00074/-00075 (1885), the "1883" card 00042-00153 and Huffman 1886 (MHS 72460): a tall, nearly windowless block of unpainted vertical boards with a low roof and a long roof monitor, stacked galleries on one front, the chimney behind. Size widened from the 1957 foundation line to the proportions in the photos (a guess); height about 9 m from the photos'),
+ 'pp-ice-house': dict(wall='boardbatten', wall_color='#a39a8a', trim='#8a8173', roof='shingle', roof_color='#5f5a54', front='S', ridge='long', stories=2, bays=0, gable_bays=0,
+        cupola=True, tower=dict(w=5.5, h=4.0), chimneys=0, eave=7.0, barn=True,
+        basis='SHSND 00042-00188 (ice house under construction, 1883) and 00042-00074/-00075: a long gabled block with a square tower and pyramid-roofed cupola; unpainted boards'),
+ 'pp-east-building': dict(wall='boardbatten', wall_color='#5e564c', trim='#4a443c', roof='shingle', roof_color='#4f4a44', front='S', ridge='long', stories=1, bays=0, gable_bays=0,
+        size=[40, 14], vents=3, barn=True, chimneys=0, eave=4.2,
+        basis='SHSND 00042-00075 and Huffman 72460: long, low, dark gabled sheds with roof ventilators east of the chimney; identity and size are guesses'),
 }
 COMMERCIAL = ('store', 'saloon', 'drug', 'hotel', 'restaurant', 'office', 'rink', 'billiard', 'shop', 'bar')
 PALETTE = ['#efe9dc', '#e6dcc6', '#d8cfbd', '#c9bfae', '#a89a86', '#e9e2cf', '#d2c3a5']
@@ -159,6 +199,16 @@ for it in out['features']:
         q = lambda t, d: [round(a[0] + dx * t + px * d, 2), round(a[1] + dy * t + py * d, 2)]
         # main two-story block along the south front, and a rear block filling the rest of the footprint
         st['blocks'] = [[q(0, 0), q(1, 0), q(1, 9), q(0, 9)], [q(0.08, 9), q(0.92, 9), q(0.92, 15.5), q(0.08, 15.5)]]
+    if 'size' in st and it.get('rect'):
+        RR = it['rect']; cx = sum(p[0] for p in RR) / 4; cy = sum(p[1] for p in RR) / 4
+        e0 = (RR[1][0] - RR[0][0], RR[1][1] - RR[0][1]); e1 = (RR[2][0] - RR[1][0], RR[2][1] - RR[1][1])
+        u = e0 if math.hypot(*e0) >= math.hypot(*e1) else e1; ul = math.hypot(*u); u = (u[0] / ul, u[1] / ul); v = (-u[1], u[0])
+        L, W = st['size']
+        it['rect'] = [[round(cx + u[0] * a * L / 2 + v[0] * b * W / 2, 2), round(cy + u[1] * a * L / 2 + v[1] * b * W / 2, 2)] for a, b in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+        it['ring'] = it['rect']; it['size_m'] = [L, W]
+    if 'eave' in st:
+        m = dict(it.get('massing') or {}); r = m.get('ridge', 0) - m.get('eave', 0)
+        m['eave'] = st['eave']; m['src'] = 'estimated from the period photographs (see Appearance)'; m['ridge'] = st['eave'] + (max(r, 0.3) if st.get('ridge') == 'flat' else max(r, 2.5)); it['massing'] = m
     it['style'] = st
     if phases:
         for ph in phases:

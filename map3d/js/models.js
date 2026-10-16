@@ -159,8 +159,7 @@ function mat(key, grade) {
     roof_shingle: TEX.shingle, roof_tin: TEX.tin, roof_sod: TEX.sod, window: TEX.window, windowArched: TEX.windowArched, door: TEX.door, storefront: TEX.storefront,
     plank: TEX.plank, trim: null, stone: null, dark: null, coach: TEX.coach}[kind];
   const m = new THREE.MeshStandardMaterial({color: col, map: map || null, roughness: kind.startsWith('roof_tin') ? 0.55 : 0.92, metalness: kind === 'roof_tin' ? 0.3 : 0, side: THREE.DoubleSide});
-  if (grade === 'C') { m.transparent = true; m.opacity = 0.8; }
-  if (grade === 'D') { m.transparent = true; m.opacity = 0.45; m.depthWrite = false; }
+  // confidence is shown by a marker above the building, not by transparency
   MATS.set(k, m); return m;
 }
 
@@ -176,6 +175,7 @@ function rectFrame(R) {
 }
 const P2 = (f, a, b) => [f.c[0] + f.u[0] * a + f.v[0] * b, f.c[1] + f.u[1] * a + f.v[1] * b];   // local (along, across) -> e,n
 
+let ctxZ = null;
 function buildBlock(bk, f, st, z0, H, R, frontDir, grade) {
   // one rectangular building block: walls, gables, roof, windows, doors, porch, chimneys, extras
   const F = rectFrame(R), hl = F.L / 2, hw = F.W / 2;
@@ -246,6 +246,7 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade) {
   const sh = Math.min(3.8, H / ((st.stories || 1) + (half ? 0.2 : 0)));
   const arched = !!st.arched, winKey = arched ? 'windowArched' : 'window';
   const put = (fc, along, bottom, w, h, key, out = 0.04) => {
+    if (st.blank && (key === 'window' || key === 'windowArched')) return;
     // along: 0..len from fc.a towards fc.b
     const t0 = along - w / 2, t1 = along + w / 2;
     const ax = fc.a[0] + (fc.b[0] - fc.a[0]) * t0 / fc.len, ay = fc.a[1] + (fc.b[1] - fc.a[1]) * t0 / fc.len;
@@ -328,8 +329,45 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade) {
     bk.add(wallKey.replace(/^wall_[a-z]+/, 'wall_clapboard').replace(/#.*/, '#efe9dc'), box(p[0], z0 + ridgeH + 1.0, -p[1], 1.8, 2.6, 1.8));
     const g = new THREE.ConeGeometry(1.5, 2.4, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + Math.atan2(F.u[1], F.u[0])); g.translate(p[0], z0 + ridgeH + 3.5, -p[1]); bk.add(roofKey, g);
   }
+  // roof monitor along a flat roof (packing house)
+  if (st.monitor && roofType === 'flat') { const p = P2(F, 0, 0); bk.add(wallKey, box(p[0], z0 + H + 0.9, -p[1], F.L * 0.7, 1.4, 2.4, Math.atan2(F.u[1], F.u[0]))); bk.add(roofKey, box(p[0], z0 + H + 1.65, -p[1], F.L * 0.7 + .4, .12, 3.0, Math.atan2(F.u[1], F.u[0]))); }
+  // ridge ventilators (sheds)
+  if (st.vents && roofType !== 'flat') for (let i = 0; i < st.vents; i++) {
+    const t = (i + 0.5) / st.vents - 0.5, a = ridgeAlongU ? [F.L * t * .9, 0] : [0, F.W * t * .9], p = P2(F, a[0], a[1]);
+    bk.add(wallKey, box(p[0], z0 + ridgeH + .35, -p[1], 1.1, .8, 1.1)); const g = new THREE.ConeGeometry(.95, .6, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + Math.atan2(F.u[1], F.u[0])); g.translate(p[0], z0 + ridgeH + 1.05, -p[1]); bk.add(roofKey, g); }
+  // stacked open galleries on one front (packing house)
+  if (st.gallery) {
+    const dir = DIRS[st.gallery.side] || [0, -1]; let fc = faces[0], best = -9; for (const x of faces) { const d = x.n[0] * dir[0] + x.n[1] * dir[1]; if (d > best) { best = d; fc = x; } }
+    const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]), fr = st.gallery.frac || .35, dep = st.gallery.depth || 2.2;
+    const lv = st.gallery.levels || 3, lh = H / lv, ang = Math.atan2(s1[1] - s0[1], s1[0] - s0[0]);
+    const ta = 0.5 - fr / 2, tb = 0.5 + fr / 2, A = [s0[0] + (s1[0] - s0[0]) * ta, s0[1] + (s1[1] - s0[1]) * ta], B = [s0[0] + (s1[0] - s0[0]) * tb, s0[1] + (s1[1] - s0[1]) * tb];
+    const M = [(A[0] + B[0]) / 2 + fc.n[0] * dep / 2, (A[1] + B[1]) / 2 + fc.n[1] * dep / 2], len = fr * fc.len;
+    for (let k = 1; k <= lv; k++) { bk.add('plank#8d8170', box(M[0], z0 + k * lh - .1, -M[1], len, .15, dep, ang)); bk.add(trimKey, box(M[0] + fc.n[0] * dep / 2, z0 + k * lh + .45, -(M[1] + fc.n[1] * dep / 2), len, .08, .06, ang)); }
+    const np = Math.round(len / 2.5) + 1; for (let i = 0; i < np; i++) { const t = i / (np - 1), x = A[0] + (B[0] - A[0]) * t + fc.n[0] * (dep - .1), y = A[1] + (B[1] - A[1]) * t + fc.n[1] * (dep - .1); bk.add(trimKey, box(x, z0 + H / 2, -y, .16, H, .16)); }
+    bk.add(roofKey, box(M[0], z0 + H + .1, -M[1], len + .3, .12, dep + .3, ang));
+    for (let k = 0; k < lv; k++) put(fc, fc.len / 2 + (k % 2 ? 1.5 : -1.5), k * lh + .1, 1.0, 2.1, 'door');
+  }
+  // inclined cattle runway on trestle bents up to the killing floor (packing house; Huffman 1886, SHSND 00042-00074/-75)
+  if (st.runway) {
+    const d = DIRS[st.runway.end] || [-1, 0], sg = Math.sign(F.u[0] * d[0] + F.u[1] * d[1]) || -1, L = st.runway.len || 30, top = H * 0.8;
+    const steps = 12, rot = Math.atan2(F.u[1], F.u[0]);
+    for (let i = 0; i < steps; i++) {
+      const a0 = sg * (F.L / 2 + L * i / steps), a1 = sg * (F.L / 2 + L * (i + 1) / steps), am = (a0 + a1) / 2, p = P2(F, am, -F.W * 0.25);
+      const h = top * (1 - (i + 0.5) / steps), zg = ctxZ ? ctxZ(p[0], p[1]) : z0;
+      const seg = box(p[0], zg + h + .9, -p[1], L / steps + .05, .2, 2.4, rot); seg.rotateZ ? 0 : 0; bk.add('plank#857a6a', seg);
+      for (const s2 of [-1.25, 1.25]) bk.add('plank#857a6a', box(p[0] - F.v[0] * 0 , zg + h + 1.6, -p[1], L / steps, 1.3, .08, rot).translate(F.v[0] * s2, 0, -F.v[1] * s2));
+      if (i % 2 === 0 && h > 0.5) for (const s2 of [-1.1, 1.1]) bk.add('plank#6f6455', box(p[0] + F.v[0] * s2, zg + (h + .8) / 2, -(p[1] + F.v[1] * s2), .25, h + .8, .25));
+    }
+  }
+  // square tower with a pyramid-roofed cupola (ice house)
+  if (st.tower) {
+    const tw = (st.tower.w || 5), th = (st.tower.h || 4), p = P2(F, -F.L * 0.25, 0), rot = Math.atan2(F.u[1], F.u[0]);
+    bk.add(wallKey, box(p[0], z0 + ridgeH + th / 2 - .5, -p[1], tw, th, tw, rot));
+    const g = new THREE.ConeGeometry(tw * .78, 2.2, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rot); g.translate(p[0], z0 + ridgeH + th + .55, -p[1]); bk.add(roofKey, g);
+    bk.add(wallKey, box(p[0], z0 + ridgeH + th + 2.1, -p[1], 1.4, 1.2, 1.4, rot)); const c = new THREE.ConeGeometry(1.2, 1.1, 4).toNonIndexed(); c.rotateY(Math.PI / 4 + rot); c.translate(p[0], z0 + ridgeH + th + 3.25, -p[1]); bk.add(roofKey, c);
+  }
   // cupola (packing plant, ice house)
-  if (st.cupola) { const p = P2(F, 0, 0); bk.add(wallKey, box(p[0], z0 + ridgeH + .6, -p[1], 2.2, 1.6, 2.2)); const g = new THREE.ConeGeometry(1.8, 1.4, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + Math.atan2(F.u[1], F.u[0])); g.translate(p[0], z0 + ridgeH + 2.1, -p[1]); bk.add(roofKey, g); }
+  if (st.cupola && !st.tower) { const p = P2(F, 0, 0); bk.add(wallKey, box(p[0], z0 + ridgeH + .6, -p[1], 2.2, 1.6, 2.2)); const g = new THREE.ConeGeometry(1.8, 1.4, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + Math.atan2(F.u[1], F.u[0])); g.translate(p[0], z0 + ridgeH + 2.1, -p[1]); bk.add(roofKey, g); }
   return {ridgeH, F, front};
 }
 
@@ -347,7 +385,7 @@ export function buildDetailed(f, ctx) {
   const st = f.style; if (!st || !f.rect) return null;
   const grade = ctx.grade(f), m = f.massing || {};
   const H = m.eave > 0 ? m.eave : (st.stories >= 2 ? 7 : st.stories >= 1.5 ? 4.5 : 3.2);
-  const bk = new Bucket();
+  const bk = new Bucket(); ctxZ = ctx.zAt;
   let frontDir = st.front ? DIRS[st.front] : ctx.streetDir(f);
   let rects = st.blocks || (st.split ? splitRect(f.rect, st.split.n, st.split.gap) : [f.rect]);
   rects.forEach((R, i) => {
@@ -431,56 +469,151 @@ export function buildTrack(line) {
   return {grp, dense};
 }
 
-function locomotive() {
-  // Northern Pacific 4-4-0 "American" of the early 1880s: balloon spark-arresting stack, Russia-iron boiler,
-  // brass bands and dome, wooden cab, cowcatcher, four drivers and a four-wheel truck; 8-wheel tender.
-  // Built along +x (forward), track centre at y=0 (railhead), metres.
+function letterTex(text, w, h, bg, fg, font) {
+  const t = canvasTex(w, h, (g) => { g.fillStyle = bg; g.fillRect(0, 0, w, h); g.fillStyle = fg; g.font = font; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, w / 2, h / 2 + 2); }, [1, 1]);
+  t.repeat.set(1, 1); return t;
+}
+function spokedWheel(r, mat, hubMat, spokes = 12, counterweight = null) {
+  // a cast wheel: tyre, rim, spokes, hub, optional counterweight; axis along z
   const g = new THREE.Group();
-  const M = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({color: c, roughness: .55, metalness: .25}, o));
-  const iron = M(0x46525a, {metalness: .5, roughness: .4}), black = M(0x1c1c1c), brass = M(0xc9a54a, {metalness: .8, roughness: .3}), red = M(0x7e2a1e, {metalness: 0}), wood = M(0x6b4a32, {metalness: 0});
-  const add = (geo, m, x, y, z, rx = 0, ry = 0, rz = 0) => { const k = new THREE.Mesh(geo, m); k.position.set(x, y, z); k.rotation.set(rx, ry, rz); k.castShadow = true; g.add(k); return k; };
-  add(new THREE.CylinderGeometry(.68, .68, 6.2, 24), iron, 1.4, 2.25, 0, 0, 0, Math.PI / 2);               // boiler
-  add(new THREE.CylinderGeometry(.74, .74, .5, 24), black, 4.4, 2.25, 0, 0, 0, Math.PI / 2);               // smokebox front
-  add(new THREE.CylinderGeometry(.18, .18, 1.0, 12), black, 4.3, 3.2, 0);                                    // stack pipe
-  add(new THREE.CylinderGeometry(.55, .2, 1.0, 16), black, 4.3, 4.1, 0);                                     // balloon stack
-  add(new THREE.CylinderGeometry(.3, .32, .55, 16), brass, 2.3, 3.1, 0);                                     // sand dome
-  add(new THREE.CylinderGeometry(.32, .35, .65, 16), brass, 0.6, 3.15, 0);                                   // steam dome
-  add(new THREE.SphereGeometry(.3, 12, 8), brass, 0.6, 3.5, 0);
-  add(new THREE.CylinderGeometry(.22, .22, .55, 12), black, 4.6, 3.2, 0, 0, 0, Math.PI / 2);                // headlight base
-  add(new THREE.BoxGeometry(.7, .75, .7), black, 4.75, 3.55, 0);                                            // big box headlamp
-  add(new THREE.BoxGeometry(.06, .45, .45), brass, 5.12, 3.55, 0);
-  [-1.1, 1.1].forEach(z => add(new THREE.CylinderGeometry(.4, .4, 1.1, 16), iron, 3.6, 1.55, z * .8, 0, 0, Math.PI / 2));   // cylinders
-  for (const x of [-1.0, 0.9]) for (const z of [-.78, .78]) { add(new THREE.CylinderGeometry(.85, .85, .14, 24), red, x, .87, z, Math.PI / 2); add(new THREE.CylinderGeometry(.2, .2, .2, 12), black, x, .87, z, Math.PI / 2); }   // drivers (red wheel centres)
-  for (const x of [3.0, 4.2]) for (const z of [-.78, .78]) add(new THREE.CylinderGeometry(.42, .42, .12, 16), black, x, .45, z, Math.PI / 2);   // pilot truck
-  add(new THREE.BoxGeometry(6.8, .35, 1.9), black, 0.8, 1.15, 0);                                            // frame / running board
-  add(new THREE.CylinderGeometry(.05, .05, 3.6, 8), brass, 0.0, 1.6, .7, 0, 0, Math.PI / 2);                 // brass handrail
-  // cowcatcher: slatted wedge
-  const cc = new THREE.Shape([new THREE.Vector2(0, 0), new THREE.Vector2(1.2, .05), new THREE.Vector2(0, .95)]);
-  const ccg = new THREE.ExtrudeGeometry(cc, {depth: 1.8, bevelEnabled: false}); ccg.translate(0, 0, -.9); add(ccg, red, 4.9, .15, 0);
-  // cab (varnished wood) with roof and windows
-  add(new THREE.BoxGeometry(2.0, 2.3, 2.4), wood, -2.4, 2.65, 0);
-  add(new THREE.BoxGeometry(2.4, .14, 2.7), black, -2.4, 3.86, 0);
-  [-1.21, 1.21].forEach(z => add(new THREE.BoxGeometry(.9, .7, .02), M(0x1f282b), -2.2, 3.0, z));
-  add(new THREE.CylinderGeometry(.25, .25, .25, 12), brass, -0.8, 3.35, 0);                                  // whistle/bell
-  // tender
+  const tyre = new THREE.Mesh(new THREE.TorusGeometry(r - .05, .07, 8, 32), mat); g.add(tyre);
+  const flange = new THREE.Mesh(new THREE.CylinderGeometry(r + .04, r + .04, .03, 32), mat); flange.rotation.x = Math.PI / 2; flange.position.z = -.06; g.add(flange);
+  for (let i = 0; i < spokes; i++) { const sp = new THREE.Mesh(new THREE.BoxGeometry(.045, r - .12, .05), mat); const a = i / spokes * Math.PI * 2; sp.position.set(Math.sin(a) * (r - .12) / 2, Math.cos(a) * (r - .12) / 2, 0); sp.rotation.z = -a; g.add(sp); }
+  const hub = new THREE.Mesh(new THREE.CylinderGeometry(r * .2, r * .2, .14, 16), hubMat); hub.rotation.x = Math.PI / 2; g.add(hub);
+  if (counterweight) { const cw = new THREE.Mesh(new THREE.CylinderGeometry(r * .78, r * .78, .06, 24, 1, false, -.9, 1.8), counterweight); cw.rotation.x = Math.PI / 2; g.add(cw); }
+  return g;
+}
+function truck(x, wheelR, gauge, mat, frameMat) {
+  const g = new THREE.Group(); g.position.x = x;
+  for (const dx of [-0.85, 0.85]) for (const z of [-gauge / 2, gauge / 2]) { const w = spokedWheel(wheelR, mat, mat, 0); w.position.set(dx, wheelR, z); g.add(w);
+    const disc = new THREE.Mesh(new THREE.CylinderGeometry(wheelR - .06, wheelR - .06, .08, 20), mat); disc.rotation.x = Math.PI / 2; disc.position.set(dx, wheelR, z); g.add(disc); }
+  for (const z of [-gauge / 2 - .12, gauge / 2 + .12]) { const side = new THREE.Mesh(new THREE.BoxGeometry(2.6, .28, .1), frameMat); side.position.set(0, wheelR + .05, z); g.add(side);
+    const spring = new THREE.Mesh(new THREE.BoxGeometry(.5, .25, .12), frameMat); spring.position.set(0, wheelR + .32, z); g.add(spring); }
+  const bol = new THREE.Mesh(new THREE.BoxGeometry(.4, .25, gauge + .5), frameMat); bol.position.set(0, wheelR + .3, 0); g.add(bol);
+  return g;
+}
+function locomotive() {
+  // Northern Pacific 4-4-0 "American" of 1882-83, after the Portland Co. builder's photo of NP No. 225 (March 1883)
+  // and contemporary Baldwin/Hinkley engines: 5 ft drivers, wagon-top boiler, balloon spark-arresting stack,
+  // square box headlamp, sand and steam domes, wooden cab, slatted pilot, 8-wheel tender. Built along +x, rail top at y=0.
+  const g = new THREE.Group();
+  const M = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({color: c, roughness: .5, metalness: .2}, o));
+  const russia = M(0x56646d, {metalness: .55, roughness: .35}), black = M(0x161616, {roughness: .7}), brass = M(0xc8a24a, {metalness: .85, roughness: .25});
+  const red = M(0x8a2a1c, {metalness: .05}), wood = M(0x6e4528, {metalness: 0, roughness: .6}), steel = M(0x8c8c8c, {metalness: .8, roughness: .3}), green = M(0x2f4a35, {metalness: .1});
+  const add = (geo, m, x, y, z, rx = 0, ry = 0, rz = 0, parent = g) => { const k = new THREE.Mesh(geo, m); k.position.set(x, y, z); k.rotation.set(rx, ry, rz); parent.add(k); return k; };
+  const G = 1.435, DR = 0.79;   // gauge, driver radius
+  // frame and running boards
+  add(new THREE.BoxGeometry(7.4, .3, .9), black, .6, 1.05, 0);
+  for (const z of [-1.05, 1.05]) add(new THREE.BoxGeometry(5.2, .05, .45), black, .9, 1.62, z);
+  // boiler: barrel, wagon-top course and firebox, with brass bands
+  add(new THREE.CylinderGeometry(.66, .66, 4.0, 32), russia, 2.2, 2.25, 0, 0, 0, Math.PI / 2);
+  add(new THREE.CylinderGeometry(.74, .66, .6, 32), russia, .0, 2.33, 0, 0, 0, Math.PI / 2);
+  add(new THREE.CylinderGeometry(.74, .74, 1.4, 32), russia, -.9, 2.33, 0, 0, 0, Math.PI / 2);
+  add(new THREE.BoxGeometry(1.5, 1.1, 1.3), russia, -1.0, 1.6, 0);   // firebox between frames
+  for (const x of [0.4, 1.4, 2.4, 3.4, -0.3, -1.5]) add(new THREE.TorusGeometry(x < 0 ? .745 : .665, .025, 6, 32), brass, x, x < 0 ? 2.33 : 2.25, 0, 0, Math.PI / 2, 0);
+  // smokebox, front door, stack
+  add(new THREE.CylinderGeometry(.7, .7, 1.1, 32), black, 4.7, 2.25, 0, 0, 0, Math.PI / 2);
+  add(new THREE.CylinderGeometry(.62, .62, .06, 32), black, 5.27, 2.25, 0, 0, 0, Math.PI / 2);
+  add(new THREE.CylinderGeometry(.08, .08, .06, 12), brass, 5.31, 2.25, 0, 0, 0, Math.PI / 2);
+  add(new THREE.CylinderGeometry(.2, .24, 1.0, 16), black, 4.7, 3.35, 0);
+  add(new THREE.CylinderGeometry(.62, .2, .9, 24), black, 4.7, 4.25, 0);        // balloon
+  add(new THREE.CylinderGeometry(.64, .64, .12, 24), black, 4.7, 4.72, 0);
+  add(new THREE.CylinderGeometry(.52, .62, .18, 24), black, 4.7, 4.86, 0);       // spark-arrestor cap
+  // headlamp on a bracket with number boards
+  add(new THREE.BoxGeometry(.5, .3, .5), black, 5.05, 3.05, 0);
+  const lamp = add(new THREE.BoxGeometry(.75, .8, .7), black, 5.1, 3.6, 0);
+  add(new THREE.CylinderGeometry(.3, .3, .05, 20), M(0xfff3c4, {emissive: 0x6b5a2a, metalness: .9, roughness: .1}), 5.48, 3.6, 0, 0, 0, Math.PI / 2);
+  add(new THREE.BoxGeometry(.03, .4, .22), brass, 5.48, 3.6, .38); add(new THREE.BoxGeometry(.03, .4, .22), brass, 5.48, 3.6, -.38);
+  add(new THREE.ConeGeometry(.45, .3, 4), black, 5.1, 4.15, 0, 0, Math.PI / 4);
+  // domes, bell, whistle, sand pipes, handrails
+  add(new THREE.CylinderGeometry(.3, .36, .55, 24), brass, 3.2, 3.15, 0); add(new THREE.SphereGeometry(.3, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), brass, 3.2, 3.42, 0);
+  add(new THREE.CylinderGeometry(.33, .4, .65, 24), brass, 1.2, 3.2, 0); add(new THREE.SphereGeometry(.33, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), brass, 1.2, 3.52, 0);
+  add(new THREE.BoxGeometry(.12, .3, .5), black, 2.2, 3.0, 0); const bell = add(new THREE.CylinderGeometry(.13, .25, .32, 16), brass, 2.2, 3.35, 0);
+  add(new THREE.CylinderGeometry(.06, .08, .45, 12), brass, .1, 3.3, 0);
+  for (const z of [-.4, .4]) add(new THREE.CylinderGeometry(.025, .025, 1.6, 6), brass, 3.0, 2.3, z, 0, 0, .4);
+  for (const z of [-.72, .72]) add(new THREE.CylinderGeometry(.022, .022, 4.6, 6), brass, 2.3, 2.62, z, 0, 0, Math.PI / 2);
+  // cylinders, steam chests, crossheads, guides
+  for (const z of [-1.0, 1.0]) {
+    add(new THREE.CylinderGeometry(.34, .34, 1.1, 24), russia, 4.0, 1.55, z, 0, 0, Math.PI / 2);
+    for (const x of [3.45, 4.55]) add(new THREE.TorusGeometry(.34, .03, 6, 24), brass, x, 1.55, z, 0, Math.PI / 2, 0);
+    add(new THREE.BoxGeometry(1.0, .4, .4), russia, 4.0, 2.05, z * .92);
+    add(new THREE.BoxGeometry(1.6, .06, .08), steel, 2.75, 1.68, z); add(new THREE.BoxGeometry(1.6, .06, .08), steel, 2.75, 1.42, z);
+    add(new THREE.BoxGeometry(.3, .3, .14), steel, 3.1, 1.55, z);
+  }
+  // drivers with counterweights, main and side rods, splashers
+  const drivers = [0.15, -1.55];
+  for (const x of drivers) for (const z of [-G / 2 - .02, G / 2 + .02]) {
+    const w = spokedWheel(DR, red, steel, 16, red); w.position.set(x, DR, z); g.add(w);
+    add(new THREE.CylinderGeometry(DR + .05, DR + .05, .3, 32, 1, true, Math.PI / 2 - .9, 1.8), black, x, DR + .02, z + (z > 0 ? .1 : -.1), Math.PI / 2, 0, 0);  // splasher
+  }
+  for (const z of [-G / 2 - .14, G / 2 + .14]) {
+    add(new THREE.BoxGeometry(1.75, .1, .05), steel, -.7, DR - .3, z);                                  // side (coupling) rod
+    const mr = add(new THREE.BoxGeometry(2.95, .12, .05), steel, 1.65, (DR - .3 + 1.55) / 2, z); mr.rotation.z = Math.atan2(1.55 - (DR - .3), 3.1 - .15);   // main rod
+  }
+  // pilot (engine) truck and slatted pilot
+  for (const x of [3.6, 4.6]) for (const z of [-G / 2, G / 2]) { const w = spokedWheel(.42, black, steel, 10); w.position.set(x, .42, z); g.add(w); }
+  for (let i = 0; i < 9; i++) { const zz = -.85 + i * .2125; const sl = add(new THREE.BoxGeometry(1.25, .05, .06), red, 5.75, .55, zz); sl.rotation.z = -.62; }
+  add(new THREE.BoxGeometry(.12, .22, 2.0), red, 5.25, 1.0, 0); add(new THREE.BoxGeometry(.1, .1, 2.0), black, 6.2, .2, 0);
+  add(new THREE.BoxGeometry(.25, .25, .3), black, 5.35, 1.0, 0);   // coupler
+  // cab: varnished wood, arched windows, roof with overhang, number on the side
+  const num = letterTex('No. 225', 256, 96, '#6e4528', '#e2c06a', 'bold 44px Georgia');
+  add(new THREE.BoxGeometry(2.0, 1.5, 2.6), wood, -2.45, 2.05, 0);
+  add(new THREE.BoxGeometry(2.0, 1.0, .1), wood, -2.45, 3.3, 1.25); add(new THREE.BoxGeometry(2.0, 1.0, .1), wood, -2.45, 3.3, -1.25);
+  add(new THREE.BoxGeometry(.1, 1.0, 2.6), wood, -1.5, 3.3, 0);
+  for (const z of [-1.31, 1.31]) { add(new THREE.PlaneGeometry(1.6, .5), new THREE.MeshStandardMaterial({map: num}), -2.45, 2.1, z, 0, z > 0 ? 0 : Math.PI, 0);
+    for (const x of [-2.9, -2.0]) add(new THREE.BoxGeometry(.6, .7, .02), M(0x1b2226, {roughness: .1, metalness: .3}), x, 3.35, z * 1.0); }
+  add(new THREE.BoxGeometry(2.6, .1, 3.0), wood, -2.45, 3.86, 0); add(new THREE.BoxGeometry(2.4, .12, 1.0), wood, -2.45, 3.97, 0);
+  // tender: tank with flared coal space, two trucks, lettering
   const t = new THREE.Group(); g.add(t);
-  const tb = new THREE.Mesh(new THREE.BoxGeometry(5.0, 1.6, 2.6), black); tb.position.set(-6.4, 2.0, 0); tb.castShadow = true; t.add(tb);
-  const coal = new THREE.Mesh(new THREE.BoxGeometry(3.0, .4, 2.2), M(0x222222, {roughness: 1})); coal.position.set(-5.6, 2.9, 0); t.add(coal);
-  for (const x of [-4.6, -5.4, -7.4, -8.2]) for (const z of [-.78, .78]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .12, 16), black); w.rotation.x = Math.PI / 2; w.position.set(x, .45, z); t.add(w); }
-  const lettering = new THREE.Mesh(new THREE.BoxGeometry(3.4, .12, .02), brass); lettering.position.set(-6.4, 2.2, 1.31); t.add(lettering);
-  return {g, length: 13.5, front: 5.6};
+  const letters = letterTex('NORTHERN PACIFIC', 1024, 128, '#161616', '#d9b65a', 'bold 64px Georgia');
+  add(new THREE.BoxGeometry(5.4, .25, 2.7), black, -6.45, 1.22, 0, 0, 0, 0, t);
+  add(new THREE.BoxGeometry(5.0, 1.45, 2.6), black, -6.6, 2.05, 0, 0, 0, 0, t);
+  for (const z of [-1.31, 1.31]) add(new THREE.PlaneGeometry(4.4, .55), new THREE.MeshStandardMaterial({map: letters}), -6.6, 2.15, z, 0, z > 0 ? 0 : Math.PI, 0, t);
+  add(new THREE.BoxGeometry(2.6, .45, 2.9), black, -5.0, 2.95, 0, 0, 0, 0, t);           // flared coal board
+  add(new THREE.BoxGeometry(2.3, .55, 2.3), M(0x1a1a1a, {roughness: 1}), -5.0, 3.0, 0, 0, 0, 0, t);
+  add(new THREE.CylinderGeometry(.25, .25, .15, 16), black, -7.8, 2.85, 0, 0, 0, 0, t);  // water hatch
+  for (const z of [-1.3, 1.3]) add(new THREE.BoxGeometry(5.0, .04, .04), brass, -6.6, 2.75, z, 0, 0, 0, t);
+  t.add(truck(-5.1, .42, G, black, black)); t.add(truck(-8.0, .42, G, black, black));
+  g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  return {g, length: 15.4};
 }
 function car(kind) {
-  // wooden passenger, baggage or stock car of the period, about 15-18 m, with clerestory roof; along +x
-  const len = kind === 'pullman' ? 18 : kind === 'stock' ? 10.5 : 15, g = new THREE.Group();
-  const body = new THREE.MeshStandardMaterial({color: kind === 'stock' ? 0x7a3a26 : 0xffffff, map: kind === 'stock' ? TEX.boardbatten : TEX.coach, roughness: .6});
-  if (kind === 'baggage') { body.map = TEX.boardbatten; body.color.set(0x6a4028); }
-  const b = new THREE.Mesh(new THREE.BoxGeometry(len, 2.7, 3.0), [body, body, new THREE.MeshStandardMaterial({color: 0x3a3a38}), body, body, body]); b.position.set(0, 2.55, 0); b.castShadow = true; g.add(b);
-  if (kind !== 'stock') { const cl = new THREE.Mesh(new THREE.BoxGeometry(len - 2, .5, 1.6), new THREE.MeshStandardMaterial({color: 0x2e2a26})); cl.position.set(0, 4.15, 0); g.add(cl); }
-  const roof = new THREE.Mesh(new THREE.BoxGeometry(len + .4, .18, 3.3), new THREE.MeshStandardMaterial({color: 0x3a3634})); roof.position.set(0, 3.95, 0); g.add(roof);
-  for (const end of [-1, 1]) { const pl = new THREE.Mesh(new THREE.BoxGeometry(.9, .2, 2.6), new THREE.MeshStandardMaterial({color: 0x2a2a2a})); pl.position.set(end * (len / 2 + .45), 1.2, 0); g.add(pl); }
-  for (const x of [-len / 2 + 2, -len / 2 + 3.4, len / 2 - 3.4, len / 2 - 2]) for (const z of [-.78, .78]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, .12, 16), new THREE.MeshStandardMaterial({color: 0x1c1c1c})); w.rotation.x = Math.PI / 2; w.position.set(x, .45, z); g.add(w); }
-  return {g, length: len + 1};
+  // wooden passenger equipment of the early 1880s: clerestory ("monitor") roof with duckbill ends, open end platforms
+  // with railings and steps, truss rods and queen posts under the floor, two four-wheel trucks; along +x, rail top y=0.
+  const len = kind === 'pullman' ? 17.5 : kind === 'baggage' ? 14 : 15.2, W = 2.9, g = new THREE.Group();
+  const M = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({color: c, roughness: .6, metalness: .05}, o));
+  const body = kind === 'baggage' ? M(0x5b3a24, {map: TEX.boardbatten}) : M(0xffffff, {map: TEX.coach});
+  const dark = M(0x2a2420), black = M(0x161616), brass = M(0xc8a24a, {metalness: .8, roughness: .3}), roof = M(0x3a3632, {roughness: .9});
+  const add = (geo, m, x, y, z, rx = 0, ry = 0, rz = 0) => { const k = new THREE.Mesh(geo, m); k.position.set(x, y, z); k.rotation.set(rx, ry, rz); g.add(k); return k; };
+  const label = kind === 'pullman' ? 'PULLMAN' : kind === 'baggage' ? 'BAGGAGE  NORTHERN PACIFIC  EXPRESS' : 'NORTHERN PACIFIC';
+  const lt = letterTex(label, 1024, 64, kind === 'baggage' ? '#5b3a24' : '#5a3a26', '#e1bf63', 'bold 36px Georgia');
+  add(new THREE.BoxGeometry(len, .3, W + .1), dark, 0, 1.25, 0);                                   // floor sill
+  add(new THREE.BoxGeometry(len, 2.45, W), body, 0, 2.62, 0);
+  if (kind === 'baggage') { for (const z of [-1, 1]) add(new THREE.BoxGeometry(1.5, 2.0, .05), M(0x47301e), 0, 2.45, z * (W / 2 + .03)); }
+  for (const z of [-1, 1]) add(new THREE.PlaneGeometry(len * .7, .3), new THREE.MeshStandardMaterial({map: lt}), 0, 3.6, z * (W / 2 + .03), 0, z > 0 ? 0 : Math.PI, 0);
+  add(new THREE.BoxGeometry(len + .1, .14, W + .5), roof, 0, 3.92, 0);                             // lower roof deck
+  if (kind !== 'baggage' || true) {
+    add(new THREE.BoxGeometry(len - 1.6, .45, 1.5), M(0x2e2924), 0, 4.2, 0);                       // clerestory with small windows
+    for (let x = -len / 2 + 1.4; x < len / 2 - 1.2; x += .9) for (const z of [-.76, .76]) add(new THREE.BoxGeometry(.5, .22, .02), M(0x7a8a8f, {roughness: .2}), x, 4.2, z);
+    add(new THREE.BoxGeometry(len - 1.4, .1, 1.9), roof, 0, 4.47, 0);
+    for (const s of [-1, 1]) { const d = add(new THREE.CylinderGeometry(.95, .95, .55, 16, 1, false, 0, Math.PI), roof, s * (len / 2 - .55), 4.12, 0, 0, s > 0 ? -Math.PI / 2 : Math.PI / 2, Math.PI / 2); d.scale.set(1, 1, .5); }   // duckbill ends
+  }
+  // end platforms: deck, railings, steps, couplers
+  for (const s of [-1, 1]) {
+    const x = s * (len / 2 + .55);
+    add(new THREE.BoxGeometry(1.1, .12, W - .2), dark, x, 1.2, 0);
+    for (const z of [-1, 1]) { add(new THREE.BoxGeometry(.05, 1.0, .05), brass, s * (len / 2 + 1.05), 1.75, z * (W / 2 - .2)); add(new THREE.BoxGeometry(1.05, .05, .05), brass, x, 2.25, z * (W / 2 - .15));
+      for (let k = 0; k < 2; k++) add(new THREE.BoxGeometry(.4, .04, .55), dark, s * (len / 2 + 1.0), .95 - k * .3, z * (W / 2 - .05)); }
+    add(new THREE.BoxGeometry(.05, .7, 1.4), brass, s * (len / 2 + 1.07), 1.65, 0);
+    add(new THREE.BoxGeometry(.4, .22, .3), black, s * (len / 2 + 1.2), 1.0, 0);
+  }
+  // truss rods and queen posts
+  for (const z of [-.7, .7]) { add(new THREE.BoxGeometry(len * .5, .04, .04), black, 0, .82, z);
+    for (const s of [-1, 1]) { const r = add(new THREE.BoxGeometry(len * .28, .04, .04), black, s * len * .37, .98, z); r.rotation.z = s * .07; add(new THREE.BoxGeometry(.08, .35, .08), black, s * len * .22, .95, z); } }
+  add(new THREE.BoxGeometry(.8, .5, .5), black, len * .12, .85, 0);   // brake cylinder / box
+  for (const s of [-1, 1]) g.add(truck(s * (len / 2 - 2.0), .45, 1.435, black, black));
+  g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  return {g, length: len + 2.2};
 }
 export function buildTrain(dense, atE, atN) {
   // parked at the depot with the engine pointing west (the westbound Pacific Express)
@@ -494,11 +627,28 @@ export function buildTrain(dense, atE, atN) {
     return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t, h];
   };
   const grp = new THREE.Group();
-  const place = (obj, s) => { const q = at(s); obj.position.set(q[0], q[2] + 0.3, -q[1]); obj.rotation.y = q[3]; grp.add(obj); };
+  const place = (obj, s) => { const q = at(s); obj.position.set(q[0], q[2] + 0.35, -q[1]); obj.rotation.y = q[3]; grp.add(obj); };
   const s0 = cum[bi] + fwd * 22;                    // engine (its origin) about 22 m west of the depot
   const loco = locomotive(); place(loco.g, s0);
-  let s = s0 - fwd * 9.4;                           // rear of the tender
+  let s = s0 - fwd * 9.4;                           // rear of the tender (tender ends 9.3 m behind the engine origin)
   for (const k of ['baggage', 'coach', 'coach', 'pullman']) { const c = car(k); s -= fwd * (c.length / 2 + 0.3); place(c.g, s); s -= fwd * (c.length / 2 + 0.3); }
   grp.traverse(o => { if (o.isMesh) o.castShadow = true; });
   return grp;
+}
+
+// ---------------------------------------------------------------- confidence markers
+const GRADE_LOOK = {A: ['#2f5d3a', 'A', 'Documented'], B: ['#3e6e86', 'B', 'Supported'], C: ['#b07a1c', 'C', 'Inferred'], D: ['#8a2a1c', 'D', 'Conjectural']};
+const MARK_TEX = {};
+export function gradeMarker(grade) {
+  if (!MARK_TEX[grade]) {
+    const [col, letter] = GRADE_LOOK[grade] || GRADE_LOOK.D;
+    const c = document.createElement('canvas'); c.width = 128; c.height = 160; const g = c.getContext('2d');
+    g.fillStyle = col; g.strokeStyle = '#f3efe6'; g.lineWidth = 8;
+    g.beginPath(); g.moveTo(64, 156); g.lineTo(24, 96); g.arc(64, 64, 52, Math.PI * 0.8, Math.PI * 0.2); g.closePath(); g.fill(); g.stroke();
+    g.fillStyle = '#f3efe6'; g.font = 'bold 64px Georgia'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(letter, 64, 66);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; MARK_TEX[grade] = t;
+  }
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map: MARK_TEX[grade], depthTest: true, transparent: true}));
+  sp.center.set(0.5, 0); sp.renderOrder = 10; sp.userData.isMarker = true;
+  return sp;
 }
