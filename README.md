@@ -13,6 +13,7 @@ This is an internal experiment by the Theodore Roosevelt Presidential Library. I
 | `map/` | The 2D map: four dates, the 1883 plat fitted to today's map, the 1883 river channel, today's lots, and building details with sources |
 | `data/buildings.csv` | Gazetteer: every known structure with dates, form, placement method, confidence grades, evidence, sources and photos. **Generated, so edit `tools/build_features.py` instead.** |
 | `data/sources/cowboy_building_mentions_1884-1886.csv` | Every building mention in the *Bad Lands Cow Boy*, 1884–86 (446 rows, OCR-checked) |
+| `data/site_photos_2026/` | Matt Briney's 2026 photos of the Historic Medora panels and of buildings today (reference only) |
 | `data/photo_catalog_1880s.csv` | Every 1880s Medora image checked online (SHSND, MHS, Harvard), with what each one was used for |
 | `data/photos_trc_ranching_in_dakota.csv` | The 209 Harvard "Ranching in Dakota" photos, tagged and linked to buildings |
 | `data/reference/` | Today's lots (ND GIS Hub), survey sections, OpenStreetMap extract, and the plat fit (control points) |
