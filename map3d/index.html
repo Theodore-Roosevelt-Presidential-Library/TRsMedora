@@ -646,6 +646,10 @@ function scaleMarkers(){ const h=renderer.domElement.clientHeight||800, k=2*Math
   for (const mk of markers){ if(!mk.parent.visible) continue; const d=_v.copy(mk.position).distanceTo(camera.position); mk.visible = mk.userData.want && !(walking && d>180); if(!mk.visible) continue; const px=walking?26:30; mk.scale.set(px*k*d*0.8, px*k*d, 1); } }
 renderer.setAnimationLoop(now=>{ scaleMarkers(); walkStep(now); if(!walking&&!photoCam) flyStep(now); if(!photoCam && !walking) controls.update(); renderer.render(scene,camera); });
 { const m=location.hash.match(/walk=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/); if(m) startWalk(+m[1],+m[2],+m[3]); }
+// view from any point: #look=e,n,height,targetE,targetN,targetHeight (heights above the ground; for sharing and testing)
+{ const m=location.hash.match(/look=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/);
+  if(m){ const v=m.slice(1).map(Number); camera.position.set(v[0], zAt(v[0],v[1])+v[2], -v[1]); controls.target.set(v[3], zAt(v[3],v[4])+v[5], -v[4]); controls.update(); } }
+{ const m=location.hash.match(/date=(\d)/); if(m){ slice=+m[1]; applyFilters(); } }
 </script>
 </body>
 </html>

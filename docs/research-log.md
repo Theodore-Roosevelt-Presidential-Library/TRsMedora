@@ -41,7 +41,7 @@
 - **Roberts Hall** is possibly building "D2": two stories, about 80 ft, with few upper windows, beside today's Old Town Hall Theater. It still stands in the c.1905 postcard. This conflicts with the *Cow Boy*'s "lot 7, block 17".
 - **Medora Stage & Forwarding Co.** is probably the row of three matching gabled buildings ("E") on the west side of Main Street, where the 1957 NPS Tour map puts it.
 - **Metropolitan Hotel** is pinned by three photos to the south end of today's Rough Riders complex.
-- **Depot**: Huffman's 1886 photo shows its long side along the track, not perpendicular to it as HMdb says.
+- **Depot**: Huffman's 1886 photo shows its long side along the track, not perpendicular to it as HMdb says. *(Corrected Oct 16, 2026: the photo audit shows the gable end on the track, so HMdb was right; see docs/photo-audit.md.)*
 - **Caption conflicts**: SHSND 00042-00184 and 00097-00045 are the same stage-coach photo, catalogued as Medora 1883 and Dickinson 1885. SHSND 00042-00194 and -00195 were taken from the same spot, despite their 1886 and 1885 dates.
 
 ## 2026-10-15 (night): Photo matching begins

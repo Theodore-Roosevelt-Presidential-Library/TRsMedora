@@ -138,3 +138,7 @@ A checkbox adds likely name boards for known businesses (Ferris, the Metropolita
 **Navigation.**
 - **Find a building:** a list of every named building flies the view to it and opens its panel. If the building wasn't standing in the current view, the view switches to a date when it was.
 - **Clicking:** one click flies to the spot (and opens a building's panel); a double-click stands you there at eye height. These replace the earlier "Drop a pin" button.
+
+## Photo audit (added Oct 16)
+
+Every building was checked against every period photo; see [photo-audit.md](photo-audit.md) for the findings building by building. The generator (`map3d/js/models.js`) gained what the photos called for: deep overhangs with knee braces, a roof carried past an end wall on open posts, canted bay windows with their own roofs, chimneys at measured positions, jerkinhead (clipped) gables, shed roofs, extra blocks (`parts`: wings, annexes, vestibules), unroofed or partial porches with railings, platforms and fences (`decks`, `fences`), lancet windows, paired windows, shutters, a stone plinth, sized monitors and belfries, a horizontal runway with a tapered pier, and per-building opening layouts (`front_openings`). Footprint changes and added buildings live in `tools/geom3d.py`, applied before the building pads are levelled.

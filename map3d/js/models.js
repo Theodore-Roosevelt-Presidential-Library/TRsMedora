@@ -90,6 +90,22 @@ export function makeTextures() {
   }, [1, 1]);
   TEX.window = win(false); TEX.windowArched = win(true);
   TEX.window.repeat.set(1, 1); TEX.windowArched.repeat.set(1, 1);
+  TEX.windowLancet = canvasTex(96, 320, (g, w, h) => {   // tall pointed (lancet) window, St. Mary's
+    g.fillStyle = '#f1ece0'; g.fillRect(0, 0, w, h);
+    const grd = g.createLinearGradient(0, 0, 0, h); grd.addColorStop(0, '#6f7c84'); grd.addColorStop(.4, '#2c3438'); grd.addColorStop(1, '#1d2326'); g.fillStyle = grd;
+    g.beginPath(); g.moveTo(10, h - 12); g.lineTo(10, 70); g.quadraticCurveTo(12, 22, w / 2, 8); g.quadraticCurveTo(w - 12, 22, w - 10, 70); g.lineTo(w - 10, h - 12); g.fill();
+    g.fillStyle = '#f1ece0'; g.fillRect(w / 2 - 2, 20, 4, h - 32); for (let y = 90; y < h - 20; y += 52) g.fillRect(10, y, w - 20, 3);
+  }, [1, 1]); TEX.windowLancet.repeat.set(1, 1);
+  TEX.vlog = canvasTex(256, 256, (g, w, h) => {   // vertical cedar logs, stockade style (Cantonment)
+    g.fillStyle = '#6a6a6a'; g.fillRect(0, 0, w, h);
+    for (let x = 0; x < w; x += w / 9) { const grd = g.createLinearGradient(x, 0, x + w / 9, 0); grd.addColorStop(0, '#777'); grd.addColorStop(.5, '#f2f2f2'); grd.addColorStop(1, '#7c7c7c'); g.fillStyle = grd; g.fillRect(x + 1, 0, w / 9 - 2, h); }
+    noise(g, w, h, 45, 7000);
+  });
+  TEX.boards = canvasTex(256, 256, (g, w, h) => {   // roof of boards laid eave to ridge (Little Missouri depot, 1881)
+    g.fillStyle = '#eee'; g.fillRect(0, 0, w, h);
+    for (let x = 0; x < w; x += w / 10) { const v = 200 + rnd() * 50 | 0; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(x, 0, w / 10 - 3, h); g.fillStyle = '#9a9a9a'; g.fillRect(x + w / 10 - 3, 0, 3, h); }
+    noise(g, w, h, 25, 3000);
+  });
   TEX.door = canvasTex(128, 256, (g, w, h) => {
     g.fillStyle = '#efece4'; g.fillRect(0, 0, w, h); g.fillStyle = '#5b4535'; g.fillRect(10, 10, w - 20, h - 10);
     g.fillStyle = '#3e2f25'; [[22, 26, 36, 70], [70, 26, 36, 70], [22, 120, 36, 110], [70, 120, 36, 110]].forEach(r => g.fillRect(...r));
@@ -191,7 +207,7 @@ function mat(key, grade) {
   const [kind, color] = isSign ? ['sign', null] : key.split('#');
   const col = color ? new THREE.Color('#' + color) : new THREE.Color(0xffffff);
   const map = {wall_clapboard: TEX.clapboard, wall_drop: TEX.drop, wall_boardbatten: TEX.boardbatten, wall_brick: TEX.brick, wall_yellowbrick: TEX.yellowbrick, wall_log: TEX.log,
-    roof_shingle: TEX.shingle, roof_tin: TEX.tin, roof_sod: TEX.sod, window: TEX.window, windowArched: TEX.windowArched, door: TEX.door, storefront: TEX.storefront,
+    roof_shingle: TEX.shingle, roof_tin: TEX.tin, roof_sod: TEX.sod, roof_boards: TEX.boards, wall_vlog: TEX.vlog, window: TEX.window, windowArched: TEX.windowArched, windowLancet: TEX.windowLancet, door: TEX.door, storefront: TEX.storefront,
     plank: TEX.plank, trim: null, stone: null, dark: null, coach: TEX.coach}[kind] || (isSign ? SIGNS[key] : undefined);
   const m = new THREE.MeshStandardMaterial({color: col, map: map || null, roughness: kind.startsWith('roof_tin') ? 0.55 : 0.92, metalness: kind === 'roof_tin' ? 0.3 : 0, side: THREE.DoubleSide});
   // confidence is shown by a marker above the building, not by transparency
@@ -211,12 +227,26 @@ function rectFrame(R) {
 const P2 = (f, a, b) => [f.c[0] + f.u[0] * a + f.v[0] * b, f.c[1] + f.u[1] * a + f.v[1] * b];   // local (along, across) -> e,n
 
 let ctxZ = null;
-function buildBlock(bk, f, st, z0, H, R, frontDir, grade) {
+// a straight timber between two points (three-space vectors), square section t
+function beam(p, q, t) {
+  const d = new THREE.Vector3().subVectors(q, p), L = d.length();
+  const g = new THREE.BoxGeometry(t, t, L).toNonIndexed();
+  const m = new THREE.Matrix4().lookAt(new THREE.Vector3(0, 0, 0), d, Math.abs(d.y) / L > 0.99 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0));
+  g.applyMatrix4(m); const c = p.clone().add(q).multiplyScalar(0.5); g.translate(c.x, c.y, c.z); return g;
+}
+// polygon (convex, ordered) as a triangle fan
+function poly(pts, uvs) {
+  const g = new THREE.BufferGeometry(), P = [], U = [];
+  for (let i = 1; i < pts.length - 1; i++) { for (const k of [0, i, i + 1]) { P.push(pts[k].x, pts[k].y, pts[k].z); U.push(...uvs[k]); } }
+  g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2)); g.computeVertexNormals(); return g;
+}
+function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
   // one rectangular building block: walls, gables, roof, windows, doors, porch, chimneys, extras
   const F = rectFrame(R), hl = F.L / 2, hw = F.W / 2;
   const wallKey = `wall_${st.wall}#${(st.wall_color || '#e9e3d6').slice(1)}`;
   const trimKey = `trim#${(st.trim || '#f3efe6').slice(1)}`;
-  const roofKey = `roof_${st.roof || 'shingle'}#${(st.roof_color || (st.roof === 'tin' ? '#8d9296' : st.roof === 'sod' ? '#7d7a58' : '#6e655c')).slice(1)}`;
+  const roofKey = `roof_${st.roof || 'shingle'}#${(st.roof_color || (st.roof === 'tin' ? '#8d9296' : st.roof === 'sod' ? '#7d7a58' : st.roof === 'boards' ? '#b9b1a2' : '#6e655c')).slice(1)}`;
+  const timberKey = `trim#${(st.timber || st.trim || '#6b5a48').slice(1)}`;
   // faces in local frame: +v side, -v side (long faces), +u end, -u end (short faces)
   const faces = [
     {name: '+v', a: [-hl, hw], b: [hl, hw], n: F.v, len: F.L, long: true},
@@ -224,64 +254,151 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade) {
     {name: '+u', a: [hl, hw], b: [hl, -hw], n: F.u, len: F.W, long: false},
     {name: '-u', a: [-hl, -hw], b: [-hl, hw], n: [-F.u[0], -F.u[1]], len: F.W, long: false},
   ];
-  // which face is the front
-  let front = faces[1];
-  if (frontDir) { let best = -9; for (const fc of faces) { const d = fc.n[0] * frontDir[0] + fc.n[1] * frontDir[1]; if (d > best) { best = d; front = fc; } } }
+  const toward = (d) => { let fc = faces[0], best = -9; for (const x of faces) { const dd = x.n[0] * d[0] + x.n[1] * d[1]; if (dd > best) { best = dd; fc = x; } } return fc; };
+  const front = frontDir ? toward(frontDir) : faces[1];
   // ridge axis: 'long' runs along u; 'front' runs perpendicular to the front face
   let ridgeAlongU = true;
   if (st.ridge === 'front') ridgeAlongU = !front.long;
-  const roofType = st.ridge === 'flat' ? 'flat' : (st.ridge === 'hip' ? 'hip' : 'gable');
+  if (st.ridge === 'cross') ridgeAlongU = front.long;
+  const roofType = st.ridge === 'flat' ? 'flat' : st.ridge === 'hip' ? 'hip' : st.ridge === 'shed' ? 'shed' : 'gable';
   const span = ridgeAlongU ? F.W : F.L;
-  const ridgeH = roofType === 'flat' ? H : H + Math.min(span * 0.42, 4.5);
+  const rise = st.rise ?? (ridgeAbs > H + 0.3 ? ridgeAbs - H : Math.min(span * 0.42, 4.5));
+  const ridgeH = roofType === 'flat' ? H : H + (roofType === 'shed' ? Math.min(rise, span * 0.3) : rise);
   const L3 = (a, b, h) => { const p = P2(F, a, b); return V(p[0], p[1], z0 + h); };
-  // walls
+  const rotU = Math.atan2(F.u[1], F.u[0]);
+  // shed roof: which long/short face is the high side
+  const shedHigh = roofType === 'shed' ? toward(DIRS[st.shed_high] || [-front.n[0], -front.n[1]]) : null;
+  const shedH = (pt) => { // height of a shed roof at local point pt
+    const hn = [shedHigh.n[0] * F.u[0] + shedHigh.n[1] * F.u[1], shedHigh.n[0] * F.v[0] + shedHigh.n[1] * F.v[1]];
+    const ext = Math.abs(hn[0]) > .5 ? hl : hw, s = (pt[0] * hn[0] + pt[1] * hn[1]) / ext;   // -1 .. 1
+    return H + (ridgeH - H) * (s + 1) / 2;
+  };
+  // jerkinhead (clipped) gable ends
+  const jerk = new Set((st.jerkin || []).map(d => toward(DIRS[d]).name));
+  const clip = st.jerkin_clip ?? 0.3;
+  // walls (stone plinth below if asked)
   for (const fc of faces) {
     const A = fc.a, B = fc.b;
+    if (roofType === 'shed') {
+      const hA = shedH(A), hB = shedH(B);
+      bk.add(wallKey, poly([L3(A[0], A[1], -0.4), L3(B[0], B[1], -0.4), L3(B[0], B[1], hB), L3(A[0], A[1], hA)], [[0, -0.4], [fc.len, -0.4], [fc.len, hB], [0, hA]]));
+      continue;
+    }
     bk.add(wallKey, quad(L3(A[0], A[1], -0.4), L3(B[0], B[1], -0.4), L3(B[0], B[1], H), L3(A[0], A[1], H), [0, -0.4], [fc.len, -0.4], [fc.len, H], [0, H]));
-    // gable triangles on the ends the ridge points at
     const isGableEnd = roofType === 'gable' && ((ridgeAlongU && !fc.long) || (!ridgeAlongU && fc.long));
     if (isGableEnd) {
       const m = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
-      bk.add(wallKey, tri(L3(A[0], A[1], H), L3(B[0], B[1], H), L3(m[0], m[1], ridgeH), [0, H], [fc.len, H], [fc.len / 2, ridgeH]));
+      if (jerk.has(fc.name)) {
+        const hc = ridgeH - clip * (ridgeH - H), k = clip;   // wall stops at hc; points on the rakes
+        const pa = [A[0] + (m[0] - A[0]) * (1 - k), A[1] + (m[1] - A[1]) * (1 - k)], pb = [B[0] + (m[0] - B[0]) * (1 - k), B[1] + (m[1] - B[1]) * (1 - k)];
+        bk.add(wallKey, poly([L3(A[0], A[1], H), L3(B[0], B[1], H), L3(pb[0], pb[1], hc), L3(pa[0], pa[1], hc)], [[0, H], [fc.len, H], [fc.len * (1 - (1 - k) / 2), hc], [fc.len * (1 - k) / 2, hc]]));
+      } else bk.add(wallKey, tri(L3(A[0], A[1], H), L3(B[0], B[1], H), L3(m[0], m[1], ridgeH), [0, H], [fc.len, H], [fc.len / 2, ridgeH]));
     }
   }
+  if (st.plinth) {
+    const ph = st.plinth.h || 0.9, key = `stone#${(st.plinth.color || '#a39882').slice(1)}`;
+    for (const fc of faces) { const n = fc.n, o = .06, A = P2(F, ...fc.a), B = P2(F, ...fc.b);
+      bk.add(key, quad(V(A[0] + n[0] * o, A[1] + n[1] * o, z0 - .4), V(B[0] + n[0] * o, B[1] + n[1] * o, z0 - .4), V(B[0] + n[0] * o, B[1] + n[1] * o, z0 + ph), V(A[0] + n[0] * o, A[1] + n[1] * o, z0 + ph), [0, 0], [1, 0], [1, 1], [0, 1])); }
+  }
   // roof
-  const o = 0.35;   // overhang
+  const o = st.overhang ?? 0.35, og = st.gable_overhang ?? o;
+  const he = H - 0.15;
   if (roofType === 'flat') {
     bk.add(roofKey, quad(L3(-hl, -hw, H + .05), L3(hl, -hw, H + .05), L3(hl, hw, H + .05), L3(-hl, hw, H + .05), [-hl, -hw], [hl, -hw], [hl, hw], [-hl, hw]));
-    const ph = st.parapet || 0.8;   // parapet / cornice all round
-    for (const fc of faces) bk.add(wallKey, quad(L3(fc.a[0], fc.a[1], H), L3(fc.b[0], fc.b[1], H), L3(fc.b[0], fc.b[1], H + ph), L3(fc.a[0], fc.a[1], H + ph), [0, H], [fc.len, H], [fc.len, H + ph], [0, H + ph]));
-    bk.add(trimKey, box(...(() => { const p = P2(F, 0, 0); return [p[0], z0 + H + ph, -p[1]]; })(), F.L + .3, .18, F.W + .3, Math.atan2(F.u[1], F.u[0])));
-  } else {
-    // ridge endpoints in (along, across)
-    let r0, r1;
-    if (ridgeAlongU) { r0 = [-hl - o, 0]; r1 = [hl + o, 0]; } else { r0 = [0, -hw - o]; r1 = [0, hw + o]; }
-    if (roofType === 'hip') { const k = Math.min(span / 2, (ridgeAlongU ? F.L : F.W) / 2 - 0.3); if (ridgeAlongU) { r0 = [-hl + k, 0]; r1 = [hl - k, 0]; } else { r0 = [0, -hw + k]; r1 = [0, hw - k]; } }
+    const ph = st.parapet ?? 0.8;   // parapet / cornice all round
+    if (ph > 0) for (const fc of faces) bk.add(wallKey, quad(L3(fc.a[0], fc.a[1], H), L3(fc.b[0], fc.b[1], H), L3(fc.b[0], fc.b[1], H + ph), L3(fc.a[0], fc.a[1], H + ph), [0, H], [fc.len, H], [fc.len, H + ph], [0, H + ph]));
+    bk.add(trimKey, box(...(() => { const p = P2(F, 0, 0); return [p[0], z0 + H + ph, -p[1]]; })(), F.L + .3, .18, F.W + .3, rotU));
+  } else if (roofType === 'shed') {
     const C = [[-hl - o, -hw - o], [hl + o, -hw - o], [hl + o, hw + o], [-hl - o, hw + o]];
-    const he = H - 0.15;
+    bk.add(roofKey, quad(...C.map(p => L3(p[0], p[1], shedH(p) + .05)), [0, 0], [F.L, 0], [F.L, F.W], [0, F.W]));
+  } else if (roofType === 'hip') {
+    let r0, r1; const k = Math.min(span / 2, (ridgeAlongU ? F.L : F.W) / 2 - 0.3);
+    if (ridgeAlongU) { r0 = [-hl + k, 0]; r1 = [hl - k, 0]; } else { r0 = [0, -hw + k]; r1 = [0, hw - k]; }
+    const C = [[-hl - o, -hw - o], [hl + o, -hw - o], [hl + o, hw + o], [-hl - o, hw + o]];
     const near = (p) => (Math.hypot(p[0] - r0[0], p[1] - r0[1]) < Math.hypot(p[0] - r1[0], p[1] - r1[1])) ? r0 : r1;
     for (let i = 0; i < 4; i++) {
       const p = C[i], q = C[(i + 1) % 4], np = near(p), nq = near(q);
       const run = Math.hypot(q[0] - p[0], q[1] - p[1]), slope = Math.hypot(span / 2 + o, ridgeH - he);
-      if (np === nq) {
-        if (roofType === 'gable') continue;               // gable end: no roof face
-        bk.add(roofKey, tri(L3(p[0], p[1], he), L3(q[0], q[1], he), L3(np[0], np[1], ridgeH), [0, 0], [run, 0], [run / 2, slope]));
-      } else {
-        bk.add(roofKey, quad(L3(p[0], p[1], he), L3(q[0], q[1], he), L3(nq[0], nq[1], ridgeH), L3(np[0], np[1], ridgeH), [0, 0], [run, 0], [run, slope], [0, slope]));
+      if (np === nq) bk.add(roofKey, tri(L3(p[0], p[1], he), L3(q[0], q[1], he), L3(np[0], np[1], ridgeH), [0, 0], [run, 0], [run / 2, slope]));
+      else bk.add(roofKey, quad(L3(p[0], p[1], he), L3(q[0], q[1], he), L3(nq[0], nq[1], ridgeH), L3(np[0], np[1], ridgeH), [0, 0], [run, 0], [run, slope], [0, slope]));
+    }
+    const rm = [(r0[0] + r1[0]) / 2, (r0[1] + r1[1]) / 2], rl = Math.hypot(r1[0] - r0[0], r1[1] - r0[1]);
+    if (rl > 0.2) { const p = P2(F, rm[0], rm[1]); bk.add(roofKey, box(p[0], z0 + ridgeH + .03, -p[1], rl, .12, .3, ridgeAlongU ? rotU : Math.atan2(F.v[1], F.v[0]))); }
+  } else {
+    // gable roof as two planes, written in (a = along the ridge, b = across) and mapped to local (u, v)
+    const RA = ridgeAlongU ? hl : hw, RB = ridgeAlongU ? hw : hl;
+    const map = (a, b) => ridgeAlongU ? [a, b] : [b, a];
+    const LL = (a, b, h) => L3(...map(a, b), h);
+    // extensions past each gable end (roof_extend over an open platform)
+    let ext = [og, og];
+    const endFace = [toward(ridgeAlongU ? [-F.u[0], -F.u[1]] : [-F.v[0], -F.v[1]]), toward(ridgeAlongU ? F.u : F.v)];
+    if (st.roof_extend) { const d = DIRS[st.roof_extend.end], s = (ridgeAlongU ? F.u : F.v); const sg = s[0] * d[0] + s[1] * d[1] > 0 ? 1 : 0; ext[sg] += st.roof_extend.len; }
+    const bE = RB + o, slope = Math.hypot(bE, ridgeH - he);
+    const hAt = (b) => he + (ridgeH - he) * (1 - Math.abs(b) / bE);
+    for (const sgnB of [-1, 1]) {
+      // plane outline from end 0 (a = -RA - ext0) to end 1
+      const pts = [], uvs = [];
+      const endPts = (e) => {   // e: 0 or 1 -> list of (a, b, h) for that end, going from eave to ridge
+        const aE = e ? RA + ext[e] : -RA - ext[e];
+        if (jerk.has(endFace[e].name)) {
+          const hc = ridgeH - clip * (ridgeH - H), bc = bE * (ridgeH - hc) / (ridgeH - he), aR = aE - (e ? 1 : -1) * bc * 0.9;
+          return [[aE, sgnB * bE, he], [aE, sgnB * bc, hc], [aR, 0, ridgeH]];
+        }
+        return [[aE, sgnB * bE, he], [aE, 0, ridgeH]];
+      };
+      const e0 = endPts(0), e1 = endPts(1);
+      // order: eave end0 -> eave end1 -> (end1 up to ridge) -> ridge end0 -> (end0 down)
+      const seq = [e0[0], e1[0], ...e1.slice(1), ...e0.slice(1).reverse()];
+      for (const [a, b, h] of seq) { pts.push(LL(a, b, h)); uvs.push([a, (bE - Math.abs(b)) / bE * slope]); }
+      bk.add(roofKey, poly(pts, uvs));
+    }
+    // hip triangles of clipped gables
+    for (const e of [0, 1]) if (jerk.has(endFace[e].name)) {
+      const aE = e ? RA + ext[e] : -RA - ext[e], hc = ridgeH - clip * (ridgeH - H), bc = bE * (ridgeH - hc) / (ridgeH - he), aR = aE - (e ? 1 : -1) * bc * 0.9;
+      bk.add(roofKey, tri(LL(aE, -bc, hc), LL(aE, bc, hc), LL(aR, 0, ridgeH), [0, 0], [2 * bc, 0], [bc, bc]));
+    }
+    // ridge cap and fascia boards along the rakes
+    const a0 = -RA - ext[0], a1 = RA + ext[1], pm = P2(F, ...map((a0 + a1) / 2, 0));
+    bk.add(roofKey, box(pm[0], z0 + ridgeH + .03, -pm[1], a1 - a0, .12, .3, ridgeAlongU ? rotU : Math.atan2(F.v[1], F.v[0])));
+    // posts and X-bracing under a roof extended past the end wall
+    if (st.roof_extend) {
+      const e = ext[1] > og + 0.01 ? 1 : 0, aw = e ? RA : -RA, aE = e ? RA + ext[e] - og : -RA - ext[e] + og, n = Math.max(2, Math.round(Math.abs(aE - aw) / 2.7) + 1);
+      for (const sb of [-1, 1]) for (let i = 1; i < n; i++) {
+        const a = aw + (aE - aw) * i / (n - 1), p = P2(F, ...map(a, sb * (RB - .1)));
+        bk.add(timberKey, box(p[0], z0 + H / 2 - .1, -p[1], .22, H + .2, .22));
+      }
+      for (const sb of [-1, 1]) { // X-brace on each long side, and across the open end
+        const p0 = LL(aw, sb * (RB - .1), 0.1), p1 = LL(aE, sb * (RB - .1), H - .2), p2 = LL(aw, sb * (RB - .1), H - .2), p3 = LL(aE, sb * (RB - .1), 0.1);
+        bk.add(timberKey, beam(p0, p1, .12)); bk.add(timberKey, beam(p2, p3, .12));
+      }
+      const q0 = LL(aE, -RB + .1, .1), q1 = LL(aE, RB - .1, H - .2), q2 = LL(aE, -RB + .1, H - .2), q3 = LL(aE, RB - .1, .1);
+      bk.add(timberKey, beam(q0, q1, .12)); bk.add(timberKey, beam(q2, q3, .12));
+      bk.add(timberKey, beam(LL(aE, -RB + .1, H - .1), LL(aE, RB - .1, H - .1), .2));
+      if (st.roof_extend.deck) { const pc = P2(F, ...map((aw + aE) / 2, 0)); bk.add('plank#8f7b60', box(pc[0], z0 + (st.roof_extend.deck_h ?? .5) / 2, -pc[1], ...(ridgeAlongU ? [Math.abs(aE - aw), st.roof_extend.deck_h ?? .5, 2 * RB] : [2 * RB, st.roof_extend.deck_h ?? .5, Math.abs(aE - aw)]), rotU)); }
+    }
+    // knee-brace brackets under deep eaves (Medora depot)
+    if (st.brackets) {
+      const sp = st.brackets.spacing || 2.7, drop = st.brackets.drop || 1.0, out = Math.max(0.3, o - 0.25);
+      const aMin = -RA - (ext[0] - og), aMax = RA + (ext[1] - og);
+      for (const sb of [-1, 1]) { const n = Math.max(2, Math.round((aMax - aMin) / sp) + 1);
+        for (let i = 0; i < n; i++) { const a = aMin + (aMax - aMin) * i / (n - 1); bk.add(timberKey, beam(LL(a, sb * RB, H - drop), LL(a, sb * (RB + out), H - .12), .11)); } }
+      for (const e of [0, 1]) if (ext[e] - og < 0.01) {   // the gable ends: brackets at the corners and a strut to the apex
+        const aw = e ? RA : -RA, s = e ? 1 : -1;
+        for (const sb of [-0.75, 0.75]) bk.add(timberKey, beam(LL(aw, sb * RB, H - drop), LL(aw + s * Math.max(.3, og - .2), sb * RB, H + (ridgeH - H) * (1 - Math.abs(sb)) - .1), .11));
+        if (st.brackets.strut) bk.add(timberKey, beam(LL(aw + s * .05, -RB * 0.45, H - 0.6), LL(aw + s * .05, 0, ridgeH - .3), .12));
       }
     }
-    // ridge cap
-    const rm = [(r0[0] + r1[0]) / 2, (r0[1] + r1[1]) / 2], rl = Math.hypot(r1[0] - r0[0], r1[1] - r0[1]);
-    if (rl > 0.2) { const p = P2(F, rm[0], rm[1]); const ang = ridgeAlongU ? Math.atan2(F.u[1], F.u[0]) : Math.atan2(F.v[1], F.v[0]); bk.add(roofKey, box(p[0], z0 + ridgeH + .03, -p[1], rl, .12, .3, ang)); }
   }
-  // trim: corner boards and a fascia band at the eaves
+  // trim: corner boards
   for (const fc of faces) { const p = P2(F, fc.a[0], fc.a[1]); bk.add(trimKey, box(p[0], z0 + H / 2 - .2, -p[1], .16, H + .4, .16)); }
   // windows and doors
   const stories = Math.max(1, Math.floor(st.stories || 1)), half = (st.stories || 1) % 1 > 0;
   const sh = Math.min(3.8, H / ((st.stories || 1) + (half ? 0.2 : 0)));
-  const arched = !!st.arched, winKey = arched ? 'windowArched' : 'window';
+  const winKey = st.arched === 'lancet' ? 'windowLancet' : st.arched ? 'windowArched' : 'window';
+  const winW = st.win_w || 0.9;
   const put = (fc, along, bottom, w, h, key, out = 0.04) => {
-    if (st.blank && (key === 'window' || key === 'windowArched')) return;
+    const isWin = key.startsWith('window');
+    if (st.blank && isWin) return;
     // along: 0..len from fc.a towards fc.b
     const t0 = along - w / 2, t1 = along + w / 2;
     const ax = fc.a[0] + (fc.b[0] - fc.a[0]) * t0 / fc.len, ay = fc.a[1] + (fc.b[1] - fc.a[1]) * t0 / fc.len;
@@ -291,133 +408,204 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade) {
     const flip = key.startsWith('sign') && ((pb[0] - pa[0]) * -fc.n[1] + (pb[1] - pa[1]) * fc.n[0]) < 0;
     const [u0, u1] = flip ? [1, 0] : [0, 1];
     bk.add(key, quad(V(pa[0] + ox, pa[1] + oy, z0 + bottom), V(pb[0] + ox, pb[1] + oy, z0 + bottom), V(pb[0] + ox, pb[1] + oy, z0 + bottom + h), V(pa[0] + ox, pa[1] + oy, z0 + bottom + h), [u0, 0], [u1, 0], [u1, 1], [u0, 1]));
+    if (isWin && st.shutters) {   // board shutters either side
+      const sk = `trim#${st.shutters.slice(1)}`, dx = (pb[0] - pa[0]) / w, dy = (pb[1] - pa[1]) / w;
+      for (const s of [-1, 1]) { const c = [(pa[0] + pb[0]) / 2 + dx * s * (w / 2 + w * .27), (pa[1] + pb[1]) / 2 + dy * s * (w / 2 + w * .27)];
+        bk.add(sk, box(c[0] + fc.n[0] * .06, z0 + bottom + h / 2, -(c[1] + fc.n[1] * .06), w * .5, h, .05, Math.atan2(dy, dx))); }
+    }
   };
+  const skipAt = (fc, along) => {   // leave part of a long wall blank (St. Mary's front quarter)
+    if (!st.win_skip || !fc.long) return false;
+    const d = DIRS[st.win_skip.from], A = P2(F, ...fc.a), B = P2(F, ...fc.b), towardB = (B[0] - A[0]) * d[0] + (B[1] - A[1]) * d[1] > 0;
+    const t = along / fc.len; return towardB ? t > 1 - st.win_skip.frac : t < st.win_skip.frac;
+  };
+  const rear = toward([-front.n[0], -front.n[1]]);
   for (const fc of faces) {
+    if (st.bay_window && fc === toward(DIRS[st.bay_window.side] || front.n) && st.bay_window.face_only) continue;
     const isFront = fc === front;
-    let n = fc.long ? (st.bays ?? Math.round(fc.len / 3)) : (st.gable_bays ?? 1);
+    let n = fc.long ? (st.bays ?? Math.round(fc.len / 3)) : (fc === rear && st.rear_bays != null ? st.rear_bays : (st.gable_bays ?? 1));
     if (n <= 0 && !isFront) continue;
     for (let s = 0; s < stories + (half && !fc.long && roofType === 'gable' ? 1 : 0); s++) {
       let nn = (s >= 1 && st.upper_bays && fc.long) ? st.upper_bays : n;
       if (s === stories) nn = Math.max(1, Math.min(2, n));   // half-story gable window(s)
-      const bottom = s * sh + 0.95 * (s === 0 ? 1 : 0.8);
-      for (let i = 0; i < nn; i++) {
-        const along = fc.len * (i + 0.5) / nn;
-        if (isFront && s === 0) continue;                    // ground floor of the front is done below
-        if (st.barn && s === 0) continue;
-        put(fc, along, bottom, 0.9, Math.min(1.6, sh * 0.5), winKey);
+      if (s === stories && fc === rear && st.rear_bays === 0) continue;
+      const bottom = s * sh + 0.95 * (s === 0 ? 1 : 0.8), wh = st.win_h || Math.min(1.6, sh * 0.5);
+      if (isFront && s === 0) continue;                      // ground floor of the front is done below
+      if (st.barn && s === 0) continue;
+      if (st.paired && fc.long) {
+        const np = Math.max(1, Math.round(nn / 2));
+        for (let i = 0; i < np; i++) { const c = fc.len * (i + 0.5) / np; if (skipAt(fc, c)) continue; for (const dd of [-0.6, 0.6]) put(fc, c + dd * winW * 1.2, bottom, winW, wh, winKey); }
+      } else for (let i = 0; i < nn; i++) {
+        const along = fc.len * (i + 0.5) / nn; if (skipAt(fc, along)) continue;
+        put(fc, along, bottom, winW, st.arched === 'lancet' ? (st.win_h || 2.6) : wh, winKey);
       }
     }
-    if (isFront) {
+    if (isFront && !st.no_front_door) {
       if (st.storefront) {
         const w = Math.min(fc.len - 0.6, 6.2); put(fc, fc.len / 2, 0.15, w, Math.min(3.0, sh - 0.4), 'storefront');
-        for (let i = 0; i < Math.floor((fc.len - w) / 2.6); i++) { put(fc, 1.2 + i * 2.6, .95, .9, 1.6, winKey); put(fc, fc.len - 1.2 - i * 2.6, .95, .9, 1.6, winKey); }
+        for (let i = 0; i < Math.floor((fc.len - w) / 2.6); i++) { put(fc, 1.2 + i * 2.6, .95, winW, 1.6, winKey); put(fc, fc.len - 1.2 - i * 2.6, .95, winW, 1.6, winKey); }
       } else if (st.barn) {
         put(fc, fc.len / 2, 0.05, Math.min(3.6, fc.len * .4), Math.min(3.4, H - .4), 'door');
+      } else if (st.front_openings) {
+        // explicit ground-floor openings across the front: list of [kind, centre as fraction of the face from the left as seen from outside]
+        const A = P2(F, ...fc.a), B = P2(F, ...fc.b), leftToRight = ((B[0] - A[0]) * -fc.n[1] + (B[1] - A[1]) * fc.n[0]) > 0;
+        for (const [kind, t] of st.front_openings) { const al = (leftToRight ? t : 1 - t) * fc.len;
+          if (kind === 'door') put(fc, al, 0.05, 1.0, 2.2, 'door'); else if (kind === 'double') put(fc, al, 0.05, 1.6, 2.4, 'door'); else put(fc, al, .95, winW, Math.min(1.6, sh * .5), winKey); }
       } else {
         const nn = Math.max(2, n); put(fc, fc.len / 2, 0.05, 1.05, 2.25, 'door');
-        for (let i = 0; i < nn; i++) { const along = fc.len * (i + 0.5) / nn; if (Math.abs(along - fc.len / 2) > 1.1) put(fc, along, .95, .9, Math.min(1.6, sh * .5), winKey); }
+        for (let i = 0; i < nn; i++) { const along = fc.len * (i + 0.5) / nn; if (Math.abs(along - fc.len / 2) > 1.1) put(fc, along, .95, winW, Math.min(1.6, sh * .5), winKey); }
       }
     }
   }
   // fanlight in the front gable (Roberts Hall)
   if (st.fanlight) put(front, front.len / 2, H + 0.4, 1.4, 1.0, 'windowArched');
+  // upper front door with a small hood (Roberts Hall, 1919 photo)
+  if (st.upper_door) { put(front, front.len / 2, sh + 0.1, 1.1, 2.3, 'door', .05); const c = P2(F, ...[(front.a[0] + front.b[0]) / 2, (front.a[1] + front.b[1]) / 2]); bk.add(trimKey, box(c[0] + front.n[0] * .25, z0 + sh + 2.55, -(c[1] + front.n[1] * .25), front.long ? 1.6 : .5, .12, front.long ? .5 : 1.6, rotU)); }
   // false front: a tall square facade hiding the gable
   if (st.false_front && roofType === 'gable' && !ridgeAlongU === front.long) {
-    const p = front; bk.add(wallKey, quad(L3(p.a[0], p.a[1], H), L3(p.b[0], p.b[1], H), L3(p.b[0], p.b[1], ridgeH + .5), L3(p.a[0], p.a[1], ridgeH + .5), [0, H], [p.len, H], [p.len, ridgeH + .5], [0, ridgeH + .5]));
-    bk.add(trimKey, quad(L3(p.a[0], p.a[1], ridgeH + .5), L3(p.b[0], p.b[1], ridgeH + .5), L3(p.b[0], p.b[1], ridgeH + .75), L3(p.a[0], p.a[1], ridgeH + .75), [0, 0], [1, 0], [1, 1], [0, 1]));
+    const p = front, top = ridgeH + (st.false_front_extra ?? .5);
+    bk.add(wallKey, quad(L3(p.a[0], p.a[1], H), L3(p.b[0], p.b[1], H), L3(p.b[0], p.b[1], top), L3(p.a[0], p.a[1], top), [0, H], [p.len, H], [p.len, top], [0, top]));
+    const c = P2(F, (p.a[0] + p.b[0]) / 2, (p.a[1] + p.b[1]) / 2);
+    bk.add(trimKey, box(c[0] + p.n[0] * .12, z0 + top + .1, -(c[1] + p.n[1] * .12), p.long ? p.len + .3 : .35, .3, p.long ? .35 : p.len + .3, rotU));
   }
   // signs seen in the period photographs (st.signs, from build_3d.py); drawn as boards on a wall
   for (const sg of (st.signs || [])) {
-    let fc = front; if (sg.side) { const d = DIRS[sg.side]; let best = -9; for (const x of faces) { const dd = x.n[0] * d[0] + x.n[1] * d[1]; if (dd > best) { best = dd; fc = x; } } }
+    const fc = sg.side ? toward(DIRS[sg.side]) : front;
     const key = 'sign:' + sg.id; if (!SIGNS[key]) SIGNS[key] = signTex(sg);
     const w = Math.min(sg.w_frac ? fc.len * sg.w_frac : sg.w, fc.len - 0.4);
-    put(fc, fc.len * (sg.along ?? 0.5), sg.at, w, w * sg.aspect, key, sg.out ?? 0.08);
+    let along = fc.len * (sg.along ?? 0.5);
+    if (sg.on_bay && st.bay_window) along = bayAlong(fc);
+    put(fc, along, sg.at, w, w * sg.aspect, key, sg.out ?? 0.08);
   }
   // a likely name board for a known business (not seen in any photograph; hidden unless the viewer asks for it)
   if (st.storefront && !f.id.startsWith('photo85') && signText(f)) {
     const key = 'signguess:' + signText(f); if (!SIGNS[key]) SIGNS[key] = letterTex(signText(f), 1024, 160, '#2e2a25', '#efe6cf', 'bold 84px Georgia');
     const w = Math.min(front.len - 0.8, 7.5); put(front, front.len / 2, Math.min(H - 1.0, (Math.max(1, Math.floor(st.stories || 1)) > 1 ? 3.5 : H - 0.9)), w, w * 0.16, key, 0.08);
   }
-  // porches
+  // porches and platforms. pc: {side, depth, roof (default true), h (floor height), span [t0, t1] measured from the span_from end, rail}
   for (const pc of (st.porch || [])) {
-    const dir = DIRS[pc.side] || [front.n[0], front.n[1]];
-    let fc = faces[0], best = -9; for (const x of faces) { const d = x.n[0] * dir[0] + x.n[1] * dir[1]; if (d > best) { best = d; fc = x; } }
-    const d = pc.depth || 2.4, ph = Math.min(3.0, sh - 0.2);
-    const mid = [(fc.a[0] + fc.b[0]) / 2, (fc.a[1] + fc.b[1]) / 2];
-    const nl = [fc.n[0] * F.u[0] + fc.n[1] * F.u[1], fc.n[0] * F.v[0] + fc.n[1] * F.v[1]];   // normal in local frame
-    const out = [mid[0] + nl[0] * d / 2, mid[1] + nl[1] * d / 2], pw = P2(F, out[0], out[1]);
-    const ang = -Math.atan2(fc.b[1] - fc.a[1], fc.b[0] - fc.a[0]) - Math.atan2(F.u[1], F.u[0]);
-    const rot = Math.atan2(...(() => { const t = P2(F, fc.b[0], fc.b[1]), s = P2(F, fc.a[0], fc.a[1]); return [t[1] - s[1], t[0] - s[0]]; })());
-    bk.add('plank#9a8466', box(pw[0], z0 + 0.25, -pw[1], fc.len, 0.3, d, rot));
-    const roofP = [mid[0] + nl[0] * (d + .2), mid[1] + nl[1] * (d + .2)];
-    // sloping porch roof
-    const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]);
-    const ox = (fc.n[0]) * (d + .25), oy = (fc.n[1]) * (d + .25);
-    bk.add(roofKey, quad(V(s1[0] + ox, s1[1] + oy, z0 + ph), V(s0[0] + ox, s0[1] + oy, z0 + ph), V(s0[0], s0[1], z0 + ph + .7), V(s1[0], s1[1], z0 + ph + .7), [0, 0], [fc.len, 0], [fc.len, d], [0, d]));
-    const posts = Math.max(2, Math.round(fc.len / 2.6) + 1);
-    for (let i = 0; i < posts; i++) { const t = i / (posts - 1); const x = s0[0] + (s1[0] - s0[0]) * t + fc.n[0] * (d - .15), y = s0[1] + (s1[1] - s0[1]) * t + fc.n[1] * (d - .15); bk.add(trimKey, box(x, z0 + ph / 2 + .2, -y, .14, ph - .2, .14)); }
+    const fc = toward(DIRS[pc.side] || front.n);
+    const d = pc.depth || 2.4, ph = pc.post_h || Math.min(3.0, sh - 0.2), fh = pc.h ?? 0.3;
+    let s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]);
+    if (pc.span) {
+      let [t0, t1] = pc.span; const dd = DIRS[pc.span_from || 'W'] || [-1, 0];
+      if ((s1[0] - s0[0]) * dd[0] + (s1[1] - s0[1]) * dd[1] > 0) [t0, t1] = [1 - t1, 1 - t0];
+      const a = [s0[0] + (s1[0] - s0[0]) * t0, s0[1] + (s1[1] - s0[1]) * t0], b = [s0[0] + (s1[0] - s0[0]) * t1, s0[1] + (s1[1] - s0[1]) * t1]; s0 = a; s1 = b;
+    }
+    const len = Math.hypot(s1[0] - s0[0], s1[1] - s0[1]), rot = Math.atan2(s1[1] - s0[1], s1[0] - s0[0]);
+    const pw = [(s0[0] + s1[0]) / 2 + fc.n[0] * d / 2, (s0[1] + s1[1]) / 2 + fc.n[1] * d / 2];
+    const zg = ctxZ ? Math.min(z0, ctxZ(pw[0], pw[1])) : z0;
+    bk.add('plank#9a8466', box(pw[0], (z0 + fh + zg - .2) / 2, -pw[1], len + (pc.extend || 0), z0 + fh - zg + .2, d, rot));
+    if (pc.roof !== false) {
+      const ox = (fc.n[0]) * (d + .25), oy = (fc.n[1]) * (d + .25), e0 = (pc.extend || 0) / 2;
+      const ux = Math.cos(rot) * e0, uy = Math.sin(rot) * e0;
+      bk.add(roofKey, quad(V(s1[0] + ox + ux, s1[1] + oy + uy, z0 + fh + ph), V(s0[0] + ox - ux, s0[1] + oy - uy, z0 + fh + ph), V(s0[0] - ux, s0[1] - uy, z0 + fh + ph + .7), V(s1[0] + ux, s1[1] + uy, z0 + fh + ph + .7), [0, 0], [len, 0], [len, d], [0, d]));
+      const posts = Math.max(2, Math.round(len / (pc.post_spacing || 2.5)) + 1);
+      for (let i = 0; i < posts; i++) { const t = i / (posts - 1); const x = s0[0] + (s1[0] - s0[0]) * t + fc.n[0] * (d - .15), y = s0[1] + (s1[1] - s0[1]) * t + fc.n[1] * (d - .15); bk.add(trimKey, box(x, z0 + fh + ph / 2, -y, .16, ph, .16)); }
+    }
+    if (pc.rail) { const ry = z0 + fh + .9; const a = [s0[0] + fc.n[0] * (d - .1), s0[1] + fc.n[1] * (d - .1)], b = [s1[0] + fc.n[0] * (d - .1), s1[1] + fc.n[1] * (d - .1)]; bk.add(trimKey, beam(V(a[0], a[1], ry), V(b[0], b[1], ry), .07)); }
   }
-  // outside stair (Ferris store, Roberts Hall)
+  // outside stair along a wall up to an upper door (Hotel de Mores east gable, Ferris store)
   if (st.outside_stair) {
-    const dir = DIRS[st.outside_stair]; let fc = faces[0], best = -9; for (const x of faces) { const d = x.n[0] * dir[0] + x.n[1] * dir[1]; if (d > best) { best = d; fc = x; } }
-    const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]), tl = Math.min(fc.len - 1, sh * 1.6);
-    const steps = 14;
-    for (let i = 0; i < steps; i++) { const t = (fc.len - 0.8 - tl * (i / steps)) / fc.len; const x = s0[0] + (s1[0] - s0[0]) * t + fc.n[0] * .7, y = s0[1] + (s1[1] - s0[1]) * t + fc.n[1] * .7; bk.add('plank#8c7558', box(x, z0 + sh * (i + 1) / steps, -y, .9, .08, .9)); }
+    const os = typeof st.outside_stair === 'string' ? {side: st.outside_stair} : st.outside_stair;
+    const fc = toward(DIRS[os.side]);
+    const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]), tl = Math.min(fc.len - 1.4, sh * 1.6), steps = 14;
+    // the top landing is at the end of the face nearest os.top (compass) or at fc.b
+    let topAtB = true; if (os.top) { const d = DIRS[os.top]; topAtB = (s1[0] - s0[0]) * d[0] + (s1[1] - s0[1]) * d[1] > 0; }
+    const at = (dist) => { const t = topAtB ? (fc.len - 0.8 - dist) / fc.len : (0.8 + dist) / fc.len; return [s0[0] + (s1[0] - s0[0]) * t + fc.n[0] * .7, s0[1] + (s1[1] - s0[1]) * t + fc.n[1] * .7]; };
+    for (let i = 0; i < steps; i++) { const p = at(tl * (1 - (i + 1) / steps)); bk.add('plank#8c7558', box(p[0], z0 + sh * (i + 1) / steps, -p[1], .9, .08, .9)); }
+    const top = at(-0.3); bk.add('plank#8c7558', box(top[0], z0 + sh, -top[1], 1.2, .12, 1.2));
+    put(fc, topAtB ? fc.len - 0.8 : 0.8, sh + .05, 1.0, 2.1, 'door', .05);
+    const p0 = at(tl), p1 = at(0); bk.add(trimKey, beam(V(p0[0] + fc.n[0] * .45, p0[1] + fc.n[1] * .45, z0 + .9), V(p1[0] + fc.n[0] * .45, p1[1] + fc.n[1] * .45, z0 + sh + .9), .06));
   }
-  // depot bay window
-  if (st.bay_window) { const m = [(front.a[0] + front.b[0]) / 2, (front.a[1] + front.b[1]) / 2], p = P2(F, m[0], m[1]); bk.add(wallKey, box(p[0] + front.n[0] * .45, z0 + 1.4, -(p[1] + front.n[1] * .45), 2.4, 2.8, .9, Math.atan2(F.u[1], F.u[0]))); }
-  // chimneys on the ridge
-  const nch = st.chimneys ?? 1;
-  for (let i = 0; i < nch; i++) {
-    const t = nch === 1 ? 0.25 : (i / (nch - 1) - 0.5) * 0.7;
-    const a = ridgeAlongU ? [F.L * t, 0] : [0, F.W * t], p = P2(F, a[0], a[1]);
-    bk.add('wall_brick#9c5a44', box(p[0], z0 + ridgeH + 0.3, -p[1], .55, 1.8, .55));
+  // bay window: flat box, or canted three-sided bay with its own low hip roof (Medora depot)
+  function bayAlong(fc) { const bw = st.bay_window; if (!bw.offset) return fc.len / 2; const d = DIRS[bw.offset_dir || 'E'], A = P2(F, ...fc.a), B = P2(F, ...fc.b), s = ((B[0] - A[0]) * d[0] + (B[1] - A[1]) * d[1]) > 0 ? 1 : -1; return fc.len / 2 + s * bw.offset; }
+  if (st.bay_window) {
+    const bw = st.bay_window === true ? {} : st.bay_window, fc = bw.side ? toward(DIRS[bw.side]) : front;
+    const w = bw.w || 2.4, dp = bw.d || 0.8, eh = bw.eave || Math.min(3.0, H - .3), al = bayAlong(fc);
+    const A = P2(F, ...fc.a), B = P2(F, ...fc.b), ux = (B[0] - A[0]) / fc.len, uy = (B[1] - A[1]) / fc.len, n = fc.n;
+    const pt = (t, out, h) => V(A[0] + ux * (al + t) + n[0] * out, A[1] + uy * (al + t) + n[1] * out, z0 + h);
+    const cw = bw.canted === false ? w : w - 2 * dp;   // width of the front face
+    const outline = bw.canted === false ? [[-w / 2, 0], [-w / 2, dp], [w / 2, dp], [w / 2, 0]] : [[-w / 2, 0], [-cw / 2, dp], [cw / 2, dp], [w / 2, 0]];
+    for (let i = 0; i < 3; i++) { const [t0, o0] = outline[i], [t1, o1] = outline[i + 1], L = Math.hypot(t1 - t0, o1 - o0);
+      bk.add(wallKey, quad(pt(t0, o0, -.3), pt(t1, o1, -.3), pt(t1, o1, eh), pt(t0, o0, eh), [0, 0], [L, 0], [L, eh], [0, eh]));
+      // a window in each face, over a 0.8 m board base
+      const ww = Math.min(L - .25, i === 1 ? 0.95 : 0.6), mt = (t0 + t1) / 2, mo = (o0 + o1) / 2, ex = (t1 - t0) / L, eo = (o1 - o0) / L;
+      const wp = (s, h) => pt(mt + ex * s, mo + eo * s + .03 * (i === 1 ? 1 : 0.7), h);
+      bk.add('window', quad(wp(-ww / 2, .8), wp(ww / 2, .8), wp(ww / 2, Math.min(eh - .25, 2.7)), wp(-ww / 2, Math.min(eh - .25, 2.7)), [0, 0], [1, 0], [1, 1], [0, 1]));
+    }
+    // low hip roof: from the bay's outer eave up to the wall
+    const ro = 0.25, rh = eh + 0.7, R2 = [[-w / 2 - ro, 0], [-cw / 2 - ro * .5, dp + ro], [cw / 2 + ro * .5, dp + ro], [w / 2 + ro, 0]];
+    for (let i = 0; i < 3; i++) { const [t0, o0] = R2[i], [t1, o1] = R2[i + 1];
+      bk.add(roofKey, poly([pt(t0, o0, eh), pt(t1, o1, eh), pt(Math.max(-w / 2, Math.min(w / 2, t1 * .6)), 0, rh), pt(Math.max(-w / 2, Math.min(w / 2, t0 * .6)), 0, rh)], [[0, 0], [1, 0], [1, 1], [0, 1]])); }
   }
-  // church belfry over the front gable
+  // chimneys on the ridge: chimney_at {from: compass end, at: [metres from that end]} or evenly spread
+  const chimneyPts = [];
+  if (st.chimney_at) {
+    const d = DIRS[st.chimney_at.from], ax = ridgeAlongU ? F.u : F.v, s = (ax[0] * d[0] + ax[1] * d[1]) > 0 ? 1 : -1, ext = ridgeAlongU ? hl : hw;
+    for (const m of st.chimney_at.at) { const a = s * (ext - m); chimneyPts.push(ridgeAlongU ? [a, st.chimney_at.off || 0] : [st.chimney_at.off || 0, a]); }
+  } else { const nch = st.chimneys ?? 1;
+    for (let i = 0; i < nch; i++) { const t = nch === 1 ? 0.25 : (i / (nch - 1) - 0.5) * 0.7; chimneyPts.push(ridgeAlongU ? [F.L * t, 0] : [0, F.W * t]); } }
+  const chH = roofType === 'shed' ? (p) => shedH(p) : () => ridgeH;
+  for (const a of chimneyPts) { const p = P2(F, a[0], a[1]); const top = chH(a) + (st.chimney_h || 1.1);
+    bk.add('wall_brick#9c5a44', box(p[0], z0 + (top + ridgeH - 2.5) / 2, -p[1], .48, top - ridgeH + 2.5, .48));
+    bk.add('wall_brick#8e5040', box(p[0], z0 + top - .1, -p[1], .62, .18, .62)); }   // corbelled cap
+  // church belfry on the ridge just behind the front gable (St. Mary's: base 2.6 m, open stage 2.3 m, pyramid roof 1.8 m)
   if (st.belfry) {
-    const m = [(front.a[0] + front.b[0]) / 2 * .85, (front.a[1] + front.b[1]) / 2 * .85], p = P2(F, m[0], m[1]);
-    bk.add(wallKey.replace(/^wall_[a-z]+/, 'wall_clapboard').replace(/#.*/, '#efe9dc'), box(p[0], z0 + ridgeH + 1.0, -p[1], 1.8, 2.6, 1.8));
-    const g = new THREE.ConeGeometry(1.5, 2.4, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + Math.atan2(F.u[1], F.u[0])); g.translate(p[0], z0 + ridgeH + 3.5, -p[1]); bk.add(roofKey, g);
+    const bf = st.belfry === true ? {} : st.belfry, bwid = bf.w || 2.6, back = (bf.back ?? 0.5) + bwid / 2;
+    const fm = [(front.a[0] + front.b[0]) / 2, (front.a[1] + front.b[1]) / 2], L0 = Math.hypot(...fm) || 1;
+    const c = [fm[0] - fm[0] / L0 * back, fm[1] - fm[1] / L0 * back], p = P2(F, c[0], c[1]);
+    const shingKey = wallKey.replace(/^wall_[a-z]+/, 'wall_clapboard');
+    bk.add(shingKey, box(p[0], z0 + ridgeH - .3 + (bf.base || .8) / 2, -p[1], bwid, (bf.base || .8) + .6, bwid, rotU));
+    const sb = z0 + ridgeH + (bf.base || .8) - .3, stg = bf.stage || 2.3;
+    for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { const q = P2(F, c[0] + dx * (bwid / 2 - .15), c[1] + dy * (bwid / 2 - .15)); bk.add(trimKey, box(q[0], sb + stg / 2, -q[1], .3, stg, .3)); }
+    bk.add('dark#2a2622', box(p[0], sb + stg / 2, -p[1], bwid * .55, stg * .8, bwid * .55, rotU));
+    bk.add(trimKey, box(p[0], sb + stg + .08, -p[1], bwid + .2, .16, bwid + .2, rotU));
+    const g = new THREE.ConeGeometry((bwid + .5) / Math.SQRT2, bf.roof || 1.8, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], sb + stg + .16 + (bf.roof || 1.8) / 2, -p[1]); bk.add(roofKey, g);
   }
-  // roof monitor along a flat roof (packing house)
-  if (st.monitor && roofType === 'flat') { const p = P2(F, 0, 0); bk.add(wallKey, box(p[0], z0 + H + 0.9, -p[1], F.L * 0.7, 1.4, 2.4, Math.atan2(F.u[1], F.u[0]))); bk.add(roofKey, box(p[0], z0 + H + 1.65, -p[1], F.L * 0.7 + .4, .12, 3.0, Math.atan2(F.u[1], F.u[0]))); }
+  // roof monitor on a flat roof: monitor true or {len_frac, at (-0.5..0.5 along), w}
+  if (st.monitor && roofType === 'flat') { const mo = st.monitor === true ? {} : st.monitor, lf = mo.len_frac ?? 0.7, at = mo.at ?? 0, mw = mo.w || 2.4, p = P2(F, F.L * at, 0);
+    bk.add(wallKey, box(p[0], z0 + H + 0.9, -p[1], F.L * lf, 1.4, mw, rotU)); bk.add(roofKey, box(p[0], z0 + H + 1.65, -p[1], F.L * lf + .4, .12, mw + .6, rotU)); }
   // ridge ventilators (sheds)
   if (st.vents && roofType !== 'flat') for (let i = 0; i < st.vents; i++) {
     const t = (i + 0.5) / st.vents - 0.5, a = ridgeAlongU ? [F.L * t * .9, 0] : [0, F.W * t * .9], p = P2(F, a[0], a[1]);
-    bk.add(wallKey, box(p[0], z0 + ridgeH + .35, -p[1], 1.1, .8, 1.1)); const g = new THREE.ConeGeometry(.95, .6, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + Math.atan2(F.u[1], F.u[0])); g.translate(p[0], z0 + ridgeH + 1.05, -p[1]); bk.add(roofKey, g); }
-  // stacked open galleries on one front (packing house)
+    bk.add(wallKey, box(p[0], z0 + ridgeH + .35, -p[1], 1.1, .8, 1.1)); const g = new THREE.ConeGeometry(.95, .6, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + 1.05, -p[1]); bk.add(roofKey, g); }
+  // galleries on one front (packing house): roofed porch at the ground, open framing above
   if (st.gallery) {
-    const dir = DIRS[st.gallery.side] || [0, -1]; let fc = faces[0], best = -9; for (const x of faces) { const d = x.n[0] * dir[0] + x.n[1] * dir[1]; if (d > best) { best = d; fc = x; } }
+    const fc = toward(DIRS[st.gallery.side] || [0, -1]);
     const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]), fr = st.gallery.frac || .35, dep = st.gallery.depth || 2.2;
+    let ta = 0.5 - fr / 2, tb = 0.5 + fr / 2;
+    if (st.gallery.end) { const d = DIRS[st.gallery.end], toB = (s1[0] - s0[0]) * d[0] + (s1[1] - s0[1]) * d[1] > 0; [ta, tb] = toB ? [1 - fr - .02, .98] : [.02, fr + .02]; }
     const lv = st.gallery.levels || 3, lh = H / lv, ang = Math.atan2(s1[1] - s0[1], s1[0] - s0[0]);
-    const ta = 0.5 - fr / 2, tb = 0.5 + fr / 2, A = [s0[0] + (s1[0] - s0[0]) * ta, s0[1] + (s1[1] - s0[1]) * ta], B = [s0[0] + (s1[0] - s0[0]) * tb, s0[1] + (s1[1] - s0[1]) * tb];
-    const M = [(A[0] + B[0]) / 2 + fc.n[0] * dep / 2, (A[1] + B[1]) / 2 + fc.n[1] * dep / 2], len = fr * fc.len;
-    for (let k = 1; k <= lv; k++) { bk.add('plank#8d8170', box(M[0], z0 + k * lh - .1, -M[1], len, .15, dep, ang)); bk.add(trimKey, box(M[0] + fc.n[0] * dep / 2, z0 + k * lh + .45, -(M[1] + fc.n[1] * dep / 2), len, .08, .06, ang)); }
-    const np = Math.round(len / 2.5) + 1; for (let i = 0; i < np; i++) { const t = i / (np - 1), x = A[0] + (B[0] - A[0]) * t + fc.n[0] * (dep - .1), y = A[1] + (B[1] - A[1]) * t + fc.n[1] * (dep - .1); bk.add(trimKey, box(x, z0 + H / 2, -y, .16, H, .16)); }
-    bk.add(roofKey, box(M[0], z0 + H + .1, -M[1], len + .3, .12, dep + .3, ang));
-    for (let k = 0; k < lv; k++) put(fc, fc.len / 2 + (k % 2 ? 1.5 : -1.5), k * lh + .1, 1.0, 2.1, 'door');
+    const A = [s0[0] + (s1[0] - s0[0]) * ta, s0[1] + (s1[1] - s0[1]) * ta], B = [s0[0] + (s1[0] - s0[0]) * tb, s0[1] + (s1[1] - s0[1]) * tb];
+    const M = [(A[0] + B[0]) / 2 + fc.n[0] * dep / 2, (A[1] + B[1]) / 2 + fc.n[1] * dep / 2], len = Math.hypot(B[0] - A[0], B[1] - A[1]);
+    bk.add('plank#8d8170', box(M[0], z0 + .3, -M[1], len, .3, dep, ang));            // raised floor
+    bk.add(roofKey, box(M[0], z0 + 3.2, -M[1], len + .3, .12, dep + .3, ang));        // porch roof at the ground level
+    for (let k = 2; k <= lv; k++) bk.add(timberKey, box(M[0] + fc.n[0] * dep / 2, z0 + k * lh, -(M[1] + fc.n[1] * dep / 2), len, .16, .16, ang));   // open frame above
+    const np = Math.round(len / 2.5) + 1; for (let i = 0; i < np; i++) { const t = i / (np - 1), x = A[0] + (B[0] - A[0]) * t + fc.n[0] * (dep - .1), y = A[1] + (B[1] - A[1]) * t + fc.n[1] * (dep - .1); bk.add(timberKey, box(x, z0 + H / 2, -y, .16, H, .16));
+      if (i < np - 1) { const t2 = (i + 1) / (np - 1), x2 = A[0] + (B[0] - A[0]) * t2 + fc.n[0] * (dep - .1), y2 = A[1] + (B[1] - A[1]) * t2 + fc.n[1] * (dep - .1); bk.add(timberKey, beam(V(x, y, z0 + 3.4), V(x2, y2, z0 + H - .3), .1)); } }
+    for (let k = 0; k < lv; k++) put(fc, fc.len * (ta + tb) / 2 + (k % 2 ? 1.5 : -1.5), k * lh + .1, 1.0, 2.1, 'door');
   }
-  // inclined cattle runway on trestle bents up to the killing floor (packing house; Huffman 1886, SHSND 00042-00074/-75)
+  // horizontal enclosed runway from the top of the building out to a timber pier (packing house; Huffman 1886, SHSND 00042-00074/-75)
   if (st.runway) {
-    const d = DIRS[st.runway.end] || [-1, 0], sg = Math.sign(F.u[0] * d[0] + F.u[1] * d[1]) || -1, L = st.runway.len || 30, top = H * 0.8;
-    const steps = 12, rot = Math.atan2(F.u[1], F.u[0]);
-    for (let i = 0; i < steps; i++) {
-      const a0 = sg * (F.L / 2 + L * i / steps), a1 = sg * (F.L / 2 + L * (i + 1) / steps), am = (a0 + a1) / 2, p = P2(F, am, -F.W * 0.25);
-      const h = top * (1 - (i + 0.5) / steps), zg = ctxZ ? ctxZ(p[0], p[1]) : z0;
-      const seg = box(p[0], zg + h + .9, -p[1], L / steps + .05, .2, 2.4, rot); seg.rotateZ ? 0 : 0; bk.add('plank#857a6a', seg);
-      for (const s2 of [-1.25, 1.25]) bk.add('plank#857a6a', box(p[0] - F.v[0] * 0 , zg + h + 1.6, -p[1], L / steps, 1.3, .08, rot).translate(F.v[0] * s2, 0, -F.v[1] * s2));
-      if (i % 2 === 0 && h > 0.5) for (const s2 of [-1.1, 1.1]) bk.add('plank#6f6455', box(p[0] + F.v[0] * s2, zg + (h + .8) / 2, -(p[1] + F.v[1] * s2), .25, h + .8, .25));
-    }
+    const d = DIRS[st.runway.end] || [-1, 0], sg = Math.sign(F.u[0] * d[0] + F.u[1] * d[1]) || -1, L = st.runway.len || 24, top = st.runway.h ?? H + 1.0;
+    const start = sg * (F.L / 2 - (st.runway.inset || 0)), c = P2(F, start + sg * L / 2, 0);
+    bk.add(wallKey, box(c[0], z0 + top, -c[1], L, 2.0, 2.2, rotU));
+    bk.add(roofKey, box(c[0], z0 + top + 1.1, -c[1], L + .3, .12, 2.8, rotU));
+    // pier: tapered square timber tower at the far end
+    const pc = P2(F, start + sg * (L - 2), 0), zg = ctxZ ? ctxZ(pc[0], pc[1]) : z0, ph = z0 + top - 1 - zg;
+    const g = new THREE.CylinderGeometry(3 / Math.SQRT2, 4 / Math.SQRT2, ph, 4, 1).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(pc[0], zg + ph / 2, -pc[1]); bk.add(timberKey, g);
   }
-  // square tower with a pyramid-roofed cupola (ice house)
+  // square tower with a pyramid-roofed cupola
   if (st.tower) {
-    const tw = (st.tower.w || 5), th = (st.tower.h || 4), p = P2(F, -F.L * 0.25, 0), rot = Math.atan2(F.u[1], F.u[0]);
-    bk.add(wallKey, box(p[0], z0 + ridgeH + th / 2 - .5, -p[1], tw, th, tw, rot));
-    const g = new THREE.ConeGeometry(tw * .78, 2.2, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rot); g.translate(p[0], z0 + ridgeH + th + .55, -p[1]); bk.add(roofKey, g);
-    bk.add(wallKey, box(p[0], z0 + ridgeH + th + 2.1, -p[1], 1.4, 1.2, 1.4, rot)); const c = new THREE.ConeGeometry(1.2, 1.1, 4).toNonIndexed(); c.rotateY(Math.PI / 4 + rot); c.translate(p[0], z0 + ridgeH + th + 3.25, -p[1]); bk.add(roofKey, c);
+    const tw = (st.tower.w || 5), th = (st.tower.h || 4), p = P2(F, -F.L * 0.25, 0);
+    bk.add(wallKey, box(p[0], z0 + ridgeH + th / 2 - .5, -p[1], tw, th, tw, rotU));
+    const g = new THREE.ConeGeometry(tw * .78, 2.2, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + th + .55, -p[1]); bk.add(roofKey, g);
   }
-  // cupola (packing plant, ice house)
-  if (st.cupola && !st.tower) { const p = P2(F, 0, 0); bk.add(wallKey, box(p[0], z0 + ridgeH + .6, -p[1], 2.2, 1.6, 2.2)); const g = new THREE.ConeGeometry(1.8, 1.4, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + Math.atan2(F.u[1], F.u[0])); g.translate(p[0], z0 + ridgeH + 2.1, -p[1]); bk.add(roofKey, g); }
+  // cupola on the ridge or hip apex (cooling house)
+  if (st.cupola && !st.tower) { const cs = st.cupola === true ? {} : st.cupola, w = cs.w || 2.2, p = P2(F, 0, 0);
+    bk.add(wallKey, box(p[0], z0 + ridgeH + (cs.h || 1.6) / 2 - .2, -p[1], w, (cs.h || 1.6) + .4, w, rotU));
+    const g = new THREE.ConeGeometry(w * .82, cs.cap || 1.4, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + (cs.h || 1.6) + (cs.cap || 1.4) / 2 - .2, -p[1]); bk.add(roofKey, g); }
   return {ridgeH, F, front};
 }
 
@@ -430,6 +618,30 @@ function splitRect(R, n, gap) {
   return out;
 }
 
+// decks and platforms (st.decks: [{rect, h, rails: [[[e,n],[e,n],...], ...]}]) and fences (st.fences: [{pts, kind: 'rail'|'board'|'picket', h}])
+function buildDecks(bk, st, zAt) {
+  for (const dk of (st.decks || [])) {
+    const R = dk.rect, c = R.reduce((s, p) => [s[0] + p[0] / 4, s[1] + p[1] / 4], [0, 0]), zt = (dk.z ?? Math.max(...R.map(p => zAt(p[0], p[1])))) + (dk.h ?? .5);
+    bk.add('plank#94805f', poly(R.map(p => V(p[0], p[1], zt)), R.map(p => [p[0] - c[0], p[1] - c[1]])));
+    for (let i = 0; i < 4; i++) { const a = R[i], b = R[(i + 1) % 4], L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      bk.add('plank#7d6b52', quad(V(a[0], a[1], zt), V(b[0], b[1], zt), V(b[0], b[1], Math.min(zt - .2, zAt(b[0], b[1]) - .3)), V(a[0], a[1], Math.min(zt - .2, zAt(a[0], a[1]) - .3)), [0, 0], [L, 0], [L, 1], [0, 1])); }
+    for (const line of (dk.rails || [])) railLine(bk, line, () => zt, 1.1, 2.4, 'trim#6f5e49');
+  }
+  for (const fe of (st.fences || [])) {
+    const h = fe.h || 1.2;
+    if (fe.kind === 'board') for (let i = 0; i < fe.pts.length - 1; i++) { const a = fe.pts[i], b = fe.pts[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), za = zAt(a[0], a[1]), zb = zAt(b[0], b[1]);
+      bk.add('plank#8a7a62', quad(V(a[0], a[1], za - .2), V(b[0], b[1], zb - .2), V(b[0], b[1], zb + h), V(a[0], a[1], za + h), [0, 0], [L, 0], [L, h], [0, h])); }
+    else railLine(bk, fe.pts, zAt, h, 2.5, 'trim#7a6a55');
+  }
+}
+function railLine(bk, pts, zf, h, sp, key) {
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.round(L / sp));
+    for (let k = 0; k <= n; k++) { const t = k / n, x = a[0] + (b[0] - a[0]) * t, y = a[1] + (b[1] - a[1]) * t, z = zf(x, y); bk.add(key, box(x, z + h / 2 - .1, -y, .12, h + .2, .12)); }
+    for (const hh of [h * .5, h - .05]) bk.add(key, beam(V(a[0], a[1], zf(a[0], a[1]) + hh), V(b[0], b[1], zf(b[0], b[1]) + hh), .07));
+  }
+}
+
 export function buildDetailed(f, ctx) {
   // returns a THREE.Group, or null if the feature has no detailed style
   const st = f.style; if (!st || !f.rect) return null;
@@ -437,25 +649,28 @@ export function buildDetailed(f, ctx) {
   const H = m.eave > 0 ? m.eave : (st.stories >= 2 ? 7 : st.stories >= 1.5 ? 4.5 : 3.2);
   const bk = new Bucket(); ctxZ = ctx.zAt;
   let frontDir = st.front ? DIRS[st.front] : ctx.streetDir(f);
-  let rects = st.blocks || (st.split ? splitRect(f.rect, st.split.n, st.split.gap) : [f.rect]);
-  rects.forEach((R, i) => {
-    const z0 = Math.min(...R.map(p => ctx.zAt(p[0], p[1])));
-    const s2 = (st.blocks && i > 0) ? Object.assign({}, st, {stories: 1.5, porch: [], chimneys: 1}) : st;
-    const H2 = (st.blocks && i > 0) ? H * 0.7 : H;
-    buildBlock(bk, f, s2, z0, H2, R, frontDir, grade);
-  });
-  // the hotel's taller end block
-  if (st.end_block) {
-    const F = rectFrame(f.rect), d = DIRS[st.end_block.end], sgn = Math.sign(F.u[0] * d[0] + F.u[1] * d[1]) || 1, L = st.end_block.len;
-    const a0 = sgn > 0 ? F.L / 2 - L : -F.L / 2, a1 = a0 + L;
-    const R = [P2(F, a0, -F.W / 2 - .2), P2(F, a1, -F.W / 2 - .2), P2(F, a1, F.W / 2 + .2), P2(F, a0, F.W / 2 + .2)];
-    const z0 = Math.min(...R.map(p => ctx.zAt(p[0], p[1])));
-    buildBlock(bk, f, Object.assign({}, st, {ridge: 'front', porch: [], chimneys: 1, bays: 2, gable_bays: 3, stories: 2.5}), z0, H + st.end_block.extra, R, d, grade);
+  if (!st.skip_main) {
+    let rects = st.blocks || (st.split ? splitRect(f.rect, st.split.n, st.split.gap) : [f.rect]);
+    rects.forEach((R, i) => {
+      const z0 = Math.min(...R.map(p => ctx.zAt(p[0], p[1])));
+      const s2 = (st.blocks && i > 0) ? Object.assign({}, st, {stories: 1.5, porch: [], chimneys: 1}) : st;
+      const H2 = (st.blocks && i > 0) ? H * 0.7 : H;
+      buildBlock(bk, f, s2, z0, H2, R, frontDir, grade, m.ridge);
+    });
   }
+  // extra blocks: wings, lean-tos, annexes, towers. Each part: {rect, eave, ridge?, style: overrides}
+  const ONE_OFF = ['parts', 'porch', 'signs', 'chimney_at', 'bay_window', 'outside_stair', 'gallery', 'runway', 'tower', 'belfry', 'monitor', 'roof_extend', 'brackets', 'decks', 'fences', 'upper_door', 'fanlight', 'front_openings', 'chimneys', 'cupola', 'vents', 'plinth', 'jerkin', 'skip_main', 'rise', 'false_front', 'storefront', 'win_skip', 'rear_bays', 'size', 'eave'];
+  for (const p of (st.parts || [])) {
+    const base = Object.fromEntries(Object.entries(st).filter(([k]) => !ONE_OFF.includes(k)));
+    const s2 = Object.assign({chimneys: 0}, base, p.style || {});
+    const z0 = p.z0 ?? Math.min(...p.rect.map(q => ctx.zAt(q[0], q[1])));
+    buildBlock(bk, f, s2, z0, p.eave, p.rect, s2.front ? DIRS[s2.front] : frontDir, grade, p.ridge);
+  }
+  buildDecks(bk, st, ctx.zAt);
   const grp = new THREE.Group();
   for (const [mesh, k] of bk.meshes(k => mat(k, grade)).map((m, i) => [m, [...bk.m.keys()][i]])) {
     mesh.userData = f; mesh.name = k;
-    if (k.startsWith('sign:')) { const sg = (st.signs || []).find(s => 'sign:' + s.id === k); mesh.name = k; mesh.userData = f; mesh.signFrom = sg?.from ?? 0; mesh.signTo = sg?.to ?? 9999; }
+    if (k.startsWith('sign:')) { const all = [...(st.signs || []), ...(st.parts || []).flatMap(p => (p.style && p.style.signs) || [])]; const sg = all.find(s => 'sign:' + s.id === k); mesh.signFrom = sg?.from ?? 0; mesh.signTo = sg?.to ?? 9999; }
     grp.add(mesh);
   }
   return grp;

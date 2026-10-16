@@ -89,6 +89,23 @@ _vals = np.array([w[2] for w in _wl])
 _vals = np.convolve(np.pad(_vals, 15, mode='edge'), np.ones(31) / 31, mode='valid')
 WATER83 = [(x, y, float(v)) for (x, y, _), v in zip(_wl, _vals)]
 
+# ---------------------------------------------------------------- photo-audit footprints and extra buildings (tools/geom3d.py)
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from geom3d import overrides as _overrides
+_HF = json.load(open(R('map', 'data', 'historic_features.geojson')))['features']
+def _orig_rect(fid, point=False):
+    for f in _HF:
+        if f['properties']['id'] != fid: continue
+        g = shape(f['geometry'])
+        if point:
+            c = g.centroid; x, y = T.transform(c.x, c.y); return [x - ORIGIN[0], y - ORIGIN[1]]
+        if g.geom_type == 'MultiPolygon': g = max(g.geoms, key=lambda q: q.area)
+        pu = Polygon([T.transform(*c) for c in g.exterior.coords]).minimum_rotated_rectangle
+        return [[x - ORIGIN[0], y - ORIGIN[1]] for x, y in list(pu.exterior.coords)[:4]]
+    raise KeyError(fid)
+GEOM3D, EXTRA3D, STYLE_ADD, PROPS3D = _overrides(_osm, T, ORIGIN, _orig_rect)
+def _utm_poly(rect): return Polygon([(x + ORIGIN[0], y + ORIGIN[1]) for x, y in rect])
+
 # ---------------------------------------------------------------- building pads
 # The 3 m bare-earth terrain is too coarse for buildings on slopes (the Chateau sits on a bluff edge), so each
 # building gets a level pad: the ground inside its footprint (plus 1.5 m) is set to one height, and the ground
@@ -100,12 +117,15 @@ _cols, _rows, _res = meta['cols'], meta['rows'], meta['res']
 _xc = meta['x0'] + (np.arange(_cols) + 0.5) * _res; _yc = meta['y1'] - (np.arange(_rows) + 0.5) * _res
 _XX, _YY = np.meshgrid(_xc, _yc)
 _Zorig = Z.copy()
-for f in json.load(open(R('map', 'data', 'historic_features.geojson')))['features']:
-    pr = f['properties']; g = _shape(f['geometry'])
-    if g.geom_type not in ('Polygon', 'MultiPolygon') or pr['kind'] in ('landmark', 'railroad', 'bridge'): continue
-    if (pr.get('massing') or {}).get('roof') in ('none',): continue
-    if g.geom_type == 'MultiPolygon': g = max(g.geoms, key=lambda q: q.area)
-    gu = Polygon([T.transform(*c) for c in g.exterior.coords])
+_padsrc = [(f['properties'], _shape(f['geometry'])) for f in _HF] + [({'id': x['id'], 'kind': 'building', 'massing': {}}, None) for x in EXTRA3D]
+for pr, g in _padsrc:
+    if pr['id'] in GEOM3D or g is None:
+        gu = _utm_poly(GEOM3D[pr['id']] if pr['id'] in GEOM3D else [x for x in EXTRA3D if x['id'] == pr['id']][0]['rect'])
+    else:
+        if g.geom_type not in ('Polygon', 'MultiPolygon') or pr['kind'] in ('landmark', 'railroad', 'bridge'): continue
+        if (pr.get('massing') or {}).get('roof') in ('none',): continue
+        if g.geom_type == 'MultiPolygon': g = max(g.geoms, key=lambda q: q.area)
+        gu = Polygon([T.transform(*c) for c in g.exterior.coords])
     if gu.area > 4000: continue
     x0, y0, x1, y1 = gu.buffer(10).bounds
     c0, c1 = int((x0 - meta['x0']) / _res), int((x1 - meta['x0']) / _res) + 1
@@ -127,6 +147,15 @@ q = np.round((Z - meta['z0']) / meta['scale']).clip(0, 65535).astype('<u2')
 q.tofile(R('map3d', 'data', 'terrain_pads.bin'))
 
 out = {'origin': {'utm13n': ORIGIN[:2], 'z0': ORIGIN[2]}, 'features': []}
+def _set_rect(item, rect):
+    rect = [[round(a, 2), round(b, 2)] for a, b in rect]
+    item['rect'] = rect; item['ring'] = rect
+    item['ground'] = round(min(zat(x + ORIGIN[0], y + ORIGIN[1]) for x, y in rect) - ORIGIN[2], 2)
+    e0 = math.dist(rect[0], rect[1]); e1 = math.dist(rect[1], rect[2])
+    if e0 >= e1: a = ((rect[1][0] + rect[2][0]) / 2, (rect[1][1] + rect[2][1]) / 2); b = ((rect[3][0] + rect[0][0]) / 2, (rect[3][1] + rect[0][1]) / 2)
+    else: a = ((rect[0][0] + rect[1][0]) / 2, (rect[0][1] + rect[1][1]) / 2); b = ((rect[2][0] + rect[3][0]) / 2, (rect[2][1] + rect[3][1]) / 2)
+    item['ridge_line'] = [[round(a[0], 2), round(a[1], 2)], [round(b[0], 2), round(b[1], 2)]]
+    item['size_m'] = [round(max(e0, e1), 1), round(min(e0, e1), 1)]
 H = json.load(open(R('map', 'data', 'historic_features.geojson')))
 for f in H['features']:
     p = f['properties']; kind, pts = utm_geom(shape(f['geometry']))
@@ -151,7 +180,16 @@ for f in H['features']:
         item['line'] = [loc(x, y) + [round(zat(x, y) - ORIGIN[2] + 0.4, 2)] for x, y in pts]
     else:
         x, y = pts[0]; item['point'] = loc(x, y); item['ground'] = round(zat(x, y) - ORIGIN[2], 2)
+    if item['id'] in GEOM3D and kind == 'poly': _set_rect(item, GEOM3D[item['id']])
+    for k, v in PROPS3D.get(item['id'], {}).items():
+        if k == 'notes_add': item['notes'] = ((item.get('notes') or '') + ' ' + v).strip()
+        else: item[k] = v
     out['features'].append(item)
+for x in EXTRA3D:
+    item = {k: x.get(k) for k in ('id', 'name', 'town', 'kind', 'built', 'removed', 'built_text', 'removed_text', 'loc', 'form', 'use',
+                                    'material', 'stories', 'footprint_ft', 'evidence', 'sources', 'photos', 'notes', 'model')}
+    item['massing'] = dict(eave=x['eave'], ridge=x['ridge'], roof='gable', src='estimated from the period photographs (see Appearance)'); item['geom'] = 'poly'
+    _set_rect(item, x['rect']); out['features'].append(item)
 
 riv = json.load(open(R('map', 'data', 'river_1883.geojson')))['features'][0]
 _, pts = utm_geom(shape(riv['geometry']))
@@ -165,58 +203,146 @@ out['terrain'] = {'x0': meta['x0'] - ORIGIN[0], 'y1': meta['y1'] - ORIGIN[1], 'r
 # front: compass side of the main door; ridge: 'long' (along the long axis) or 'front' (front-gabled)
 # basis: what the look is based on. Anything not stated in a photo or source is a best guess.
 STYLE = {
- 'hotel-de-mores': dict(wall='brick', wall_color='#b46a4e', trim='#efe9dc', roof='shingle', front='W', ridge='long', stories=2, bays=11, gable_bays=3,
-        arched=True, porch=[dict(side='W', depth=2.4), dict(side='S', depth=2.4)], chimneys=3, end_block=dict(end='E', len=7.6, extra=2.6),
-        basis='SHSND 00042-00076/-00086 and Houghton 3013534/3013559 (brick, arched windows, taller end block); porches west and south from the Cow Boy, Feb-May 1885. No sign appears on the building in any of these photographs, so none is modelled',
-        phases=[dict(until=1885.3, wall='clapboard', wall_color='#ece6d8', arched=False, porch=[], bays=9, end_block=None,
-                     basis='SHSND 00042-00149 (1883: two-story frame hotel, about 9 bays, two ridge chimneys)')]),
- 'roberts-hall': dict(wall='drop', wall_color='#e2dccd', trim='#f3efe6', roof='shingle', front='S', ridge='front', stories=2, bays=6, upper_bays=3, gable_bays=2,
-        fanlight=True, outside_stair='E', chimneys=1, false_front=False,
-        basis='Hagedorn 1919 (Houghton 3013539) and the courthouse panel photo: two-story front-gabled frame hall, fanlight in the gable, upper door; Cow Boy: drop siding, 24x75, 26 ft'),
- 'metropolitan-hotel': dict(wall='drop', wall_color='#7c6a58', trim='#e8e2d4', roof='tin', front='W', ridge='flat', stories=2, bays=10, gable_bays=4,
+ # ---- Medora, Main Street
+ 'hotel-de-mores': dict(wall='yellowbrick', wall_color='#ddd3bd', trim='#f3efe6', roof='shingle', front='W', ridge='long', stories=2, bays=11, upper_bays=11, gable_bays=2,
+        arched=True, chimneys=2, outside_stair=dict(side='E', top='S'), eave=6.8,
+        porch=[dict(side='W', depth=2.4, roof=False, h=0.45), dict(side='S', depth=2.4, roof=False, h=0.45)],
+        part_styles=[dict(wall='clapboard', wall_color='#ece6d8', front='E', ridge='long', stories=1, bays=2, gable_bays=1, chimneys=1, arched=False, porch=[])],
+        basis='Form from the 1885-86 overviews (SHSND 00042-00071, -00195, -00194): a light-toned two-storey building of one eave height with a plain gable at the east end, an outside stair up the east gable to an upper door, and a lower wing on the north side near the east end (the Cow Boy\'s 1885 kitchen and laundry). Height scaled from those photos (eave about 6.5-7 m). Walls: the Cow Boy says the hotel was brick-veneered in spring 1885, and the building reads light in every 1885-86 print, so a pale (cream) brick is used, like St. Mary\'s of the same year. Windows: narrow 2/2 sash under segmental brick arches, as in the 1890s photos of the brick hotel (SHSND 00042-00076/-00086, Houghton 3013534/3013559); those photos date from the 1890s (dress, wires), so the taller cross-gabled block they show is not modelled for 1885-87. Front platforms unroofed (the photos show a raised plank walk, no porch roof). No sign appears in any photo',
+        phases=[dict(until=1885.3, wall='clapboard', wall_color='#ece6d8', arched=False, porch=[dict(side='W', depth=1.6, roof=False, h=0.25)], bays=10, upper_bays=8, gable_bays=2,
+                     outside_stair=None, parts=[], chimneys=2, front_openings=[['win', 0.25], ['double', 0.5], ['win', 0.75]],
+                     basis='SHSND 00042-00149 (1883): two-storey clapboard hotel, light paint, gable roof of about 40 degrees with cornice returns, 6/6 windows with flat heads (10 openings below, 8 windows above on the long side), window-double door-window on the gable end with two windows above, two ridge chimneys, a low plank walk; eave scaled at about 6-7 m')]),
+ 'roberts-hall': dict(wall='drop', wall_color='#e2dccd', trim='#f3efe6', roof='shingle', front='S', ridge='front', stories=2, bays=10, upper_bays=10, paired=True, gable_bays=2,
+        fanlight=True, upper_door=True, chimneys=1, false_front=False,
+        basis='Houghton 3013539 (Hagedorn 1919, context): two-storey front-gabled frame hall, drop siding, sunburst/fan in the gable, central upper door with a small hood between two windows, narrow side windows in pairs; SHSND 00042-00195 (1885) shows paired upper windows on the east side and an arched opening in the south gable. Cow Boy: 24x75, 26 ft. The outside stair once modelled on the east side is not confirmed in any photo and has been removed'),
+ 'metropolitan-hotel': dict(wall='drop', wall_color='#7c6a58', trim='#e8e2d4', roof='tin', front='W', ridge='flat', stories=2, bays=10, upper_bays=10, paired=True, gable_bays=4,
         porch=[dict(side='W', depth=2.4)], chimneys=2, parapet=1.0,
-        basis='SHSND 00042-00071/-00195 (dark, flat-roofed, two rows of windows); Cow Boy: drop siding, 35x80, long front porch planned. Colour and porch side are guesses'),
+        basis='SHSND 00042-00071/-00195: dark, flat or very low roof, two storeys, windows in pairs on both floors (about five pairs on the visible long side), a chimney near the front. Cow Boy: drop siding, 35x80, long front porch planned. Colour and porch side are guesses'),
  'ferris-store': dict(wall='clapboard', wall_color='#eee6cf', trim='#ffffff', roof='shingle', front='W', ridge='front', stories=2, bays=5, gable_bays=2,
-        storefront=True, porch=[dict(side='W', depth=2.6)], outside_stair='S', chimneys=1,
-        basis='Houghton 3013537/3013655 and the Historic Medora panel (two-story front-gabled frame store, porch, side stair); today\'s 1963 rebuild'),
- 'st-marys-church': dict(wall='yellowbrick', wall_color='#cdb48a', trim='#f2ede2', roof='shingle', front='W', ridge='front', stories=1, bays=4, gable_bays=1,
-        arched=True, belfry=True, chimneys=0, basis='SHSND 00042-00077/-00124 and the standing church (front gable, belfry, arched windows); front side a guess'),
- 'von-hoffman-house': dict(wall='brick', wall_color='#a95c43', trim='#efe9dc', roof='shingle', front='S', ridge='hip', stories=1.5, bays=4, gable_bays=3,
-        porch=[dict(side='S', depth=2.4)], chimneys=2, basis='the standing house and SHSND 00042-00176/-00038 (brick, hip-gable roof, front porch)'),
- 'courthouse-cottages': dict(wall='brick', wall_color='#ad6248', trim='#efe9dc', roof='shingle', front='W', ridge='hip', stories=1, bays=3, gable_bays=2,
-        porch=[dict(side='W', depth=2.0)], chimneys=1, split=dict(n=2, gap=0.3),
-        basis='SHSND 00042-00195 (two matching hipped one-story cottages) and the courthouse panel; brick from the Cow Boy'),
- 'chateau-de-mores': dict(wall='clapboard', wall_color='#a3a29b', trim='#8b2e24', roof='shingle', roof_color='#7c3428', front='E', ridge='long', stories=2, bays=6, gable_bays=3,
-        porch=[dict(side='E', depth=3.0), dict(side='S', depth=3.0)], chimneys=3,
-        basis='Colours follow the building as the State Historical Society of North Dakota maintains it today (grey siding with red roof and trim; the 1974 National Register nomination describes "French grey" siding with a red roof and shutters). The Cow Boy of Nov. 26, 1885 described "green sides and red roof"; the 1883-86 photographs show light walls and a dark roof, which fits either. Form: two-story main block, lower rear wing, one-story veranda on the river (east) and south sides, simplified'),
- 'company-store-offices': dict(wall='clapboard', wall_color='#f0ebdf', trim='#ffffff', roof='shingle', front='E', ridge='front', stories=1.5, bays=3, gable_bays=2,
-        storefront=True, split=dict(n=3, gap=0.0), chimneys=1, basis='Houghton 3013533 (1883: three joined front-gabled frame buildings, white; no sign visible)'),
- 'medora-depot': dict(wall='boardbatten', wall_color='#cbb68c', trim='#6b4a32', roof='shingle', front='S', ridge='long', stories=1.5, bays=5, gable_bays=2,
-        bay_window=True, chimneys=1,
-        signs=[dict(id='medora-depot', w_frac=0.36, aspect=0.15, at=2.55, out=0.98, photo='MHS 72461')],
-        basis='Huffman 1886 (MHS 72461): board-and-batten, long side on the track, agent\'s bay window; colours are a guess (NP depots of the period were commonly painted buff with brown trim). Sign: the photograph shows a dark board with white letters across the bay window reading MEDORA, with ST. PAUL at the left end and PORTLAND at the right, each over a mileage figure; the figures are not legible in the available scan, so the model leaves them blank. A smaller board above the bay is also unreadable and is left out'),
- 'lm-depot': dict(wall='boardbatten', wall_color='#bfae8a', trim='#6b4a32', roof='shingle', front='S', ridge='long', stories=1, bays=3, gable_bays=1,
-        chimneys=1, basis='Haynes 1881 (SHSND 00119-00017): small board-and-batten depot along the track; colours a guess'),
- 'pyramid-park-hotel': dict(wall='clapboard', wall_color='#e8e2d2', trim='#ffffff', roof='shingle', front='N', ridge='front', stories=2, bays=4, gable_bays=2,
-        porch=[dict(side='N', depth=2.0)], chimneys=2, basis='Haynes 1881 (SHSND 00119-00017): two-story front-gabled frame hotel with a block behind; porch a guess. No sign is visible in the photograph'),
- 'cowboy-office': dict(wall='boardbatten', wall_color='#e6e0d0', trim='#ffffff', roof='shingle', front='W', ridge='front', stories=1, bays=2, gable_bays=1,
-        chimneys=1, basis='Houghton 3013536 (one-story front-gabled board building, chimney at rear). That photo shows two lines of lettering laid into the roof in light-coloured shingles, but the words cannot be read at the available resolution (and the print may date from after 1887), so no lettering is modelled'),
- 'paddock-livery': dict(wall='boardbatten', wall_color='#8c7a62', trim='#5b4a3a', roof='shingle', front='S', ridge='long', stories=1.5, bays=4, gable_bays=1,
-        barn=True, basis='Cow Boy 1885 (livery barn, drop siding); appearance a guess'),
+        storefront=True, false_front=True, false_front_extra=0.8, porch=[dict(side='W', depth=2.0, h=0.5, post_spacing=2.6)], outside_stair='S', chimneys=1,
+        basis='Houghton 3013537/3013655 (both after 1887): two-storey store with a square false front and cornice, two upper windows, display windows either side of a recessed double door, a bracketed shed-roof porch on a raised plank platform; the Historic Medora panel (side stair); today\'s 1963 rebuild'),
+ 'company-store-offices': dict(wall='clapboard', wall_color='#f0ebdf', trim='#ffffff', roof='shingle', front='E', ridge='front', stories=1, bays=2, gable_bays=1,
+        part_styles=[dict(front_openings=[['win', 0.2], ['door', 0.5], ['win', 0.8]], chimney_at=dict(**{'from': 'E'}, at=[1.0])),
+                     dict(front_openings=[['win', 0.2], ['double', 0.5], ['win', 0.8]], chimney_at=dict(**{'from': 'W'}, at=[1.5])),
+                     dict(front_openings=[['door', 0.32], ['win', 0.72]], chimneys=0)],
+        basis='Houghton 3013533 (1883): three joined one-storey front-gabled white frame buildings of unequal width (about 7.3, 6.0 and 4.3 m, south to north), floor raised about 0.5 m, eave about 3.2 m, two chimneys; no sign. The photo suggests a frontage of about 18-19 m against the 27 m footprint, which fits the 1885 overview; the footprint is kept and the three blocks are scaled to it'),
+ 'cowboy-office': dict(wall='boardbatten', wall_color='#e6e0d0', trim='#ffffff', roof='shingle', front='W', ridge='front', stories=1, bays=2, gable_bays=0, rear_bays=0, eave=2.7, rise=1.7,
+        no_front_door=True, chimney_at=dict(**{'from': 'E'}, at=[0.8]),
+        part_styles=[dict(wall='boardbatten', wall_color='#9a8c78', ridge='shed', shed_high='E', front='W', bays=0, gable_bays=0, rear_bays=0, front_openings=[['door', 0.5]], chimneys=0, no_front_door=False)],
+        basis='Houghton 3013536 (date uncertain): one-storey board-and-batten building, gable roof of about 40 degrees, an unpainted board entry vestibule with a shed roof on the gable end right of centre, two small high windows on the long side, capped brick chimney at the rear of the ridge; eave about 2.7 m. Two lines of lettering are laid into the roof in light shingles but cannot be read, so none is modelled'),
+ 'paddock-livery': dict(wall='boardbatten', wall_color='#8c7a62', trim='#5b4a3a', roof='shingle', front='E', ridge='front', stories=1.5, bays=4, gable_bays=1,
+        barn=True, basis='SHSND 00042-00071 (1885): a gable-fronted barn facing east with a big central wagon door and lean-tos; Cow Boy 1885 (livery barn, drop siding)'),
  'freight-house': dict(wall='boardbatten', wall_color='#9b8a70', trim='#5b4a3a', roof='shingle', front='S', ridge='long', stories=1, bays=12, gable_bays=1,
-        barn=True, basis='Cow Boy (240 x 42 freight house); appearance a guess'),
- 'cantonment': dict(wall='log', wall_color='#8a7357', trim='#5b4a3a', roof='sod', front='S', ridge='long', stories=1, bays=4, gable_bays=1, chimneys=2,
-        basis='Haynes 1880 (MHS 91738) and HM52: cedar-log army buildings; roof covering a guess'),
- 'pp-foundation': dict(wall='boardbatten', wall_color='#9e9586', trim='#8a8173', roof='tin', roof_color='#77736c', front='S', ridge='flat', stories=3, bays=0, gable_bays=0,
-        size=[46, 18], parapet=0.4, monitor=True, gallery=dict(side='S', levels=3, frac=0.35), runway=dict(end='W', len=34), chimneys=0, eave=9.0,
-        basis='SHSND 00042-00074/-00075 (1885), the "1883" card 00042-00153 and Huffman 1886 (MHS 72460): a tall, nearly windowless block of unpainted vertical boards with a low roof and a long roof monitor, stacked galleries on one front, the chimney behind. Size widened from the 1957 foundation line to the proportions in the photos (a guess); height about 9 m from the photos. Sign: SHSND 00042-00180 and -00181 show a long banner on a blank wall of the closed plant, "This building with machinery will be furnished rent free to any responsible party who will start any industry therein." The photo is undated (after the plant shut in late 1886), so the model shows it only in the spring 1887 view; which wall it was on is a guess',
-        signs=[dict(id='pp-rentfree', side='N', w=28, aspect=0.057, at=2.2, along=0.5, **{'from': 1887.0}, photo='SHSND 00042-00180')]),
- 'pp-ice-house': dict(wall='boardbatten', wall_color='#a39a8a', trim='#8a8173', roof='shingle', roof_color='#5f5a54', front='S', ridge='long', stories=2, bays=0, gable_bays=0,
-        cupola=True, tower=dict(w=5.5, h=4.0), chimneys=0, eave=7.0, barn=True,
-        basis='SHSND 00042-00188 (ice house under construction, 1883) and 00042-00074/-00075: a long gabled block with a square tower and pyramid-roofed cupola; unpainted boards'),
+        barn=True, basis='Cow Boy (240 x 42 freight house); appearance a guess. The 1885-86 overviews show open ground at this spot, so its position is unconfirmed'),
+ # ---- Medora, churches and houses
+ 'st-marys-church': dict(wall='yellowbrick', wall_color='#e8e1d1', trim='#f2ede2', roof='shingle', front='W', ridge='front', stories=1, bays=5, gable_bays=1, rear_bays=0,
+        arched='lancet', win_w=0.7, win_h=2.8, win_skip=dict(**{'from': 'W'}, frac=0.22), front_openings=[['double', 0.5]],
+        belfry=dict(w=2.0, base=0.4, stage=1.6, roof=1.5, back=0.3), chimneys=0,
+        basis='SHSND 00042-00077 (c.1886) and the standing church: pale brick that reads near-white in the prints; west front with a central double door under a pointed hood and no other openings; four tall pointed (lancet) windows on the rear three-quarters of the side walls, the front quarter blank; blank east gable; small square open belfry on the ridge just behind the west gable (shingled base, open stage with arched openings, pyramid roof), about 2 m wide'),
+ 'von-hoffman-house': dict(wall='brick', wall_color='#a95c43', trim='#efe9dc', roof='shingle', front='S', ridge='long', stories=1.5, bays=5, gable_bays=2, arched=True,
+        jerkin=['S', 'N'], jerkin_clip=0.3, front_openings=[['win', 0.25], ['door', 0.5], ['win', 0.75]],
+        porch=[dict(side='S', depth=2.4, h=0.35, post_spacing=2.6, rail=True)], chimneys=2,
+        basis='SHSND 00042-00176, -00182, -00071, -00195 and the standing house: brick, long north-south ridge with a clipped (jerkinhead) south gable over a full-width porch on square chamfered posts, a close pair of attic windows in the gable, two ridge chimneys, four windows and a door on the east side, a post-and-rail fenced yard to the west and north. The 1977 National Register nomination: common-bond brick, "hip-gabled" wood-shingle roof, 2/2 windows under segmental brick arches, the original one-storey front porch, about 38 x 48 ft. The north end is shown clipped too (probable). The wall colour is not recorded; the 1885 prints read paler than this red, so check it against the standing house'),
+ 'courthouse-cottages': dict(wall='brick', wall_color='#e9e4d8', trim='#efe9dc', roof='shingle', front='E', ridge='hip', stories=1, bays=2, gable_bays=1, eave=2.8, rise=2.0,
+        chimneys=1, split=dict(n=2, gap=0.256),
+        basis='SHSND 00042-00195 and -00194: two separate identical one-storey cottages with near-pyramidal dark hipped roofs and a gap of about 5-6 m, walls bright white (brick per the Cow Boy, so whitewashed or painted), each about 8 m square with a door and two windows on the east'),
+ # ---- the Chateau (colours as the State Historical Society keeps it today)
+ 'chateau-de-mores': dict(wall='clapboard', wall_color='#a3a29b', trim='#8b2e24', roof='shingle', roof_color='#7c3428', front='E', ridge='long', stories=2, bays=6, gable_bays=3,
+        eave=6.3, rise=3.1,
+        shutters='#8b2e24', chimney_at=dict(**{'from': 'W'}, at=[2.0, 17.4]),
+        porch=[dict(side='E', depth=3.0, h=0.5, post_spacing=2.4, rail=True), dict(side='S', depth=3.0, h=0.5, post_spacing=2.4, rail=True, span=[0.5, 1.0], span_from='W', extend=3.0)],
+        basis='Height: the 2021 lidar ridge (9.4 m) with a two-storey eave of about 6.3 m (the lidar eave of 3.8 m is the veranda roof). Colours follow the building as the State Historical Society of North Dakota maintains it today (grey siding with red roof and trim; the 1974 National Register nomination describes "French grey" siding with a red roof and shutters). The Cow Boy of Nov. 26, 1885 described "green sides and red roof"; the 1883-86 photographs show light walls and a dark roof, which fits either. Form from SHSND 00042-00152/-00157/-00196/-00197 and MHS 72389/72403: two-storey side-gabled main block, no dormers, board shutters; a one-storey rear wing with its ridge running north-south; a one-storey veranda with open rafters along the whole east end, wrapping the south-east corner and covering about the eastern half of the south front; chimneys near the west end and about a third from the east end, and one on the wing'),
+ # ---- railroad
+ 'medora-depot': dict(wall='boardbatten', front='S', ridge='front', stories=1,
+        part_styles=[dict(wall='boardbatten', wall_color='#6f5d4a', trim='#c9bfa8', timber='#5d4c3a', roof='shingle', front='S', ridge='front', stories=1,
+                          overhang=1.7, gable_overhang=1.2, brackets=dict(spacing=2.7, drop=1.0, strut=True), bays=3, gable_bays=0, rear_bays=0,
+                          front_openings=[['door', 0.223]], bay_window=dict(w=2.4, d=0.7, eave=3.0, offset=0.8, offset_dir='E'),
+                          chimney_at=dict(**{'from': 'S'}, at=[2.5, 8.0]), chimney_h=0.8, roof_extend=dict(end='N', len=8.0, deck=True, deck_h=0.45),
+                          signs=[dict(id='medora-depot', w=3.4, aspect=0.15, at=2.62, out=0.76, on_bay=True, photo='MHS 72461')])],
+        basis='Huffman 1886 (MHS 72461), measured with the door (2.1 m) as scale: a one-storey board-and-batten depot whose gable end faces the track, about 4-5 m from it, standing at the back of a plank platform at rail height. The roof is about 30 degrees with very deep eaves (about 1.7 m at the sides, 1.2 m at the gable) on diagonal knee braces, and runs on past the north end wall over open X-braced posts. The gable end has a door with a transom west of a canted three-sided bay window with its own low hip roof; two corbelled brick chimneys; railings on the platform either side. 5.6 m across the track face, about 13.5 m of enclosed walls. The walls read mid-dark in the print; the actual colour is unknown. Sign: a dark board with white letters across the bay head reading MEDORA, with ST. PAUL and PORTLAND mileboards at its ends; the mileage figures are not reliably legible in the scan, so the model leaves them blank'),
+ 'lm-depot': dict(wall='boardbatten', front='S', ridge='long', stories=1,
+        part_styles=[dict(wall='boardbatten', wall_color='#e6dfcf', trim='#ffffff', roof='boards', front='S', ridge='long', stories=1, bays=2, gable_bays=1,
+                          front_openings=[['win', 0.2], ['door', 0.5], ['win', 0.8]], chimney_at=dict(**{'from': 'W'}, at=[1.0]), chimney_h=0.6),
+                     dict(wall='drop', wall_color='#e9e4d8', trim='#ffffff', roof='shingle', front='S', ridge='long', stories=1, bays=0, gable_bays=0,
+                          front_openings=[['door', 0.45]], chimney_at=dict(**{'from': 'W'}, at=[4.0]), chimney_h=0.6)],
+        basis='Haynes 1881 (SHSND 00119-00017 = MHS 108837): two attached one-storey gabled blocks along the track, ridges parallel to it. West block: very light board-and-batten, a roof of boards laid eave to ridge, window-door-window on the track side, a stovepipe; east block: deeper and higher, smooth light walls, shingle roof, a single door with a small plaque. A plank platform along the track. Colours from the light tones of the print'),
+ 'pyramid-park-hotel': dict(wall='drop', front='S', ridge='long', stories=1.5,
+        part_styles=[dict(wall='drop', wall_color='#7d6f60', trim='#d8d0c0', roof='shingle', front='S', ridge='long', stories=1.5, bays=4, gable_bays=1,
+                          front_openings=[['door', 0.07], ['win', 0.22], ['win', 0.36], ['win', 0.5], ['win', 0.64]], chimneys=3, chimney_h=0.7),
+                     dict(wall='drop', wall_color='#7d6f60', trim='#d8d0c0', roof='shingle', front='S', ridge='front', stories=1.5, bays=1, gable_bays=2,
+                          front_openings=[['door', 0.5]], chimneys=0),
+                     dict(wall='clapboard', wall_color='#ece6d6', trim='#ffffff', roof='shingle', front='S', ridge='front', stories=1.5, bays=1, gable_bays=1,
+                          front_openings=[['win', 0.5]], chimneys=0),
+                     dict(wall='drop', wall_color='#8a7c6c', trim='#d8d0c0', roof='shingle', front='S', ridge='long', stories=1, bays=1, gable_bays=1, chimneys=1)],
+        basis='Haynes 1881 (SHSND 00119-00017): a main block with its ridge along the track and its front to the south, one tall storey with a loft under a steep roof (Hagedorn\'s "loft with 14 beds"), a front-facing cross gable with two upper windows at the east end, a separate light front-gabled block at the west end and a low block behind it. Dark weathered horizontal siding on the main block, new light boards on the west block, three or four stovepipes; no porch roof, only a plank walk. No sign is visible'),
+ 'cantonment': dict(wall='vlog', wall_color='#8d877c', trim='#5b4a3a', roof='shingle', roof_color='#8f877a', front='S', ridge='long', stories=1, bays=6, gable_bays=0, chimneys=0, eave=2.7,
+        basis='Haynes 1880 (MHS 91738): long one-storey barracks of vertical cedar logs, stockade style, weathered grey, with a shingle or board gable roof (not sod), evenly spaced doors and windows along the long side, eave about 2.7 m. The barracks were 200 x 22 ft (HM52); the buildings here are the plat\'s schematic symbols, so their sizes are placeholders'),
+ # ---- packing plant
+ 'pp-foundation': dict(wall='drop', front='S', ridge='flat', stories=3,
+        part_styles=[dict(wall='drop', wall_color='#9e9586', trim='#8a8173', timber='#6e6558', roof='tin', roof_color='#77736c', front='S', ridge='flat', parapet=0.4, stories=3,
+                          bays=0, gable_bays=0, blank=True, no_front_door=True, plinth=dict(h=0.9, color='#a39882'), monitor=dict(len_frac=0.2, at=-0.1, w=3.0),
+                          gallery=dict(side='S', levels=3, frac=0.38, end='E', depth=2.4), runway=dict(end='W', len=24, h=11.5), chimneys=0,
+                          signs=[dict(id='pp-rentfree', side='S', w=22, aspect=0.057, at=2.2, along=0.45, **{'from': 1887.0}, photo='SHSND 00042-00180')]),
+                     dict(wall='drop', wall_color='#a39a8c', trim='#8a8173', roof='tin', roof_color='#77736c', front='S', ridge='flat', parapet=0.3, stories=3,
+                          bays=6, gable_bays=2, no_front_door=True, monitor=dict(len_frac=0.5, w=2.0), chimneys=0)],
+        basis='SHSND 00042-00074 (= 00042-00153 and 0039_00001, the same 1885 exposure; the "1883" on the card is wrong), 00042-00075 (from the north), Huffman 1886 (MHS 72460) and 00042-00180: two parts, a tall nearly windowless block (eave about 10.5 m) of horizontal siding on a stone foundation course, with a short box ventilator on its low roof and three levels of galleries at the east end of its south face (a roofed porch below, open framing above); and a lower annex at the west end with three rows of small windows and a louvred monitor. An enclosed horizontal runway runs from the tall block over the annex to a tapered timber pier about 6 m beyond it; a raised loading platform runs along the north side. Lengths from the 1957 foundation line (46 m), split by the photos\' proportions. Sign: the undated "rent free" banner (00042-00180) is on the south wall; shown only in the spring 1887 view'),
+ 'pp-ice-house': dict(wall='boardbatten', wall_color='#5e564c', trim='#4a443c', roof='shingle', roof_color='#4f4a44', front='S', ridge='long', stories=2, bays=0, gable_bays=0,
+        vents=2, chimneys=0, eave=5.8, rise=3.2, barn=True,
+        basis='MHS 72460 (left) and SHSND 00042-00075 (right): a long dark gabled shed of vertical boards, ridge east-west, two square ridge ventilators, eave about 5.8 m; 00042-00188 shows it being built in 1883. The tower and cupola once modelled here belong to the cooling house'),
+ 'pp-cooling-house': dict(wall='clapboard', wall_color='#d9d3c4', trim='#bdb5a5', roof='shingle', roof_color='#5f5a54', front='N', ridge='hip', stories=3, bays=2, gable_bays=2,
+        cupola=dict(w=2.0, h=1.6, cap=1.2), chimneys=0, rise=3.0,
+        basis='SHSND 00042-00150 and -00188 (1883), seen behind the plant in 00042-00074/-00075 and MHS 72460: a near-cubic block of painted clapboard, eave about 9 m (scaled from the refrigerator car beside it), a hipped roof with a square louvred cupola, a loading platform on trestle legs at car-floor height'),
  'pp-east-building': dict(wall='boardbatten', wall_color='#5e564c', trim='#4a443c', roof='shingle', roof_color='#4f4a44', front='S', ridge='long', stories=1, bays=0, gable_bays=0,
-        size=[40, 14], vents=3, barn=True, chimneys=0, eave=4.2,
-        basis='SHSND 00042-00075 and Huffman 72460: long, low, dark gabled sheds with roof ventilators east of the chimney; identity and size are guesses'),
+        vents=2, barn=True, chimneys=0, eave=6.0, rise=3.0,
+        basis='SHSND 00042-00074 (= 0039_00001), MHS 72460, 00042-00071: a dark gabled building of vertical boards with its ridge east-west and its gable end to the east, two ridge ventilators, eave about 6 m; identity unknown'),
+ 'pp-east-tower': dict(wall='boardbatten', wall_color='#4f483f', trim='#4a443c', roof='shingle', roof_color='#4a453f', front='S', ridge='hip', stories=3, bays=0, gable_bays=0,
+        blank=True, no_front_door=True, chimneys=0, rise=1.8, basis='SHSND 00042-00074, MHS 72460: a tall narrow dark tower with a pyramid cap and an open-framed lower part. Position along the east building is a guess'),
+ # ---- Chateau outbuildings, and buildings added from the overviews
+ 'chateau-outbuilding-east': dict(wall='clapboard', wall_color='#e6e1d6', trim='#ffffff', roof='shingle', front='S', ridge='long', stories=1, bays=1, gable_bays=1, chimneys=1,
+        basis='SHSND 00042-00152 (1883): small light gabled one-storey building east of the house'),
+ 'chateau-stable': dict(wall='boardbatten', wall_color='#6a5d4e', trim='#4a443c', roof='shingle', front='S', ridge='long', stories=1, bays=3, gable_bays=1, chimneys=0, barn=True,
+        basis='SHSND 00042-00157 (1884): long, low, dark gabled building with wagons in front; place provisional'),
+ 'photo85-x1': dict(wall='clapboard', wall_color='#ece8de', trim='#ffffff', roof='shingle', front='S', ridge='long', stories=1, bays=2, gable_bays=1, chimney_at=dict(**{'from': 'W'}, at=[0.3]),
+        basis='SHSND 00042-00195/-00194/-00193: white one-storey side-gabled cottage, chimney at the west gable'),
+ 'photo85-x2': dict(wall='clapboard', wall_color='#ece8de', trim='#ffffff', roof='shingle', front='S', ridge='long', stories=1, bays=2, gable_bays=1, chimneys=1,
+        front_openings=[['win', 0.25], ['door', 0.5], ['win', 0.75]], basis='SHSND 00042-00194/-00193: white side-gabled house, door and two windows facing south, chimney'),
+ 'photo85-x2b': dict(wall='boardbatten', wall_color='#6a5e50', trim='#4a443c', roof='shingle', front='S', ridge='long', stories=1, bays=1, gable_bays=0, chimneys=0,
+        basis='SHSND 00042-00194: a darker building (log or unpainted boards) against the white house'),
+ 'von-hoffman-outbuilding': dict(wall='boardbatten', wall_color='#bfb3a0', trim='#efe9dc', roof='shingle', roof_color='#8c8378', front='S', ridge='long', stories=1, bays=1, gable_bays=1, chimneys=0, barn=True,
+        basis='SHSND 00042-00071/-00193: low gabled outbuilding with a light roof inside the fenced yard'),
+ # ---- unidentified buildings placed from the 1885-86 photos (descriptions from the photo audit)
+ 'photo85-g': dict(wall='drop', wall_color='#6e6458', trim='#5b5248', roof='tin', ridge='flat', parapet=0.3, front='', stories=1, bays=2, gable_bays=1, chimneys=0, eave=3.0,
+        basis='SHSND 00042-00195/-00194/-00071: low dark building of horizontal boards against the east end of Roberts Hall, flat or very low shed roof, about 3 m tall'),
+ 'photo85-c': dict(wall='boardbatten', wall_color='#6f6253', trim='#5b4a3a', roof='shingle', front='E', ridge='front', stories=1, bays=2, gable_bays=1, barn=True, chimneys=0, eave=3.0, rise=2.5,
+        basis='SHSND 00042-00071/-00195/-00194: unpainted dark front-gabled board building facing east, steep roof, large dark opening like a barn or stable'),
+ 'photo85-f': dict(wall='clapboard', wall_color='#b9ad98', trim='#e8e2d4', roof='shingle', roof_color='#9a917f', front='E', ridge='front', stories=1, bays=1, gable_bays=1, chimneys=1,
+        basis='SHSND 00042-00071/-00195: small one-storey gabled frame building, gable and door facing east, light new-shingle roof'),
+ 'photo85-m': dict(wall='clapboard', wall_color='#ece8de', trim='#ffffff', roof='shingle', front='', ridge='long', stories=1, bays=2, gable_bays=1, chimneys=1, eave=3.0,
+        basis='SHSND 00042-00195: white one-storey side-gabled cottage (00042-00193 shows the spot empty; may be the same house as u09)'),
+ 'photo85-o': dict(wall='boardbatten', wall_color='#8a7c68', trim='#e8e2d4', roof='shingle', front='', ridge='long', stories=1, bays=1, gable_bays=1, chimneys=1, eave=2.6, rise=1.0,
+        basis='SHSND 00042-00195: a low one-storey building behind a tall board fence'),
+ 'photo85-u01': dict(wall='boardbatten', wall_color='#ece8de', trim='#ffffff', roof='shingle', roof_color='#a8a090', front='', ridge='long', stories=1, bays=1, gable_bays=0, chimneys=0, eave=2.5, rise=1.3,
+        basis='SHSND 00042-00071: small white shed with a light low gable roof, ridge parallel to the track'),
+ 'photo85-u02': dict(wall='clapboard', wall_color='#e6e0d2', trim='#ffffff', roof='shingle', front='E', ridge='front', stories=1.5, bays=1, gable_bays=1, chimneys=1, eave=2.8,
+        basis='SHSND 00042-00071: small light house, gable to the east with a gable window, dark lean-to on the south'),
+ 'photo85-u03': dict(wall='clapboard', wall_color='#f0ece2', trim='#ffffff', roof='shingle', front='E', ridge='long', stories=1, bays=2, gable_bays=1, chimneys=1,
+        basis='SHSND 00042-00071: white one-storey L-plan house, side-gabled main roof with a chimney at mid-ridge and a front-gabled wing at the south end facing east'),
+ 'photo85-u04': dict(wall='clapboard', wall_color='#e9e4d8', trim='#ffffff', roof='shingle', roof_color='#a8a090', front='', ridge='long', stories=1, bays=3, gable_bays=1, chimneys=1, eave=3.0,
+        basis='SHSND 00042-00193/-00071: long low light-roofed gabled building (low confidence)'),
+ 'photo85-u05': dict(wall='clapboard', wall_color='#ece8de', trim='#ffffff', roof='shingle', front='', ridge='shed', stories=1, bays=1, gable_bays=1, chimneys=0, eave=2.5, rise=0.6,
+        basis='SHSND 00042-00071: low white shed-roofed building (low confidence)'),
+ 'photo85-u07': dict(wall='boardbatten', wall_color='#d9d2c2', trim='#ffffff', roof='shingle', roof_color='#a8a090', front='', ridge='long', stories=1, bays=2, gable_bays=1, chimneys=1, eave=2.8, rise=1.5,
+        basis='SHSND 00042-00193: long low light-roofed gabled building, long axis about NNE-SSW'),
+ 'photo85-u08': dict(wall='clapboard', wall_color='#ece8de', trim='#ffffff', roof='shingle', front='S', ridge='front', stories=1, bays=1, gable_bays=1, chimneys=1, eave=3.0,
+        front_openings=[['door', 0.5], ['win', 0.8]], basis='SHSND 00042-00195: white one-storey front-gabled building, central door and small window, gable to the south'),
+ 'photo85-u09': dict(wall='clapboard', wall_color='#f0ece2', trim='#ffffff', roof='shingle', front='E', ridge='front', stories=1.5, bays=2, gable_bays=1, chimneys=1,
+        bay_window=dict(side='E', w=2.4, d=0.7, eave=2.6, offset=1.0, offset_dir='S'), porch=[dict(side='S', depth=1.8)],
+        basis='SHSND 00042-00071/-00193: white one-and-a-half-storey house, front gable to the east with a bay window, porch in the angle on the south'),
+ 'photo85-u11': dict(wall='boardbatten', wall_color='#6e6458', trim='#5b5248', roof='shingle', front='', ridge='long', stories=1, bays=1, gable_bays=0, chimneys=0, eave=2.5,
+        basis='SHSND 00042-00195/-00193: small dark low shed'),
+ 'photo85-u12': dict(wall='clapboard', wall_color='#ece8de', trim='#ffffff', roof='shingle', roof_color='#a8a090', front='E', ridge='front', stories=1.5, bays=2, gable_bays=1, chimneys=0,
+        split=dict(n=2, gap=0.0), barn=True, eave=4.0, rise=3.0,
+        basis='SHSND 00042-00071/-00193 (still there in 00259-00003): twin front-gabled building, two equal parallel gables facing east, white walls, light roofs, a large wagon or store door'),
 }
 COMMERCIAL = ('store', 'saloon', 'drug', 'hotel', 'restaurant', 'office', 'rink', 'billiard', 'shop', 'bar')
 PALETTE = ['#efe9dc', '#e6dcc6', '#d8cfbd', '#c9bfae', '#a89a86', '#e9e2cf', '#d2c3a5']
@@ -243,13 +369,22 @@ for it in out['features']:
         new.append(it); continue
     if st is None: st = default_style(it)
     st = dict(st); phases = st.pop('phases', [])
+    for k, v in STYLE_ADD.get(it['id'], {}).items():
+        if k == 'parts':   # rects from geom3d, looks from the STYLE entry's part_styles (same order)
+            ps = st.pop('part_styles', [{}] * len(v))
+            st['parts'] = [dict(p, style=dict({a: b for a, b in (p.get('style') or {}).items() if not a.startswith('_')}, **(ps[i] if i < len(ps) else {}))) for i, p in enumerate(v)]
+        else: st[k] = v
+    st.pop('part_styles', None)
     if it['id'] == 'chateau-de-mores':
         poly = SPoly(it['ring']).buffer(0)
         a, b = (-739.93, -228.55), (-715.55, -237.74)
         dx, dy = b[0] - a[0], b[1] - a[1]; L = math.hypot(dx, dy); px, py = -dy / L, dx / L
         q = lambda t, d: [round(a[0] + dx * t + px * d, 2), round(a[1] + dy * t + py * d, 2)]
         # main two-story block along the south front, and a rear block filling the rest of the footprint
-        st['blocks'] = [[q(0, 0), q(1, 0), q(1, 9), q(0, 9)], [q(0.08, 9), q(0.92, 9), q(0.92, 15.5), q(0.08, 15.5)]]
+        st['blocks'] = [[q(0, 0), q(1, 0), q(1, 9), q(0, 9)]]
+        # one-storey rear wing with its ridge running north-south (MHS 72389, SHSND 00042-00197/-00157)
+        st['parts'] = [dict(rect=[q(0.08, 9), q(0.92, 9), q(0.92, 15.5), q(0.08, 15.5)], eave=3.0, ridge=5.0,
+                            style=dict(front='N', ridge='front', stories=1, bays=2, gable_bays=3, porch=[], chimneys=1, shutters='#8b2e24'))]
     if 'size' in st and it.get('rect'):
         RR = it['rect']; cx = sum(p[0] for p in RR) / 4; cy = sum(p[1] for p in RR) / 4
         e0 = (RR[1][0] - RR[0][0], RR[1][1] - RR[0][1]); e1 = (RR[2][0] - RR[1][0], RR[2][1] - RR[1][1])
@@ -259,7 +394,7 @@ for it in out['features']:
         it['ring'] = it['rect']; it['size_m'] = [L, W]
     if 'eave' in st:
         m = dict(it.get('massing') or {}); r = m.get('ridge', 0) - m.get('eave', 0)
-        m['eave'] = st['eave']; m['src'] = 'estimated from the period photographs (see Appearance)'; m['ridge'] = st['eave'] + (max(r, 0.3) if st.get('ridge') == 'flat' else max(r, 2.5)); it['massing'] = m
+        m['eave'] = st['eave']; m['src'] = 'estimated from the period photographs (see Appearance)'; m['ridge'] = st['eave'] + (st['rise'] if 'rise' in st else (max(r, 0.3) if st.get('ridge') == 'flat' else max(r, 2.5))); it['massing'] = m
     it['style'] = st
     if phases:
         for ph in phases:
@@ -339,11 +474,13 @@ for _ in range(2600):
     e, n = q.x - ty / L * off * side, q.y + tx / L * off * side
     g = zat(e + ORIGIN[0], n + ORIGIN[1])
     if g - wl > 4.5 or not _free(e, n): continue
-    if rng.random() > math.exp(-(off - 17) / 35): continue
+    if rng.random() > 0.55 * math.exp(-(off - 17) / 35): continue   # sparser than a modern grove (photo audit: the 1885 river grove is thin)
     trees.append([round(e, 1), round(n, 1), round(g - ORIGIN[2], 2), round(float(rng.uniform(9, 19)), 1), int(rng.integers(0, 1000))])
 # a few trees in and around town (two large ones stand in the middle of town in SHSND 00042-00071 and -00195)
 for lo, la in [(-103.52520, 46.91420), (-103.52450, 46.91432), (-103.52395, 46.91370), (-103.52300, 46.91470), (-103.52205, 46.91445)]:
-    x, y = T.transform(lo, la); trees.append([round(x - ORIGIN[0], 1), round(y - ORIGIN[1], 1), round(zat(x, y) - ORIGIN[2], 2), 13.0, int(rng.integers(0, 1000))])
+    x, y = T.transform(lo, la)
+    if min(math.dist((x - ORIGIN[0], y - ORIGIN[1]), c) for c in ((190.5, 30.0), (261.8, -32.2))) < 45: continue   # none beside St. Mary's or the Von Hoffman House in 1885
+    trees.append([round(x - ORIGIN[0], 1), round(y - ORIGIN[1], 1), round(zat(x, y) - ORIGIN[2], 2), 13.0, int(rng.integers(0, 1000))])
 out['trees'] = trees
 # sagebrush and grass tussocks on the valley floor within ~1 km of town
 sage = []
