@@ -576,6 +576,29 @@ UNPLACED = [
     ('lm-paddock-cabin', "Paddock's cabin and livery, Little Missouri", '1880', '"\'Little Misery.\' Paddock\'s cabin in foreground, 1880" (Haynes, in NPSHB).'),
 ]
 
+# ---------------------------------------------------------------- 3D massing
+# eave/ridge heights in metres above ground; roof: gable | hip | flat | none; src says where the numbers come from.
+# Measured: lidar 2021 point cloud (surviving buildings) or photo scale bars on the solved cameras (docs/photo-matching.md).
+MASS = {
+ 'von-hoffman-house':   dict(eave=3.6, ridge=7.2, roof='hip',   src='lidar 2021 (original building)'),
+ 'st-marys-church':     dict(eave=4.2, ridge=7.7, roof='gable', src='lidar 2021 (original building)'),
+ 'chateau-de-mores':    dict(eave=3.8, ridge=9.4, roof='gable', src='lidar 2021 (original building; trees nearby)'),
+ 'courthouse-cottages': dict(eave=3.2, ridge=6.0, roof='hip',   src='lidar 2021 (eave of the 1884 wings); ridge estimated'),
+ 'roberts-hall':        dict(eave=7.5, ridge=10.1, roof='gable', src='photo scale bars, SHSND 00042-00071 (7.9/10.5) and -00195 (7.0/9.7); Cow Boy: two 12-ft stories, 26 ft high'),
+ 'hotel-de-mores':      dict(eave=8.5, ridge=10.5, roof='gable', src='photo scale bars, SHSND 00042-00195 (8.5/10.2) and -00071 (9.1/11.7 at the tall east block)'),
+ 'metropolitan-hotel':  dict(eave=7.6, ridge=7.6, roof='flat',  src='photo scale bar, SHSND 00042-00195 (flat roof, about 7.6 m)'),
+ 'ferris-store':        dict(eave=6.5, ridge=8.9, roof='gable', src='lidar 2021 of the 1963 reconstruction built to the original plan'),
+ 'demores-packing-plant': dict(eave=0, ridge=0, roof='chimney', src='chimney ruin (lidar misses it); drawn as a 2 m square stack 20 m tall - height to be measured'),
+}
+def massing(k):
+    if k['id'] in MASS: return MASS[k['id']]
+    if k['kind'] in ('railroad', 'bridge', 'landmark'): return dict(eave=0, ridge=0, roof='none', src='')
+    st = (k.get('stories') or '').strip()
+    if st.startswith('2'): e, r = 7.0, 9.5
+    elif st.startswith('1 1/2') or st.startswith('1.5') or 'loft' in st: e, r = 4.5, 7.0
+    else: e, r = 3.2, 5.2
+    return dict(eave=e, ridge=r, roof='gable', src='default for ' + (st or 'unknown') + ' stories')
+
 # ---------------------------------------------------------------- write
 def fmt_year(v):
     return '' if v is None else str(v)
@@ -598,6 +621,7 @@ for k in F:
     props = {c: k.get(c) for c in ('id', 'name', 'aka', 'town', 'bank', 'kind', 'built_text', 'removed_text', 'use', 'material', 'stories',
                                    'footprint_ft', 'evidence', 'sources', 'photos', 'notes')}
     props.update(built=k['built'], removed=k['removed'], method=k['method'], loc=k['loc'], form=k['form'], model=k.get('model', ''))
+    props['massing'] = massing(k)
     feats.append({'type': 'Feature', 'properties': props, 'geometry': mapping(g)})
 os.makedirs(R('map', 'data'), exist_ok=True)
 json.dump({'type': 'FeatureCollection', 'features': feats}, open(R('map', 'data', 'historic_features.geojson'), 'w'))

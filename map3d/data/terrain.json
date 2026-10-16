@@ -1,0 +1,11 @@
+{
+ "crs": "EPSG:26913",
+ "x0": 611050,
+ "y1": 5197900,
+ "res": 3,
+ "cols": 670,
+ "rows": 863,
+ "z0": 684.0,
+ "scale": 0.01,
+ "source": "USGS 3DEP 1 m DEM (ND_SouthWest_2021_D21), resampled to 3 m; bare earth as of 2021"
+}

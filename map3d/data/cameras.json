@@ -1,0 +1,107 @@
+[
+ {
+  "id": "71",
+  "ref": "SHSND 00042-00071",
+  "title": "Bird's-eye view of Medora",
+  "date": "1885",
+  "url": "https://findhistory.nd.gov/proficiowebmodule/Fullimages/00022/00042-00071-negative-jpg636380361718604190.jpg",
+  "page": "https://statemuseum.nd.gov/photobook/details?I_RecID=PH_I_144278",
+  "W": 2043,
+  "H": 1642,
+  "C": [
+   612818.524774314,
+   5196692.884171753,
+   775.6918549919633
+  ],
+  "yaw": -86.79701832396508,
+  "pitch": -6.4985627309802485,
+  "roll": 0.4021123212438411,
+  "f": 2961.961261753608,
+  "cx": 1056,
+  "cy": 820
+ },
+ {
+  "id": "195",
+  "ref": "SHSND 00042-00195",
+  "title": "Overview of Medora",
+  "date": "1885",
+  "url": "https://findhistory.nd.gov/proficiowebmodule/Fullimages/00022/00042-00195-negative-jpg636380365199900190.jpg",
+  "page": "https://statemuseum.nd.gov/photobook/details?I_RecID=PH_I_144411",
+  "W": 2049,
+  "H": 1379,
+  "C": [
+   612794.7124642223,
+   5196432.961239487,
+   716.2403776803935
+  ],
+  "yaw": -58.73761193106093,
+  "pitch": -0.9696081642263349,
+  "roll": -0.8087127611180254,
+  "f": 3104.969280347492,
+  "cx": 1024,
+  "cy": 690
+ },
+ {
+  "id": "194",
+  "ref": "SHSND 00042-00194",
+  "title": "View of Medora",
+  "date": "1886 (same session as -00195)",
+  "url": "https://findhistory.nd.gov/proficiowebmodule/Fullimages/00022/00042-00194-negative-jpg636380365178840190.jpg",
+  "page": "https://statemuseum.nd.gov/photobook/details?I_RecID=PH_I_144410",
+  "W": 2016,
+  "H": 1361,
+  "C": [
+   612791.2402710711,
+   5196434.736782582,
+   715.8625541743038
+  ],
+  "yaw": -58.977795058372735,
+  "pitch": -4.568204052814384,
+  "roll": 1.1532325299508215,
+  "f": 1760.4268773731458,
+  "cx": 1008,
+  "cy": 680
+ },
+ {
+  "id": "193",
+  "ref": "SHSND 00042-00193",
+  "title": "View from top of butte overlooking Medora",
+  "date": "1885-86",
+  "url": "https://findhistory.nd.gov/proficiowebmodule/Fullimages/00022/00042-00193-jpg636380365162460190.jpg",
+  "page": "https://statemuseum.nd.gov/photobook/details?I_RecID=PH_I_144409",
+  "W": 2564,
+  "H": 1635,
+  "C": [
+   612910.2617414992,
+   5196540.896001811,
+   785.7961284267074
+  ],
+  "yaw": -67.20474492045928,
+  "pitch": -12.280779088323118,
+  "roll": 1.4439365719575674,
+  "f": 2867.01244504489,
+  "cx": 1282,
+  "cy": 817
+ },
+ {
+  "id": "259",
+  "ref": "SHSND 00259-00003",
+  "title": "Birds eye view of town Medora (postcard)",
+  "date": "c.1901-09",
+  "url": "https://findhistory.nd.gov/proficiowebmodule/Fullimages/00092/00259-00003-jpg637944531529407210.jpg",
+  "page": "https://statemuseum.nd.gov/photobook/details?I_RecID=PH_I_18786",
+  "W": 1120,
+  "H": 713,
+  "C": [
+   612853.2137691329,
+   5196497.018528896,
+   750.936596229988
+  ],
+  "yaw": -66.49933050066112,
+  "pitch": -5.111857834238089,
+  "roll": 1.0985543544215852,
+  "f": 1797.3185358404114,
+  "cx": 560,
+  "cy": 356
+ }
+]

@@ -5,11 +5,13 @@ Visualizing what Medora looked like during Theodore Roosevelt's time.
 This is an internal experiment by the Theodore Roosevelt Presidential Library. It rebuilds the two towns of Roosevelt's ranching years as a map, with a simple 3D model to follow. Those towns are Little Missouri on the west bank of the Little Missouri River and Medora on the east bank, plus the Chateau de Mores. The map shows how they changed from his arrival in September 1883 to the hard winter of 1886–87.
 
 **Map:** https://trsmedora.labs.trlibrary.com/map/ (source in `map/`).
+**3D:** https://trsmedora.labs.trlibrary.com/map3d/ (source in `map3d/`; data from `tools/build_3d.py`).
 
 ## What is here
 
 | Path | What it is |
 |---|---|
+| `map3d/` | The 3D massing model: lidar terrain, buildings with measured or estimated heights, the four dates, and views from the solved photo cameras with the photo overlaid |
 | `map/` | The 2D map: four dates, the 1883 plat fitted to today's map, the 1883 river channel, today's lots, and building details with sources |
 | `data/buildings.csv` | Gazetteer: every known structure with dates, form, placement method, confidence grades, evidence, sources and photos. **Generated, so edit `tools/build_features.py` instead.** |
 | `data/sources/cowboy_building_mentions_1884-1886.csv` | Every building mention in the *Bad Lands Cow Boy*, 1884–86 (446 rows, OCR-checked) |
@@ -42,6 +44,7 @@ Each building has a separate grade for **location** and for **form**:
 ```
 pip install shapely numpy
 python3 tools/build_features.py
+python3 tools/build_3d.py
 ```
 
 Then open the map from a web server, for example `python3 -m http.server` in the `map/` folder.

@@ -57,3 +57,24 @@ Interiors, people and animals, the ranches (Maltese Cross and Elkhorn), and phot
 | Ferris store | 1963 reconstruction | 17.6 × 7.6 | 6.5 | 8.9 |
 
 Only the original buildings are used as references for measuring vanished buildings in the 1880s photos. The thin packing-plant chimney is mostly missed by the lidar.
+
+## 3D model, first version (Oct 16, 2026)
+
+Live at `map3d/`, built by `tools/build_3d.py`.
+
+- **Terrain.** The 2021 bare-earth lidar, resampled to 3 m and coloured by slope: river bottoms green, slopes tan, steep badlands banded, with a clinker tint high on the buttes. It still shows today's railroad embankment, highway and gravel pits. The 1883 river channel is drawn on top as a blue ribbon.
+- **Buildings.** Walls are the footprint extruded to eave height. Roofs are gable or hip over the footprint's minimum rectangle, with the ridge on the long axis, or flat. Heights (`MASS` in `tools/build_features.py`) come from three sources:
+  - **Lidar 2021, for surviving buildings:** Von Hoffman House, St. Mary's, the Chateau, and the courthouse cottage wings.
+  - **Photo scale bars, for vanished buildings.** `tools/photomatch/scalebars.py` and `heights.py` read eave and ridge heights at a triangulated position on a solved camera. The method was checked against the lidar first: the Von Hoffman House eave reads 3.4 m in SHSND 00042-00071 against 3.6 m in the lidar, and St. Mary's about 3.2 m against 4.2 m in 00042-00195.
+    - Roberts Hall: eave 7.0–7.9 m, ridge 9.7–10.5 m. The *Cow Boy*'s "two full stories each twelve feet clear … 26 feet high" is about 7.9 m, which supports the identification.
+    - Hotel de Mores: eave 8.5–9.1 m, ridge 10.2–11.7 m.
+    - Metropolitan: flat roof at about 7.6 m.
+  - **Defaults by number of stories** for everything else: 1 story 3.2/5.2 m, 1½ stories 4.5/7.0 m, 2 stories 7.0/9.5 m.
+- **Look by confidence.** The worse of the location and form grades sets the look: solid for A or B, see-through for C, near-invisible for D.
+- **Photo views.** Each solved camera (`map3d/data/cameras.json`) sets the 3D camera's position, orientation and lens, including the off-centre principal point. The period photo, hotlinked from SHSND, sits over the canvas with adjustable opacity, so you can check the model against the photo directly.
+
+**Next refinements:**
+- Flatten the modern earthworks in town.
+- Draw footprints from the photos for the larger unidentified buildings.
+- Add porches and the hotel's tall east block.
+- Get the drone models of the Chateau and chimney from their owner.
