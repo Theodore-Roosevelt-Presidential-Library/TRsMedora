@@ -65,6 +65,13 @@ def _dist_to(line_utm):
         if 0 <= r < Z.shape[0] and 0 <= c < Z.shape[1]: m[r, c] = True
     return distance_transform_edt(~m) * meta['res']
 _riv83 = [T.transform(*c) for c in json.load(open(R('map', 'data', 'river_1883.geojson')))['features'][0]['geometry']['coordinates']]
+def _chaikin(pts, n=3):
+    for _ in range(n):
+        q = [pts[0]]
+        for a, b in zip(pts[:-1], pts[1:]): q += [(0.75 * a[0] + 0.25 * b[0], 0.75 * a[1] + 0.25 * b[1]), (0.25 * a[0] + 0.75 * b[0], 0.25 * a[1] + 0.75 * b[1])]
+        pts = q + [pts[-1]]
+    return pts
+_riv83 = _chaikin(_riv83)   # the plat/survey trace is a polyline; a river bends smoothly
 _d83 = _dist_to(_riv83)
 _modern = []
 for f in _osm['features']:
@@ -423,7 +430,7 @@ for f in O['features']:
     clip = LineString(pts).intersection(TOWN)
     for part in (clip.geoms if hasattr(clip, 'geoms') else [clip]):
         if part.length > 20:
-            streets.append({'name': pr['name'], 'kind': 'street', 'width': 12 if pr['name'] in ('Main Street', '3rd Avenue') else 10, 'built': 1883.9, 'pts': drape(list(part.coords))})
+            streets.append({'name': pr['name'], 'kind': 'street' if pr['name'] in ('Main Street', '3rd Avenue') else 'lane', 'width': 10 if pr['name'] in ('Main Street', '3rd Avenue') else 6, 'built': 1883.9, 'pts': drape(list(part.coords))})
 TRAILS = [
  ('Road from Medora to the ford and Little Missouri', [(-103.5262, 46.9150), (-103.5285, 46.9160), (-103.5300, 46.91625), (-103.53085, 46.91629), (-103.5320, 46.9164), (-103.5328, 46.9163)], 1879.0),
  ('Road to the Chateau', [(-103.5326, 46.9160), (-103.5330, 46.9150), (-103.5334, 46.9138), (-103.5340, 46.9130), (-103.5345, 46.9127)], 1883.6),
@@ -453,6 +460,22 @@ for it in out['features']:
     if it['id'] == 'np-railroad':
         it['line'] = drape(list(seg.coords), step=6.0, lift=0.4)
         it['notes'] = (it.get('notes') or '') + ' In the 3D view the track follows today\'s alignment through town, which the 1885-86 photos support (the depot and sheds stand beside it).'
+
+# two sidings beside the main line at Little Missouri (three tracks in Haynes 1881, SHSND 00119-00017), south of the depot
+_tl = LineString([(x - ORIGIN[0], y - ORIGIN[1]) for x, y in seg.coords])
+_lmd = [it for it in out['features'] if it['id'] == 'lm-depot'][0]
+_d0 = _tl.project(Point(sum(p[0] for p in _lmd['rect']) / 4, sum(p[1] for p in _lmd['rect']) / 4))
+out['sidings'] = []
+for off in (-4.6, -9.2):
+    pts = []
+    for d in np.arange(_d0 - 170, _d0 + 170, 4.0):
+        k = min(1.0, (d - (_d0 - 170)) / (40 if off == -4.6 else 60), ((_d0 + 170) - d) / (40 if off == -4.6 else 60))
+        a_, b_ = _tl.interpolate(max(0, d - 2)), _tl.interpolate(min(_tl.length, d + 2)); q_ = _tl.interpolate(d)
+        tx, ty = b_.x - a_.x, b_.y - a_.y; L = math.hypot(tx, ty) or 1
+        if tx < 0: tx, ty = -tx, -ty
+        e, n = q_.x - ty / L * off * k, q_.y + tx / L * off * k   # offset along the left normal; negative = south
+        pts.append([round(e, 2), round(n, 2), round(zat(e + ORIGIN[0], n + ORIGIN[1]) - ORIGIN[2] + 0.4, 2)])
+    out['sidings'].append({'name': 'Siding at Little Missouri (Haynes 1881)', 'removed': None, 'pts': pts})
 
 # ---------------------------------------------------------------- vegetation and poles (deterministic)
 rng = np.random.default_rng(1883)

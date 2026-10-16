@@ -681,6 +681,7 @@ export function buildStreets(streets, t) {
   const grp = new THREE.Group();
   const matDirt = new THREE.MeshStandardMaterial({map: TEX.dirt, color: 0xffffff, roughness: 1, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2});
   const matTrail = matDirt.clone(); matTrail.opacity = 0.85;
+  const matLane = matDirt.clone(); matLane.opacity = 0.6;   // side streets: worn wagon tracks in the 1885 photos, not graded roads
   const matPlank = new THREE.MeshStandardMaterial({map: TEX.plank, color: 0xa08a6a, roughness: .95});
   for (const s of streets) {
     const pts = s.pts, w = s.width, pos = [], uv = [], idx = []; let dist = 0;
@@ -696,7 +697,7 @@ export function buildStreets(streets, t) {
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
     let m;
     if (s.kind === 'sidewalk') { for (let i = 0; i < uv.length; i += 2) { uv[i] *= w / 2; } g.setAttribute('uv', new THREE.Float32BufferAttribute(uv.map((v, i) => i % 2 ? v * 6 : v), 2)); m = matPlank; }
-    else m = s.kind === 'trail' ? matTrail : matDirt;
+    else m = s.kind === 'trail' ? matTrail : s.kind === 'lane' ? matLane : matDirt;
     const mesh = new THREE.Mesh(g, m); mesh.receiveShadow = true; mesh.userData = {street: s}; grp.add(mesh);
   }
   return grp;

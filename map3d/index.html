@@ -123,6 +123,7 @@ button{font:inherit;color:inherit}
     <label><input type="checkbox" id="showRiver" checked> Show the river in its 1883 channel</label>
     <label><input type="checkbox" id="showDetail" checked> Detailed buildings (uncheck for plain shapes)</label>
     <label><input type="checkbox" id="showTrain" checked> Show the train at the depot</label>
+    <label><input type="checkbox" id="showFigures" checked> People, horses and wagons (representative, not documented)</label>
     <label><input type="checkbox" id="showGuessSigns"> Add likely business signs (guesses; only the depot and packing-plant signs appear in photographs)</label>
     <label for="light" style="display:block;margin-top:8px">Light and season</label>
     <select id="light" style="font:14px var(--sans);padding:5px;border:1px solid var(--rule);border-radius:3px;width:100%">
@@ -150,7 +151,7 @@ button{font:inherit;color:inherit}
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {makeTextures, buildDetailed, buildStreets, buildTrack, buildTrain, gradeMarker, frontInfo} from './js/models.js';
-import {buildVegetation, buildTelegraph, buildingDetails, buildWagons, buildRailFence} from './js/props.js';
+import {buildVegetation, buildTelegraph, buildingDetails, buildWagons, buildRailFence, buildFigures} from './js/props.js';
 const TEX = makeTextures();
 
 const SLICES = [
@@ -207,7 +208,7 @@ function zAt(e,n){
   const step = innerWidth<820 ? 2 : 1;
   const cols = Math.floor((terr.cols-1)/step)+1, rows = Math.floor((terr.rows-1)/step)+1;
   const pos = new Float32Array(cols*rows*3), col = new Float32Array(cols*rows*3), uvs = new Float32Array(cols*rows*2);
-  const flat = new THREE.Color(0xb2b98f), slope = new THREE.Color(0xcbb894), steep1 = new THREE.Color(0xb9ab98), steep2 = new THREE.Color(0x9b8f86), lig = new THREE.Color(0x6f6a64), sco = new THREE.Color(0xa45a43);
+  const flat = new THREE.Color(0xa3a886), slope = new THREE.Color(0xcbb894), steep1 = new THREE.Color(0xb9ab98), steep2 = new THREE.Color(0x9b8f86), lig = new THREE.Color(0x6f6a64), sco = new THREE.Color(0xa45a43);
   const tmp = new THREE.Color();
   const zz=(r,c)=>H[Math.min(r,terr.rows-1)*terr.cols+Math.min(c,terr.cols-1)]*terr.scale+terr.z0;
   for(let j=0;j<rows;j++) for(let i=0;i<cols;i++){
@@ -307,7 +308,7 @@ for (const f of scene0.features){
     const u=(f.use||'').toLowerCase(), st=f.style||{};
     const kind = (st.storefront || /hotel|store|saloon|office|drug|shop|restaurant|rink|billiard/.test(u)) ? 'commercial' : (/residence|dwelling|house|cottage/.test(u) || f.id.startsWith('photo85-u')) ? 'dwelling' : null;
     if (kind && !/^pp-|depot|church|cantonment|chateau/.test(f.id)){ const fi=frontInfo(f,ctx); det.add(buildingDetails(f, fi, zAt, kind));
-      if (kind==='commercial' && ([...f.id].reduce((a,c)=>a+c.charCodeAt(0),0)%3===0)) { const p=[fi.c[0]+fi.front[0]*(fi.depth/2+7.5), fi.c[1]+fi.front[1]*(fi.depth/2+7.5)]; wagonSpots.push([p[0],p[1],Math.atan2(fi.front[0],fi.front[1])]); } }
+      if (kind==='commercial' && ([...f.id].reduce((a,c)=>a+c.charCodeAt(0),0)%3===0)) { const p=[fi.c[0]+fi.front[0]*(fi.depth/2+7.5), fi.c[1]+fi.front[1]*(fi.depth/2+7.5)]; wagonSpots.push([p[0],p[1],Math.atan2(fi.front[0],fi.front[1]),f]); } }
     const g=worst(f.loc,f.form), box=new THREE.Box3().setFromObject(det), mk=gradeMarker(g), c=box.getCenter(new THREE.Vector3());
     mk.position.set(c.x, box.max.y+1.5, c.z); mk.userData={f, grade:g}; grp.add(mk); markers.push(mk); }
   const grade = worst(f.loc, f.form);
@@ -359,12 +360,29 @@ for (const f of scene0.features){
 // ---------- vegetation, telegraph, wagons, stock fences
 let vegetation = buildVegetation(scene0, 'summer'); scene.add(vegetation);
 const telegraph = buildTelegraph(scene0.poles||[]); telegraph.userData={from:1880}; scene.add(telegraph);
-const wagons = buildWagons(wagonSpots, zAt); scene.add(wagons);
+// wagons, teams and people: tied to the building they stand at, so they appear only while it stands (representative, not documented)
+const lifeGroups = [];
+function lifeAt(f){ let g=lifeGroups.find(x=>x.f===f); if(!g){ g={f, grp:new THREE.Group()}; lifeGroups.push(g); scene.add(g.grp);} return g.grp; }
+for (const [e, n, a, f] of wagonSpots){ const g=lifeAt(f); g.add(buildWagons([[e,n,a]], zAt));
+  const dx=Math.cos(a), dy=Math.sin(a), sp=[];   // wagon's long axis in e,n (three rotation.y = a maps local x to (cos a, sin a))
+  for (const side of [-.45, .45]) sp.push([e + dx*5.6 - dy*side, n + dy*5.6 + dx*side, a, 'horse']);
+  sp.push([e - dy*1.4, n + dx*1.4, a + 1.4, 'man']); g.add(buildFigures(sp, zAt)); }
+const near = (id, list) => { const f=scene0.features.find(x=>x.id===id); if(!f||!f.rect) return; const fi=frontInfo(f,ctx), sp=[];
+  for (const [d, t, kind, turn] of list) sp.push([fi.c[0]+fi.front[0]*(fi.depth/2+d)-fi.front[1]*t, fi.c[1]+fi.front[1]*(fi.depth/2+d)+fi.front[0]*t, Math.atan2(fi.front[0], fi.front[1]) + Math.PI + (turn||0), kind]);
+  lifeAt(f).add(buildFigures(sp, zAt)); };
+near('hotel-de-mores', [[1.2,-3,'man'],[1.4,-2.2,'man',.6],[1.1,2.5,'woman'],[3.5,6,'man',2]]);
+near('hotel-de-mores@before-1885.3', [[1.2,-3,'man'],[1.4,-2.2,'man',.6],[3.5,6,'man',2]]);
+near('company-store-offices', [[1.5,-4,'man'],[1.8,3,'man',1.2],[1.6,3.7,'woman',-1]]);
+near('ferris-store', [[2.4,-1,'man'],[2.6,0,'man',2.5]]);
+near('roberts-hall', [[1.5,1,'man',.3]]);
+{ const d=scene0.features.find(x=>x.id==='medora-depot'); if (d && d.style && d.style.decks){ const R=d.style.decks[0].rect, c=[(R[0][0]+R[2][0])/2,(R[0][1]+R[2][1])/2], z=Math.max(...R.map(p=>zAt(p[0],p[1])))+0.45;
+  lifeAt(d).add(buildFigures([[c[0]+6,c[1]-2,1.2,'man',z],[c[0]+7,c[1]-1.6,-1.6,'man',z],[c[0]-8,c[1]-1.5,0.3,'woman',z]], zAt)); } }
 for (const f of scene0.features) if (f.id==='pp-holding-pens' && f.ring){ const fe=buildRailFence(f.ring, zAt); fe.userData={f}; scene.add(fe); groups.push(Object.assign(new THREE.Group(),{userData:f, visible:true}).add(fe)); scene.add(groups[groups.length-1]); }
 
 // ---------- streets and trains
 const streets = buildStreets(scene0.streets||[]); scene.add(streets);
 const trains = [];
+for (const sd of (scene0.sidings||[])) scene.add(buildTrack(sd.pts).grp);
 if (trackDense){
   const dep = scene0.features.find(f=>f.id==='medora-depot'), lmd = scene0.features.find(f=>f.id==='lm-depot');
   const cen = f => f.ring.reduce((s,p)=>[s[0]+p[0]/f.ring.length, s[1]+p[1]/f.ring.length],[0,0]);
@@ -389,6 +407,7 @@ function applyFilters(){
   for (const mk of markers){ mk.userData.want = det && (mkMode==='all' || (mkMode==='uncertain' && 'CD'.includes(mk.userData.grade))); mk.visible = mk.userData.want; }
   for (const s of streets.children) s.visible = (s.userData.street.built||0) <= t;
   for (const tr of trains) tr.visible = $('#showTrain').checked && t>=tr.userData.from && t<tr.userData.to;
+  for (const g of lifeGroups) g.grp.visible = $('#showFigures').checked && (g.f.built==null || g.f.built<=t) && (g.f.removed==null || g.f.removed>t);
   const guess = $('#showGuessSigns').checked;
   for (const [d] of detailGroups) d.traverse(o=>{ if(!o.isMesh||!o.name) return;
     if (o.name.startsWith('signguess:')) o.visible = guess;
@@ -413,7 +432,7 @@ function setLight(v){
   river.material.color.set(winter?0xdfe6ea:0x6b8583); river.material.roughness = winter?.6:.12;
 }
 $('#light').onchange=e=>setLight(e.target.value);
-$('#showUnk').onchange=applyFilters; $('#showRiver').onchange=applyFilters; $('#showDetail').onchange=applyFilters; $('#markers').onchange=applyFilters; $('#showTrain').onchange=applyFilters; $('#showGuessSigns').onchange=applyFilters;
+$('#showUnk').onchange=applyFilters; $('#showRiver').onchange=applyFilters; $('#showDetail').onchange=applyFilters; $('#markers').onchange=applyFilters; $('#showTrain').onchange=applyFilters; $('#showGuessSigns').onchange=applyFilters; $('#showFigures').onchange=applyFilters;
 applyFilters();
 
 // ---------- detail panel and hover

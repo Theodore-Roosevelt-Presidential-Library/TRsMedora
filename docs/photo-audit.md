@@ -53,9 +53,21 @@ Footprint changes and added buildings are in `tools/geom3d.py`. Looks are in `ST
 
 ## Open questions
 - **Depot mileboards:** the figures are partly legible (about "595.3 M" to St. Paul, "1465.? M" to Portland). A better scan of MHS 72461 would settle them.
-- **Little Missouri tracks:** Haynes shows **three tracks** there in 1881; the model has one.
 - **Cooling-house spur:** the plant's spur track and the cooling house's siding (00042-00150) aren't modelled yet. They need the 1956–57 NPS plans.
-- **Streets:** the 1885 overviews show worn tracks and paths, not a fully formed street grid. The streets probably need thinning.
 - **Von Hoffman House colour** and its north roof end: check against the standing house.
 - **Photo 193's date:** it shows the Von Hoffman House and St. Mary's but no cottages, so it may be autumn 1884 rather than 1886.
 - **SHSND 00098-00019 ("Foley's house"):** not in the local photo set; worth downloading.
+
+## Second pass (Oct 16, afternoon)
+- **Little Missouri sidings:** two sidings now run south of the main line at Little Missouri, so three tracks show as in Haynes 1881. Each is about 340 m long with tapered ends. Which of the three was the main line isn't known.
+- **Streets:** side streets are drawn as narrow, faint wagon tracks; only Main Street and Third Avenue are full-width roads. This matches the worn paths in the 1885 overviews.
+- **Ground:** the valley floor is a greyer sage, which reads closer to the overviews.
+- **1883 river course:** the trace is smoothed so the channel bends instead of zig-zagging. This affects both the ground cut and the water.
+- **People, horses and wagons:** representative figures, each tied to the building it stands at so it appears only while that building stands. They show:
+  - a team at each wagon;
+  - a few people at the depot platform, the hotel and the stores.
+
+  A checkbox hides them. They are not documented individuals.
+- **Still open:**
+  - The plant's spur track needs the 1956–57 NPS plans; no source in hand locates it.
+  - Von Hoffman House wall colour: the 1885 prints read light. Check the standing house, and its north roof end.

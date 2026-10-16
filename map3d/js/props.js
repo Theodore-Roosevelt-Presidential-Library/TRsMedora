@@ -143,3 +143,40 @@ export function buildRailFence(ring, zAt, posts = 3.0) {
   const mesh = new THREE.Mesh(mergeGeometries(parts.map(g => g.toNonIndexed())), new THREE.MeshStandardMaterial({color: 0x786a58, roughness: 1}));
   mesh.castShadow = true; return mesh;
 }
+
+// ---------------------------------------------------------------- people and horses (representative, not documented individuals)
+const CLOTH = [0x2b2a2c, 0x3b332c, 0x4a3f33, 0x262f3a, 0x5a4a3a, 0x3d3a36];
+const COATS = [0x7b5a3c, 0x4e3a28, 0x8a8174, 0x2e2622, 0x6b4a2e];
+function horse(rng) {
+  const g = new THREE.Group(), col = COATS[Math.floor(rng() * COATS.length)], m = new THREE.MeshStandardMaterial({color: col, roughness: .85}), dk = new THREE.MeshStandardMaterial({color: 0x1d1814, roughness: .9});
+  const add = (geo, mat, x, y, z, rz = 0) => { const o = new THREE.Mesh(geo, mat); o.position.set(x, y, z); o.rotation.z = rz; o.castShadow = true; g.add(o); return o; };
+  add(new THREE.CapsuleGeometry(.32, 1.15, 4, 10).rotateZ(Math.PI / 2), m, 0, 1.25, 0);                // barrel
+  add(new THREE.CapsuleGeometry(.16, .55, 4, 8), m, .78, 1.62, 0, -.75);                                 // neck
+  add(new THREE.CapsuleGeometry(.12, .38, 4, 8), m, 1.08, 1.78, 0, -1.9);                                // head
+  add(new THREE.BoxGeometry(.05, .28, .05), dk, .62, 1.9, 0, -.6);                                        // mane
+  for (const [x, z] of [[.55, .16], [.55, -.16], [-.55, .16], [-.55, -.16]]) add(new THREE.CylinderGeometry(.06, .05, 1.05, 6), m, x, .53, z);
+  add(new THREE.CylinderGeometry(.05, .02, .7, 6), dk, -.86, 1.0, 0, .35);                                // tail
+  return g;
+}
+function person(rng, woman) {
+  const g = new THREE.Group(), cl = new THREE.MeshStandardMaterial({color: CLOTH[Math.floor(rng() * CLOTH.length)], roughness: .95});
+  const skin = new THREE.MeshStandardMaterial({color: 0xc9a487, roughness: .8}), hat = new THREE.MeshStandardMaterial({color: rng() < .5 ? 0x2a2420 : 0x8c7a62, roughness: .9});
+  const add = (geo, mat, x, y, z) => { const o = new THREE.Mesh(geo, mat); o.position.set(x, y, z); o.castShadow = true; g.add(o); return o; };
+  if (woman) add(new THREE.ConeGeometry(.34, 1.0, 10), cl, 0, .5, 0);
+  else for (const z of [-.09, .09]) add(new THREE.CylinderGeometry(.075, .07, .85, 6), cl, 0, .43, z);
+  add(new THREE.CapsuleGeometry(.17, .42, 4, 8), cl, 0, 1.18, 0);
+  add(new THREE.SphereGeometry(.11, 10, 8), skin, 0, 1.6, 0);
+  add(new THREE.CylinderGeometry(woman ? .14 : .2, woman ? .14 : .2, .02, 12), hat, 0, 1.69, 0);
+  add(new THREE.CylinderGeometry(.09, .1, .13, 10), hat, 0, 1.75, 0);
+  return g;
+}
+export function buildFigures(spots, zAt) {
+  // spots: [e, n, heading (radians, three's y rotation), kind: 'man' | 'woman' | 'horse']
+  const grp = new THREE.Group(); let s = 7;
+  const rng = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  for (const [e, n, ang, kind, z] of spots) {
+    const o = kind === 'horse' ? horse(rng) : person(rng, kind === 'woman');
+    o.position.set(e, (z ?? zAt(e, n)), -n); o.rotation.y = ang; grp.add(o);
+  }
+  return grp;
+}
