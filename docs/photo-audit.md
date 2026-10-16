@@ -82,3 +82,22 @@ Nine buildings overlapped a street, so the build now slides any such footprint o
   - **Roller rink:** moved 3 m.
 
 Every move is within the stated uncertainty of the original placement and is recorded in the building's notes. No building now overlaps a street or another building in any date view.
+
+## Chateau and St. Mary's from today's buildings (Oct 16, evening)
+- **Chateau:** doors, windows, chimneys and the north ell now follow the 2023 drone photogrammetry model (Sketchfab, ajkclark) and the 1975 National Register nomination.
+  - **South front:** two windows and a door with a small gabled hood at the west end. Under the veranda, windows either side of a door. Upstairs, two windows at the west end and three windows with their shutters closed.
+  - **East end:** a door between two windows, three windows above.
+  - **West gable:** two windows below, one above.
+  - **North side:** six upper windows.
+  - **North ell:** a long one-storey hipped wing along the whole north wall, with a front-gabled wing projecting north at its east end. That wing has a hooded entry.
+  - **Chimneys:** three on the main ridge.
+  - **Veranda:** starts about 40% along the south front.
+- **St. Mary's:** the 1886 photo governs. It shows a single door under a pointed blind arch and pointed side windows. Today the door and arch are the same but the side windows are round-headed, a later change. The door is now drawn that way.
+
+## Photo gallery
+"Compare with the period photographs" opens a gallery of the photos with a camera. Choosing one draws the model from the photographer's position, with an opacity slider and Model only / Photo only buttons. Each photo is one of three kinds:
+- **Matched:** the five town overviews, solved from control points across the town.
+- **Fitted:** a few points on one building fix the camera, using `fitcam.py`-style least squares on corners and gable peaks. This covers the depot (8 px RMS), St. Mary's, the 1883 hotel and the Haynes Little Missouri view (about 15–23 px).
+- **Approximate:** set by eye. This covers the Von Hoffman House, the packing plant (two views) and the Chateau (two views).
+
+The view definitions are in `data/photo_views.json`. Copies of those photos, downsized to 1800 px, with thumbnails, are in `map3d/photos/`. Each record links back to the holding archive. The town overviews still load from the State Historical Society's servers.

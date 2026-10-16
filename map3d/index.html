@@ -53,6 +53,27 @@ button{font:inherit;color:inherit}
 .chain button[aria-pressed=true] .stake{background:var(--clinker);border-color:var(--clinker)}
 .chain button[aria-pressed=true] .when{color:var(--clinker)}
 
+#gallery{position:absolute;inset:0;z-index:8;background:rgba(30,43,49,.55);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:28px 18px}
+#gallery.open{display:flex}
+.gwin{background:var(--paper);border:1px solid var(--rule);border-radius:6px;max-width:1080px;width:100%;padding:18px 20px 22px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.ghead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:6px}
+.ghead h2{margin:0;font-size:22px}
+.gclose{border:1px solid var(--ink);background:var(--paper);border-radius:3px;padding:5px 10px;cursor:pointer}
+.ggroup{font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin:16px 0 8px}
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.gcard{display:flex;flex-direction:column;text-align:left;border:1px solid var(--rule);background:#fff;border-radius:4px;padding:0;cursor:pointer;overflow:hidden}
+.gcard:hover{border-color:var(--ink)}
+.gcard img{width:100%;height:140px;object-fit:cover;background:#ddd;display:block;filter:sepia(.15)}
+.gcard .gt{padding:8px 10px 10px}
+.gcard b{font:700 14px/1.25 var(--serif);display:block}
+.gcard span{font-size:12px;color:var(--ink-2)}
+.badge{display:inline-block;font:600 11px var(--sans);border-radius:3px;padding:1px 6px;margin-top:5px}
+.badge.m{background:#dbe8dd;color:#2f5d3a}.badge.a{background:#f1e4cc;color:#7a5414}
+#cmp{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;background:rgba(231,235,227,.96);border:1px solid var(--rule);border-radius:5px;padding:10px 14px;display:none;width:min(620px,calc(100% - 28px))}
+#cmp .ct{font:700 14px var(--serif)} #cmp .cs{font-size:12px;color:var(--ink-2)}
+#cmp .row{display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap}
+#cmp .row input{flex:1;min-width:140px}
+#cmp .btn{padding:4px 9px;font-size:13px}
 .views{display:grid;gap:6px}
 .views button{display:block;text-align:left;border:1px solid var(--rule);background:#fff;border-radius:3px;padding:7px 10px;cursor:pointer}
 .views button b{font:700 14px var(--serif);display:block}
@@ -102,14 +123,9 @@ button{font:inherit;color:inherit}
     <p class="small" style="margin:10px 0 0">Or start from one of these spots:</p>
     <div class="views" id="spots" style="margin-top:6px"></div>
 
-    <h2>Stand where the photographer stood</h2>
-    <p class="small">Each button puts you at the camera position solved for a period photograph. Slide the photo over the model to check one against the other.</p>
-    <div class="views" id="views"></div>
-    <div class="ctl" id="photoCtl" hidden>
-      <label for="op" style="display:block">Photograph <span id="opv">60%</span></label>
-      <input type="range" id="op" min="0" max="100" value="60">
-      <div class="btnrow"><button class="btn" id="exitPhoto" type="button">Leave photo view</button><a class="btn" id="photoLink" target="_blank" rel="noopener" style="text-decoration:none">Archive record</a></div>
-    </div>
+    <h2>Compare with the period photographs</h2>
+    <p class="small">Open a photograph and the model is drawn from where the photographer stood. Slide between the photo and the model to see what matches.</p>
+    <div class="btnrow" style="margin-top:0"><button class="btn" id="openGallery" type="button">Open the photo gallery</button></div>
 
     <h2>Confidence</h2>
     <p class="small">A marker floats over each building. The letter is the lower of its location and form grades.</p>
@@ -137,6 +153,15 @@ button{font:inherit;color:inherit}
   <div id="stage">
     <nav class="chain" aria-label="Choose a date"><ol id="chain"></ol></nav>
     <img id="photo" alt="">
+    <div id="cmp" role="region" aria-label="Photo comparison">
+      <div class="ct" id="cmpTitle"></div><div class="cs" id="cmpSub"></div>
+      <div class="row"><span class="small">Model</span><input type="range" id="op" min="0" max="100" value="60" aria-label="Photograph opacity"><span class="small">Photo <span id="opv">60%</span></span></div>
+      <div class="row"><button class="btn" id="cmpModel" type="button">Model only</button><button class="btn" id="cmpPhoto" type="button">Photo only</button><button class="btn" id="cmpGallery" type="button">Back to the gallery</button><button class="btn" id="exitPhoto" type="button">Leave</button><a class="btn" id="photoLink" target="_blank" rel="noopener" style="text-decoration:none">Archive record</a></div>
+    </div>
+    <div id="gallery" role="dialog" aria-modal="true" aria-label="Photo gallery"><div class="gwin">
+      <div class="ghead"><div><h2>Period photographs</h2><p class="small" style="margin:4px 0 0">Choose a photograph to stand where the photographer stood. <b>Matched</b> views were solved from control points, so the model lines up with the photo. <b>Fitted</b> views were matched to a few points on one building, so they line up closely. <b>Approximate</b> views were set by eye and show the same scene from about the same place.</p></div><button class="gclose" id="closeGallery" type="button">Close</button></div>
+      <div id="galleryBody"></div>
+    </div></div>
     <div id="tip"></div>
     <div id="walkhint"><b>Drag</b> to look · <b>click the ground</b> to walk · <b>arrows / WASD</b> to move, <b>Shift</b> to run · <b>scroll</b> to zoom · <b>Esc</b> to leave</div>
     <div id="compass" aria-hidden="true"></div>
@@ -503,11 +528,22 @@ renderer.domElement.addEventListener('pointerleave',()=>tip.style.display='none'
 // ---------- photo viewpoints
 let photoCam = null;
 const photo = $('#photo');
-cams.forEach(c=>{
-  const b=document.createElement('button'); b.type='button';
-  b.innerHTML=`<b>${esc(c.ref)}</b><span>${esc(c.title)}, ${esc(c.date)}</span>`;
-  b.onclick=()=>enterPhoto(c,b); $('#views').appendChild(b);
-});
+const THUMB = {'71':'photos/thumbs/solved71.jpg','195':'photos/thumbs/solved195.jpg','194':'photos/thumbs/solved194.jpg','193':'photos/thumbs/solved193.jpg','259':'photos/thumbs/solved259.jpg'};
+const allViews = [...cams.map(c=>Object.assign({approx:false, thumb:THUMB[c.id]}, c)), ...(scene0.photo_views||[])];
+{ const body=$('#galleryBody');
+  for (const [label, list] of [['Town views matched to the model', allViews.filter(v=>!v.approx)], ['Single buildings and close views', allViews.filter(v=>v.approx)]]){
+    const h=document.createElement('div'); h.className='ggroup'; h.textContent=label; body.appendChild(h);
+    const g=document.createElement('div'); g.className='ggrid'; body.appendChild(g);
+    for (const v of list){ const b=document.createElement('button'); b.type='button'; b.className='gcard';
+      b.innerHTML=`<img src="${esc(v.thumb||v.url)}" alt=""><div class="gt"><b>${esc(v.title)}</b><span>${esc(v.ref)}, ${esc(v.date)}</span><br><span class="badge ${v.approx?'a':'m'}">${!v.approx?'Matched':(v.fit==='points'?'Fitted to the building':'Approximate viewpoint')}</span></div>`;
+      b.onclick=()=>{ closeGallery(); enterPhoto(v); }; g.appendChild(b); } } }
+function openGallery(){ $('#gallery').classList.add('open'); $('#closeGallery').focus(); }
+function closeGallery(){ $('#gallery').classList.remove('open'); }
+$('#openGallery').onclick=openGallery; $('#closeGallery').onclick=closeGallery; $('#cmpGallery').onclick=()=>{ leavePhoto(true); openGallery(); };
+$('#gallery').addEventListener('click',e=>{ if(e.target.id==='gallery') closeGallery(); });
+addEventListener('keydown',e=>{ if(e.key==='Escape' && $('#gallery').classList.contains('open')) closeGallery(); });
+const setOp=v=>{ $('#op').value=v; photo.style.opacity=v/100; $('#opv').textContent=v+'%'; };
+$('#cmpModel').onclick=()=>setOp(0); $('#cmpPhoto').onclick=()=>setOp(100);
 function camBasis(c){
   const y=c.yaw*Math.PI/180, p=c.pitch*Math.PI/180, r=(c.roll||0)*Math.PI/180;
   let f=[Math.sin(y)*Math.cos(p), Math.cos(y)*Math.cos(p), Math.sin(p)];
@@ -520,16 +556,18 @@ function camBasis(c){
 function enterPhoto(c, btn){
   if (walking) leaveWalk();
   photoCam=c; controls.enabled=false;
-  [...document.querySelectorAll('#views button')].forEach(x=>x.setAttribute('aria-pressed', String(x===btn)));
-  photo.src=c.url; photo.style.display='block'; $('#photoCtl').hidden=false; $('#photoLink').href=c.page;
+  photo.src=c.url; photo.style.display='block'; $('#cmp').style.display='block'; $('#photoLink').href=c.page;
+  // trains, wagons and people are not in the photographs: hide them while comparing
+  for (const tr of trains) tr.visible=false; for (const g of lifeGroups) g.grp.visible=false;
+  $('#cmpTitle').textContent=`${c.title} (${c.date})`;
+  $('#cmpSub').textContent = !c.approx ? `${c.ref}. Camera solved from control points across the town; the model should line up with the photo.` : c.fit==='points' ? `${c.ref}. Camera fitted to a few points on the building: close, but not exact.` : `${c.ref}. Approximate viewpoint, set by eye: the same scene from about the same place; it won't line up exactly.`;
   const {rt,up,fw}=camBasis(c);
   camera.position.set(c.C[0]-O.utm13n[0], c.C[2]-O.z0, -(c.C[1]-O.utm13n[1]));
   const M=new THREE.Matrix4().makeBasis(rt, up, fw.clone().negate()); camera.quaternion.setFromRotationMatrix(M);
   resize();
 }
 function leavePhoto(keepCam){
-  photoCam=null; controls.enabled=true; photo.style.display='none'; $('#photoCtl').hidden=true;
-  [...document.querySelectorAll('#views button')].forEach(x=>x.setAttribute('aria-pressed','false'));
+  photoCam=null; controls.enabled=true; photo.style.display='none'; $('#cmp').style.display='none'; applyFilters();
   if(!keepCam){ camera.position.set(330,330,620); controls.target.set(-220,0,40); controls.update(); }
   resize();
 }
@@ -666,13 +704,15 @@ function resize(){
 new ResizeObserver(resize).observe(stage); resize();
 const _v=new THREE.Vector3();
 function scaleMarkers(){ const h=renderer.domElement.clientHeight||800, k=2*Math.tan(camera.fov*Math.PI/360)/h;
-  for (const mk of markers){ if(!mk.parent.visible) continue; const d=_v.copy(mk.position).distanceTo(camera.position); mk.visible = mk.userData.want && !(walking && d>180); if(!mk.visible) continue; const px=walking?26:30; mk.scale.set(px*k*d*0.8, px*k*d, 1); } }
+  for (const mk of markers){ if(!mk.parent.visible) continue; const d=_v.copy(mk.position).distanceTo(camera.position); mk.visible = mk.userData.want && !photoCam && !(walking && d>180); if(!mk.visible) continue; const px=walking?26:30; mk.scale.set(px*k*d*0.8, px*k*d, 1); } }
 renderer.setAnimationLoop(now=>{ scaleMarkers(); walkStep(now); if(!walking&&!photoCam) flyStep(now); if(!photoCam && !walking) controls.update(); renderer.render(scene,camera); });
 { const m=location.hash.match(/walk=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/); if(m) startWalk(+m[1],+m[2],+m[3]); }
 // view from any point: #look=e,n,height,targetE,targetN,targetHeight (heights above the ground; for sharing and testing)
 { const m=location.hash.match(/look=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/);
   if(m){ const v=m.slice(1).map(Number); camera.position.set(v[0], zAt(v[0],v[1])+v[2], -v[1]); controls.target.set(v[3], zAt(v[3],v[4])+v[5], -v[4]); controls.update(); } }
 { const m=location.hash.match(/date=(\d)/); if(m){ slice=+m[1]; applyFilters(); } }
+// open a period photo view directly: #view=<id>&op=<0-100>   (ids as in the gallery, e.g. 71, 195, mhs72461)
+{ const m=location.hash.match(/view=([\w-]+)/); if(m){ const v=allViews.find(x=>String(x.id)===m[1]); if(v){ enterPhoto(v); const o=location.hash.match(/op=(\d+)/); if(o) setOp(+o[1]); } } }
 </script>
 </body>
 </html>

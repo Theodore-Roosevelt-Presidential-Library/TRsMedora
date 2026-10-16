@@ -96,6 +96,10 @@ export function makeTextures() {
     g.beginPath(); g.moveTo(10, h - 12); g.lineTo(10, 70); g.quadraticCurveTo(12, 22, w / 2, 8); g.quadraticCurveTo(w - 12, 22, w - 10, 70); g.lineTo(w - 10, h - 12); g.fill();
     g.fillStyle = '#f1ece0'; g.fillRect(w / 2 - 2, 20, 4, h - 32); for (let y = 90; y < h - 20; y += 52) g.fillRect(10, y, w - 20, 3);
   }, [1, 1]); TEX.windowLancet.repeat.set(1, 1);
+  TEX.blindArch = canvasTex(96, 128, (g, w, h) => {   // a pointed blind arch in the brickwork over a door (St. Mary's, 1886)
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h); g.strokeStyle = '#8f8a82'; g.lineWidth = 7;
+    g.beginPath(); g.moveTo(8, h); g.lineTo(8, 60); g.quadraticCurveTo(10, 14, w / 2, 5); g.quadraticCurveTo(w - 10, 14, w - 8, 60); g.lineTo(w - 8, h); g.stroke();
+  }, [1, 1]); TEX.blindArch.repeat.set(1, 1);
   TEX.vlog = canvasTex(256, 256, (g, w, h) => {   // vertical cedar logs, stockade style (Cantonment)
     g.fillStyle = '#6a6a6a'; g.fillRect(0, 0, w, h);
     for (let x = 0; x < w; x += w / 9) { const grd = g.createLinearGradient(x, 0, x + w / 9, 0); grd.addColorStop(0, '#777'); grd.addColorStop(.5, '#f2f2f2'); grd.addColorStop(1, '#7c7c7c'); g.fillStyle = grd; g.fillRect(x + 1, 0, w / 9 - 2, h); }
@@ -207,7 +211,7 @@ function mat(key, grade) {
   const [kind, color] = isSign ? ['sign', null] : key.split('#');
   const col = color ? new THREE.Color('#' + color) : new THREE.Color(0xffffff);
   const map = {wall_clapboard: TEX.clapboard, wall_drop: TEX.drop, wall_boardbatten: TEX.boardbatten, wall_brick: TEX.brick, wall_yellowbrick: TEX.yellowbrick, wall_log: TEX.log,
-    roof_shingle: TEX.shingle, roof_tin: TEX.tin, roof_sod: TEX.sod, roof_boards: TEX.boards, wall_vlog: TEX.vlog, window: TEX.window, windowArched: TEX.windowArched, windowLancet: TEX.windowLancet, door: TEX.door, storefront: TEX.storefront,
+    roof_shingle: TEX.shingle, roof_tin: TEX.tin, roof_sod: TEX.sod, roof_boards: TEX.boards, wall_vlog: TEX.vlog, blindArch: TEX.blindArch, window: TEX.window, windowArched: TEX.windowArched, windowLancet: TEX.windowLancet, door: TEX.door, storefront: TEX.storefront,
     plank: TEX.plank, trim: null, stone: null, dark: null, coach: TEX.coach}[kind] || (isSign ? SIGNS[key] : undefined);
   const m = new THREE.MeshStandardMaterial({color: col, map: map || null, roughness: kind.startsWith('roof_tin') ? 0.55 : 0.92, metalness: kind === 'roof_tin' ? 0.3 : 0, side: THREE.DoubleSide});
   // confidence is shown by a marker above the building, not by transparency
@@ -420,7 +424,31 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
     const t = along / fc.len; return towardB ? t > 1 - st.win_skip.frac : t < st.win_skip.frac;
   };
   const rear = toward([-front.n[0], -front.n[1]]);
+  const compass = (fc) => Math.abs(fc.n[0]) > Math.abs(fc.n[1]) ? (fc.n[0] > 0 ? 'E' : 'W') : (fc.n[1] > 0 ? 'N' : 'S');
+  // explicit openings for a face, read from a drone model or photographs: {S: {0: [[kind, t], ...], 1: [...]}}
+  // t = centre as a fraction of the wall from the left, seen from outside. kinds: win, shut (closed shutters), door, double, hooddoor, archdoor
+  const drawOpenings = (fc, spec) => {
+    const A = P2(F, ...fc.a), B = P2(F, ...fc.b), l2r = ((B[0] - A[0]) * -fc.n[1] + (B[1] - A[1]) * fc.n[0]) > 0;
+    for (const [fl, items] of Object.entries(spec)) for (const [kind, t] of items) {
+      const al = (l2r ? t : 1 - t) * fc.len, s0 = +fl, base = s0 === 0 ? 0 : s0 * sh;
+      if (kind === 'win' || kind === 'shut') {
+        if (kind === 'shut') put(fc, al, base + (s0 === 0 ? .95 : .76), winW * 1.05, Math.min(1.6, sh * .5), `trim#${(st.shutters || '#6b5a48').slice(1)}`, .07);   // shutters closed over the window
+        else put(fc, al, base + (s0 === 0 ? .95 : .76), winW, Math.min(1.6, sh * .5), winKey);
+      } else {
+        const w = kind === 'double' ? 1.6 : 1.0; put(fc, al, base + .05, w, 2.25, 'door');
+        if (kind === 'archdoor') put(fc, al, base + 2.3, w + .5, 1.5, `blindArch#${(st.wall_color || '#e9e3d6').slice(1)}`, .03);
+        if (kind === 'hooddoor') {   // small gabled hood over the door on brackets
+          const c = [A[0] + (B[0] - A[0]) * al / fc.len, A[1] + (B[1] - A[1]) * al / fc.len], ux = (B[0] - A[0]) / fc.len, uy = (B[1] - A[1]) / fc.len, n = fc.n;
+          const pt = (x, o, h) => V(c[0] + ux * x + n[0] * o, c[1] + uy * x + n[1] * o, z0 + base + h);
+          for (const sg of [-1, 1]) bk.add(roofKey, quad(pt(sg * .9, 0, 2.45), pt(sg * .9, .95, 2.45), pt(0, .95, 2.95), pt(0, 0, 2.95), [0, 0], [1, 0], [1, 1], [0, 1]));
+          bk.add(trimKey, tri(pt(-.9, .95, 2.45), pt(.9, .95, 2.45), pt(0, .95, 2.95), [0, 0], [1, 0], [.5, 1]));
+          for (const sg of [-1, 1]) bk.add(trimKey, beam(pt(sg * .75, 0, 2.0), pt(sg * .75, .85, 2.42), .07));
+        }
+      }
+    }
+  };
   for (const fc of faces) {
+    if (st.openings && st.openings[compass(fc)]) { drawOpenings(fc, st.openings[compass(fc)]); continue; }
     if (st.bay_window && fc === toward(DIRS[st.bay_window.side] || front.n) && st.bay_window.face_only) continue;
     const isFront = fc === front;
     let n = fc.long ? (st.bays ?? Math.round(fc.len / 3)) : (fc === rear && st.rear_bays != null ? st.rear_bays : (st.gable_bays ?? 1));
@@ -499,7 +527,7 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
     if (pc.roof !== false) {
       const ox = (fc.n[0]) * (d + .25), oy = (fc.n[1]) * (d + .25), e0 = (pc.extend || 0) / 2;
       const ux = Math.cos(rot) * e0, uy = Math.sin(rot) * e0;
-      bk.add(roofKey, quad(V(s1[0] + ox + ux, s1[1] + oy + uy, z0 + fh + ph), V(s0[0] + ox - ux, s0[1] + oy - uy, z0 + fh + ph), V(s0[0] - ux, s0[1] - uy, z0 + fh + ph + .7), V(s1[0] + ux, s1[1] + uy, z0 + fh + ph + .7), [0, 0], [len, 0], [len, d], [0, d]));
+      bk.add(roofKey, quad(V(s1[0] + ox + ux, s1[1] + oy + uy, z0 + fh + ph), V(s0[0] + ox - ux, s0[1] + oy - uy, z0 + fh + ph), V(s0[0] - ux, s0[1] - uy, z0 + fh + ph + (pc.rise ?? .7)), V(s1[0] + ux, s1[1] + uy, z0 + fh + ph + (pc.rise ?? .7)), [0, 0], [len, 0], [len, d], [0, d]));
       const posts = Math.max(2, Math.round(len / (pc.post_spacing || 2.5)) + 1);
       for (let i = 0; i < posts; i++) { const t = i / (posts - 1); const x = s0[0] + (s1[0] - s0[0]) * t + fc.n[0] * (d - .15), y = s0[1] + (s1[1] - s0[1]) * t + fc.n[1] * (d - .15); bk.add(trimKey, box(x, z0 + fh + ph / 2, -y, .16, ph, .16)); }
     }

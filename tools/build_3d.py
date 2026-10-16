@@ -243,9 +243,9 @@ STYLE = {
         barn=True, basis='Cow Boy (240 x 42 freight house); appearance a guess. The 1885-86 overviews show open ground at this spot, so its position is unconfirmed'),
  # ---- Medora, churches and houses
  'st-marys-church': dict(wall='yellowbrick', wall_color='#e8e1d1', trim='#f2ede2', roof='shingle', front='W', ridge='front', stories=1, bays=5, gable_bays=1, rear_bays=0,
-        arched='lancet', win_w=0.7, win_h=2.8, win_skip=dict(**{'from': 'W'}, frac=0.22), front_openings=[['double', 0.5]],
+        arched='lancet', win_w=0.7, win_h=2.8, win_skip=dict(**{'from': 'W'}, frac=0.22), openings=dict(W={0: [['archdoor', 0.5]]}),
         belfry=dict(w=2.0, base=0.4, stage=1.6, roof=1.5, back=0.3), chimneys=0,
-        basis='SHSND 00042-00077 (c.1886) and the standing church: pale brick that reads near-white in the prints; west front with a central double door under a pointed hood and no other openings; four tall pointed (lancet) windows on the rear three-quarters of the side walls, the front quarter blank; blank east gable; small square open belfry on the ridge just behind the west gable (shingled base, open stage with arched openings, pyramid roof), about 2 m wide'),
+        basis='SHSND 00042-00077 (c.1886) and the standing church: pale brick that reads near-white in the prints; west front with a central door under a pointed blind arch in the brickwork and no other openings (today the same door and arch, with round-headed side windows that replaced the pointed ones); four tall pointed (lancet) windows on the rear three-quarters of the side walls, the front quarter blank; blank east gable; small square open belfry on the ridge just behind the west gable (shingled base, open stage with arched openings, pyramid roof), about 2 m wide'),
  'von-hoffman-house': dict(wall='brick', wall_color='#a95c43', trim='#efe9dc', roof='shingle', front='S', ridge='long', stories=1.5, bays=5, gable_bays=2, arched=True,
         jerkin=['S', 'N'], jerkin_clip=0.3, front_openings=[['win', 0.25], ['door', 0.5], ['win', 0.75]],
         porch=[dict(side='S', depth=2.4, h=0.35, post_spacing=2.6, rail=True)], chimneys=2,
@@ -256,9 +256,14 @@ STYLE = {
  # ---- the Chateau (colours as the State Historical Society keeps it today)
  'chateau-de-mores': dict(wall='clapboard', wall_color='#a3a29b', trim='#8b2e24', roof='shingle', roof_color='#7c3428', front='E', ridge='long', stories=2, bays=6, gable_bays=3,
         eave=6.3, rise=3.1,
-        shutters='#8b2e24', chimney_at=dict(**{'from': 'W'}, at=[2.0, 17.4]),
-        porch=[dict(side='E', depth=3.0, h=0.5, post_spacing=2.4, rail=True), dict(side='S', depth=3.0, h=0.5, post_spacing=2.4, rail=True, span=[0.5, 1.0], span_from='W', extend=3.0)],
-        basis='Height: the 2021 lidar ridge (9.4 m) with a two-storey eave of about 6.3 m (the lidar eave of 3.8 m is the veranda roof). Colours follow the building as the State Historical Society of North Dakota maintains it today (grey siding with red roof and trim; the 1974 National Register nomination describes "French grey" siding with a red roof and shutters). The Cow Boy of Nov. 26, 1885 described "green sides and red roof"; the 1883-86 photographs show light walls and a dark roof, which fits either. Form from SHSND 00042-00152/-00157/-00196/-00197 and MHS 72389/72403: two-storey side-gabled main block, no dormers, board shutters; a one-storey rear wing with its ridge running north-south; a one-storey veranda with open rafters along the whole east end, wrapping the south-east corner and covering about the eastern half of the south front; chimneys near the west end and about a third from the east end, and one on the wing'),
+        shutters='#8b2e24', chimney_at=dict(**{'from': 'W'}, at=[2.6, 17.4, 22.6]),
+        openings=dict(S={0: [['win', 0.06], ['win', 0.15], ['hooddoor', 0.25], ['win', 0.5], ['door', 0.62], ['win', 0.75], ['win', 0.9]],
+                         1: [['win', 0.06], ['win', 0.14], ['shut', 0.37], ['shut', 0.54], ['shut', 0.82]]},
+                      N={1: [['win', t] for t in (0.08, 0.24, 0.4, 0.56, 0.72, 0.88)]},
+                      E={0: [['win', 0.22], ['door', 0.5], ['win', 0.78]], 1: [['win', 0.22], ['win', 0.5], ['win', 0.78]]},
+                      W={0: [['win', 0.3], ['win', 0.7]], 1: [['win', 0.5]]}),
+        porch=[dict(side='E', depth=3.0, h=0.5, post_spacing=2.4, rail=True, rise=1.1), dict(side='S', depth=3.0, h=0.5, post_spacing=2.4, rail=True, span=[0.42, 1.0], span_from='W', extend=3.0, rise=1.1)],
+        basis='Height: the 2021 lidar ridge (9.4 m) with a two-storey eave of about 6.3 m (the lidar eave of 3.8 m is the veranda roof). Colours follow the building as the State Historical Society of North Dakota maintains it today (grey siding with red roof and trim; the 1974 National Register nomination describes "French grey" siding with a red roof and shutters). The Cow Boy of Nov. 26, 1885 described "green sides and red roof"; the 1883-86 photographs show light walls and a dark roof, which fits either. Doors, windows, chimneys and the north ell follow the 2023 drone photogrammetry model of the building (Sketchfab, ajkclark) and the 1975 National Register nomination ("a one story ell on the north side"; the veranda runs along the east side and "partway down the south side"). A west door the nomination says was later made a window is not modelled as a door. Form from SHSND 00042-00152/-00157/-00196/-00197 and MHS 72389/72403: two-storey side-gabled main block, no dormers, board shutters; a one-storey rear wing with its ridge running north-south; a one-storey veranda with open rafters along the whole east end, wrapping the south-east corner and covering about the eastern half of the south front; chimneys near the west end and about a third from the east end, and one on the wing'),
  # ---- railroad
  'medora-depot': dict(wall='boardbatten', front='S', ridge='front', stories=1,
         part_styles=[dict(wall='boardbatten', wall_color='#6f5d4a', trim='#c9bfa8', timber='#5d4c3a', roof='shingle', front='S', ridge='front', stories=1,
@@ -389,9 +394,14 @@ for it in out['features']:
         q = lambda t, d: [round(a[0] + dx * t + px * d, 2), round(a[1] + dy * t + py * d, 2)]
         # main two-story block along the south front, and a rear block filling the rest of the footprint
         st['blocks'] = [[q(0, 0), q(1, 0), q(1, 9), q(0, 9)]]
-        # one-storey rear wing with its ridge running north-south (MHS 72389, SHSND 00042-00197/-00157)
-        st['parts'] = [dict(rect=[q(0.08, 9), q(0.92, 9), q(0.92, 15.5), q(0.08, 15.5)], eave=3.0, ridge=5.0,
-                            style=dict(front='N', ridge='front', stories=1, bays=2, gable_bays=3, porch=[], chimneys=1, shutters='#8b2e24'))]
+        # one-storey ell on the north side (NRHP 1975), as the 2023 drone model shows it: a long hipped wing along the whole north
+        # wall, and a front-gabled wing projecting north at its east end with a small hooded entry
+        st['parts'] = [dict(rect=[q(0.03, 9), q(0.97, 9), q(0.97, 15.0), q(0.03, 15.0)], eave=3.0, ridge=4.8,
+                            style=dict(front='N', ridge='hip', stories=1, bays=6, gable_bays=1, porch=[], chimneys=1, shutters='#8b2e24',
+                                       chimney_at=dict(**{'from': 'W'}, at=[3.0]))),
+                       dict(rect=[q(0.64, 14.5), q(0.88, 14.5), q(0.88, 21.0), q(0.64, 21.0)], eave=3.0, ridge=5.4,
+                            style=dict(front='N', ridge='front', stories=1, bays=2, gable_bays=1, porch=[], chimneys=0, shutters='#8b2e24',
+                                       openings=dict(N={0: [['hooddoor', 0.3], ['win', 0.72]]})))]
     if 'size' in st and it.get('rect'):
         RR = it['rect']; cx = sum(p[0] for p in RR) / 4; cy = sum(p[1] for p in RR) / 4
         e0 = (RR[1][0] - RR[0][0], RR[1][1] - RR[0][1]); e1 = (RR[2][0] - RR[1][0], RR[2][1] - RR[1][1])
@@ -525,6 +535,18 @@ for d in np.arange(10, rl_.length, 45):
     e, n = q.x + nx * 11, q.y + ny * 11
     poles.append([round(e, 1), round(n, 1), round(zat(e + ORIGIN[0], n + ORIGIN[1]) - ORIGIN[2], 2)])
 out['poles'] = poles
+
+# single-building period photos with an approximate (hand-fitted) camera, for the photo gallery
+import csv as _csv
+_cat = {r['image']: r['url'] for r in _csv.DictReader(open(R('data', 'photo_catalog_1880s.csv')))}
+out['photo_views'] = []
+for v in json.load(open(R('data', 'photo_views.json'))):
+    key = v['ref'].replace('SHSND ', 'shsnd:').replace('MHS ', 'mhs:')
+    g = zat(v['e'] + ORIGIN[0], v['n'] + ORIGIN[1])
+    f = (v['H'] / 2) / math.tan(math.radians(v['vfov'] / 2))
+    out['photo_views'].append(dict(id=v['id'], ref=v['ref'], title=v['title'], date=v['date'], url=v['img'], thumb=v['thumb'], page=_cat.get(key, v['page']),
+                                   credit=v['credit'], approx=True, fit=v.get('fit', 'eye'), W=v['W'], H=v['H'], C=[v['e'] + ORIGIN[0], v['n'] + ORIGIN[1], g + v['h']],
+                                   yaw=v['yaw'], pitch=v['pitch'], roll=v.get('roll', 0), f=round(f, 1), cx=v['W'] / 2, cy=v['H'] / 2))
 
 # street-level viewpoints: (title, lon, lat, look-at lon, look-at lat)
 VIEWS = [
