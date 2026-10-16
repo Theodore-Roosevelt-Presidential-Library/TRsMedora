@@ -74,5 +74,19 @@ line = LineString(pts); dense = [line.interpolate(d) for d in np.arange(0, line.
 out['river_1883'] = [loc(q.x, q.y) + [round(zat(q.x, q.y) - ORIGIN[2] + 0.3, 2)] for q in dense]
 out['terrain'] = {'x0': meta['x0'] - ORIGIN[0], 'y1': meta['y1'] - ORIGIN[1], 'res': meta['res'], 'cols': meta['cols'], 'rows': meta['rows'],
                   'z0': meta['z0'] - ORIGIN[2], 'scale': meta['scale'], 'file': 'terrain.bin'}
+
+# street-level viewpoints: (title, lon, lat, look-at lon, look-at lat)
+VIEWS = [
+ ('Little Missouri depot, where Roosevelt stepped off the train (Sept. 1883)', -103.53262, 46.91652, -103.532968, 46.91594),
+ ('Main Street outside the Hotel de Mores', -103.52628, 46.91378, -103.525635, 46.913867),
+ ('Third Avenue by the Ferris store', -103.52540, 46.91482, -103.525759, 46.915065),
+ ('St. Mary\'s Church and the Von Hoffman House', -103.52300, 46.91420, -103.52178, 46.914),
+ ('Below the packing-plant chimney', -103.52725, 46.91580, -103.527793, 46.916084),
+ ('The Chateau lawn, looking across to Medora', -103.53430, 46.91265, -103.5255, 46.9142),
+]
+out['viewpoints'] = []
+for title, lo, la, tlo, tla in VIEWS:
+    x, y = T.transform(lo, la); tx, ty = T.transform(tlo, tla)
+    out['viewpoints'].append({'title': title, 'at': loc(x, y), 'heading': round(math.degrees(math.atan2(tx - x, ty - y)) % 360, 1)})
 json.dump(out, open(R('map3d', 'data', 'scene.json'), 'w'))
 print(len(out['features']), 'features written to map3d/data/scene.json')

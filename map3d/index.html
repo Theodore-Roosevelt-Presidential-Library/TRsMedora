@@ -34,6 +34,11 @@ button{font:inherit;color:inherit}
 #stage canvas{display:block;position:absolute}
 #photo{position:absolute;pointer-events:none;display:none;object-fit:fill;z-index:2}
 #tip{position:absolute;pointer-events:none;font:600 13px var(--sans);background:var(--paper);border:1px solid var(--ink);border-radius:3px;padding:2px 7px;display:none;white-space:nowrap;z-index:5}
+#walkhint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;background:rgba(231,235,227,.94);border:1px solid var(--rule);border-radius:4px;padding:6px 12px;font-size:13px;color:var(--ink-2);display:none;text-align:center}
+#walkhint b{color:var(--ink)}
+#stage.picking canvas{cursor:crosshair}
+#compass{position:absolute;right:14px;bottom:14px;z-index:4;width:54px;height:54px;border-radius:50%;background:rgba(231,235,227,.94);border:1px solid var(--rule);display:none}
+#compass span{position:absolute;left:50%;top:50%;font:700 12px var(--serif);transform-origin:0 0}
 #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:italic 17px var(--serif);color:var(--ink-2)}
 
 .chain{position:absolute;z-index:4;left:50%;transform:translateX(-50%);top:14px;display:flex;
@@ -84,6 +89,11 @@ button{font:inherit;color:inherit}
     <p class="sub">The two towns and the Chateau as Roosevelt knew them, 1883 to 1887, as simple shapes on today's ground.</p>
     <p class="small">Drag to turn, right-drag or two fingers to pan, scroll or pinch to zoom. Click a building for its sources. <a href="../map/">Back to the 2D map</a>.</p>
 
+    <h2>Walk the town</h2>
+    <p class="small">Drop a pin anywhere and stand there at eye height. Drag to look around, click the ground to walk to it, or use the arrow keys.</p>
+    <div class="btnrow" style="margin-top:0"><button class="btn" id="pinBtn" type="button">Drop a pin</button><button class="btn" id="exitWalk" type="button" hidden>Back to the overview</button></div>
+    <div class="views" id="spots" style="margin-top:10px"></div>
+
     <h2>Stand where the photographer stood</h2>
     <p class="small">Each button puts you at the camera position solved for a period photograph. Slide the photo over the model to check one against the other.</p>
     <div class="views" id="views"></div>
@@ -110,6 +120,8 @@ button{font:inherit;color:inherit}
     <nav class="chain" aria-label="Choose a date"><ol id="chain"></ol></nav>
     <img id="photo" alt="">
     <div id="tip"></div>
+    <div id="walkhint"><b>Drag</b> to look · <b>click the ground</b> to walk · <b>arrows / WASD</b> to move, <b>Shift</b> to run · <b>scroll</b> to zoom · <b>Esc</b> to leave</div>
+    <div id="compass" aria-hidden="true"></div>
     <div id="loading">Loading terrain…</div>
   </div>
 </div>
@@ -156,6 +168,7 @@ controls.target.set(-220, 0, 40); controls.maxPolarAngle = Math.PI*0.495; contro
 const P = (e,n,u) => new THREE.Vector3(e, u, -n);
 
 // ---------- terrain
+let ground;
 function zAt(e,n){
   const c=(e-terr.x0)/terr.res-0.5, r=(terr.y1-n)/terr.res-0.5;
   const c0=Math.max(0,Math.min(terr.cols-2,Math.floor(c))), r0=Math.max(0,Math.min(terr.rows-2,Math.floor(r)));
@@ -190,7 +203,7 @@ function zAt(e,n){
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos,3)); g.setAttribute('color', new THREE.BufferAttribute(col,3));
   g.setIndex(new THREE.BufferAttribute(idx,1)); g.computeVertexNormals();
-  scene.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({vertexColors:true})));
+  ground = new THREE.Mesh(g, new THREE.MeshLambertMaterial({vertexColors:true})); scene.add(ground);
 }
 
 // ---------- lines
@@ -331,6 +344,16 @@ let downAt=null;
 renderer.domElement.addEventListener('pointerdown',e=>downAt=[e.clientX,e.clientY]);
 renderer.domElement.addEventListener('pointerup',e=>{
   if(!downAt || Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1])>5) return;
+  if (picking || walking){
+    const h=hit(e);
+    if (h && !picking){ showDetail(h.object.userData); return; }
+    const gh=groundHit(e); if(!gh) return;
+    if (picking){ picking=false; stage.classList.remove('picking'); $('#pinBtn').textContent='Drop a pin';
+      const fw=new THREE.Vector3(); camera.getWorldDirection(fw);
+      startWalk(gh.point.x, -gh.point.z, Math.atan2(fw.x,-fw.z)*180/Math.PI); }
+    else walkTo(gh.point.x, -gh.point.z);
+    return;
+  }
   const h=hit(e); if(h) showDetail(h.object.userData);
 });
 const tip=$('#tip');
@@ -360,6 +383,7 @@ function camBasis(c){
   return {rt:T(rt), up:T(up), fw:T(f)};
 }
 function enterPhoto(c, btn){
+  if (walking) leaveWalk();
   photoCam=c; controls.enabled=false;
   [...document.querySelectorAll('#views button')].forEach(x=>x.setAttribute('aria-pressed', String(x===btn)));
   photo.src=c.url; photo.style.display='block'; $('#photoCtl').hidden=false; $('#photoLink').href=c.page;
@@ -368,14 +392,101 @@ function enterPhoto(c, btn){
   const M=new THREE.Matrix4().makeBasis(rt, up, fw.clone().negate()); camera.quaternion.setFromRotationMatrix(M);
   resize();
 }
-function leavePhoto(){
+function leavePhoto(keepCam){
   photoCam=null; controls.enabled=true; photo.style.display='none'; $('#photoCtl').hidden=true;
   [...document.querySelectorAll('#views button')].forEach(x=>x.setAttribute('aria-pressed','false'));
-  camera.position.set(330,330,620); controls.target.set(-220,0,40); controls.update(); resize();
+  if(!keepCam){ camera.position.set(330,330,620); controls.target.set(-220,0,40); controls.update(); }
+  resize();
 }
-$('#exitPhoto').onclick=leavePhoto;
+$('#exitPhoto').onclick=()=>leavePhoto();
 $('#op').oninput=e=>{ photo.style.opacity=e.target.value/100; $('#opv').textContent=e.target.value+'%'; };
 photo.style.opacity=.6;
+
+// ---------- walk mode (street-level view)
+const EYE=1.65;
+let picking=false, walking=false, yaw=0, pitch=0, moveAnim=null;
+const keys={};
+const pinGrp=new THREE.Group(); scene.add(pinGrp);
+{
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.25,10,8), new THREE.MeshLambertMaterial({color:0x7e2a1e})); post.position.y=5;
+  const head=new THREE.Mesh(new THREE.SphereGeometry(2.2,16,12), new THREE.MeshLambertMaterial({color:0x7e2a1e})); head.position.y=11;
+  pinGrp.add(post,head); pinGrp.visible=false;
+}
+function groundHit(ev){
+  const r=renderer.domElement.getBoundingClientRect();
+  mouse.set(((ev.clientX-r.left)/r.width)*2-1, -((ev.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(mouse, camera); return ray.intersectObject(ground,false)[0];
+}
+function setLook(){ camera.quaternion.setFromEuler(new THREE.Euler(pitch*Math.PI/180, -yaw*Math.PI/180, 0, 'YXZ')); }
+function placeAt(e,n){ camera.position.set(e, zAt(e,n)+EYE, -n); pinGrp.position.set(e, zAt(e,n), -n); updateHash(); }
+function startWalk(e,n,heading){
+  if (photoCam) leavePhoto(true);
+  walking=true; controls.enabled=false; yaw=heading||0; pitch=0;
+  camera.near=0.1; camera.fov=60; camera.updateProjectionMatrix();
+  scene.fog.near=400; scene.fog.far=3200;
+  placeAt(e,n); setLook(); pinGrp.visible=false;
+  $('#walkhint').style.display='block'; $('#compass').style.display='block'; $('#exitWalk').hidden=false;
+}
+function leaveWalk(){
+  walking=false; controls.enabled=true; camera.near=1; camera.fov=40; camera.updateProjectionMatrix();
+  scene.fog.near=1800; scene.fog.far=4200;
+  $('#walkhint').style.display='none'; $('#compass').style.display='none'; $('#exitWalk').hidden=true;
+  [...document.querySelectorAll('#spots button')].forEach(x=>x.setAttribute('aria-pressed','false'));
+  pinGrp.visible=true;
+  const p=camera.position.clone();
+  controls.target.set(p.x,p.y-EYE,p.z); camera.position.set(p.x+260,p.y+240,p.z+300); controls.update();
+  history.replaceState(null,'',location.pathname);
+}
+function walkTo(e,n){
+  const from=camera.position.clone(), to=new THREE.Vector3(e, zAt(e,n)+EYE, -n);
+  const d=from.distanceTo(to); if(d<0.5) return;
+  moveAnim={from,to,t0:performance.now(),dur:Math.min(4000, 400+d*25)};
+}
+$('#pinBtn').onclick=()=>{
+  if (walking) leaveWalk();
+  picking=!picking; stage.classList.toggle('picking',picking);
+  $('#pinBtn').textContent= picking ? 'Click the ground…' : 'Drop a pin';
+};
+$('#exitWalk').onclick=leaveWalk;
+(scene0.viewpoints||[]).forEach(v=>{
+  const b=document.createElement('button'); b.type='button'; b.innerHTML=`<b>${esc(v.title)}</b>`;
+  b.onclick=()=>{ startWalk(v.at[0], v.at[1], v.heading); [...document.querySelectorAll('#spots button')].forEach(x=>x.setAttribute('aria-pressed',String(x===b))); };
+  $('#spots').appendChild(b);
+});
+// look by dragging
+let drag=null;
+renderer.domElement.addEventListener('pointerdown',e=>{ if(walking){ drag=[e.clientX,e.clientY]; renderer.domElement.setPointerCapture(e.pointerId);} });
+renderer.domElement.addEventListener('pointermove',e=>{
+  if(!walking||!drag) return;
+  const k=camera.fov/renderer.domElement.clientHeight;
+  yaw-=(e.clientX-drag[0])*k; pitch=Math.max(-80,Math.min(80,pitch+(e.clientY-drag[1])*k)); drag=[e.clientX,e.clientY]; setLook();
+});
+renderer.domElement.addEventListener('pointerup',()=>{ if(walking){ drag=null; updateHash(); } });
+renderer.domElement.addEventListener('wheel',e=>{ if(!walking) return; e.preventDefault();
+  camera.fov=Math.max(15,Math.min(80,camera.fov+e.deltaY*0.03)); camera.updateProjectionMatrix(); },{passive:false});
+addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(walking) leaveWalk(); if(picking) $('#pinBtn').click(); } if(walking && !e.target.closest('input')) keys[e.key.toLowerCase()]=true; });
+addEventListener('keyup',e=>{ keys[e.key.toLowerCase()]=false; });
+let lastT=performance.now();
+function walkStep(now){
+  const dt=Math.min(0.1,(now-lastT)/1000); lastT=now;
+  if(!walking) return;
+  if (moveAnim){
+    const t=Math.min(1,(now-moveAnim.t0)/moveAnim.dur), s=t*t*(3-2*t);
+    const p=moveAnim.from.clone().lerp(moveAnim.to,s); camera.position.set(p.x, zAt(p.x,-p.z)+EYE, p.z);
+    if(t>=1){ moveAnim=null; updateHash(); }
+  }
+  const f=(keys['w']||keys['arrowup']?1:0)-(keys['s']||keys['arrowdown']?1:0);
+  const r=(keys['d']?1:0)-(keys['a']?1:0); const turn=(keys['arrowright']?1:0)-(keys['arrowleft']?1:0);
+  if(turn){ yaw+=turn*60*dt; setLook(); }
+  if(f||r){
+    moveAnim=null; const sp=(keys['shift']?6:1.6)*dt, y=yaw*Math.PI/180;
+    const e=camera.position.x+(Math.sin(y)*f+Math.cos(y)*r)*sp, n=-camera.position.z+(Math.cos(y)*f-Math.sin(y)*r)*sp;
+    camera.position.set(e, zAt(e,n)+EYE, -n);
+  }
+  const c=$('#compass'); c.innerHTML=['N','E','S','W'].map((L,i)=>{const a=(i*90-yaw)*Math.PI/180; return `<span style="transform:translate(${Math.sin(a)*19-4}px,${-Math.cos(a)*19-8}px);color:${L==='N'?'#7e2a1e':'#1e2b31'}">${L}</span>`;}).join('');
+}
+// shareable street-level links: #walk=east,north,heading (local metres)
+function updateHash(){ if(!walking) return; history.replaceState(null,'',`#walk=${camera.position.x.toFixed(1)},${(-camera.position.z).toFixed(1)},${(((yaw%360)+360)%360).toFixed(0)}`); }
 
 // ---------- sizing (photo view letterboxes the canvas to the photograph)
 function resize(){
@@ -398,7 +509,8 @@ function resize(){
   }
 }
 new ResizeObserver(resize).observe(stage); resize();
-renderer.setAnimationLoop(()=>{ if(!photoCam) controls.update(); renderer.render(scene,camera); });
+renderer.setAnimationLoop(now=>{ walkStep(now); if(!photoCam && !walking) controls.update(); renderer.render(scene,camera); });
+{ const m=location.hash.match(/walk=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/); if(m) startWalk(+m[1],+m[2],+m[3]); }
 </script>
 </body>
 </html>

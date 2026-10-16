@@ -78,3 +78,5 @@ Live at `map3d/`, built by `tools/build_3d.py`.
 - Draw footprints from the photos for the larger unidentified buildings.
 - Add porches and the hotel's tall east block.
 - Get the drone models of the Chateau and chimney from their owner.
+
+**Walk mode (added Oct 16).** You can drop a pin, or pick one of six preset spots in `tools/build_3d.py` (VIEWS), and stand there at eye height, 1.65 m above the lidar ground. Drag to look around, click the ground to walk to that spot, use the arrow keys or WASD to move, and scroll to zoom. The address bar keeps a shareable link to the current spot in the form `#walk=east,north,heading`, in local metres from the model origin. Walls don't stop you, so you can walk through buildings.
