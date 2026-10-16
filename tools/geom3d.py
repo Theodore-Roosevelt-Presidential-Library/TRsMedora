@@ -30,7 +30,7 @@ def bearing_u(deg):
     r = math.radians(deg); return np.array([math.sin(r), math.cos(r)])
 
 
-def overrides(osm, T, ORIGIN, orig_rect):
+def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     """orig_rect(id) -> the feature's footprint rect (local) as the gazetteer has it.
     Returns (geom, extra, style_add, props):
       geom      {id: rect}            new footprints
@@ -203,4 +203,49 @@ def overrides(osm, T, ORIGIN, orig_rect):
     props['freight-house'] = dict(loc='D', notes_add='Photo audit: the 1885-86 overviews (SHSND 00042-00194/-00195) show open ground at this spot; a long gabled building with boxcars stands further south-west. Position unconfirmed.')
     props['cowboy-office'] = dict(notes_add='Photo audit: in SHSND 00042-00071 (1885) the modelled spot reads as open ground and a small flat-roofed building stands about 20 m south. The site follows Matt Briney\'s identification of the surviving building; check against the photo.')
     props['medora-depot'] = dict(notes_add='Photo audit: MHS 72461 shows the long axis perpendicular to the track with the gable end, bay window and sign facing the track, which agrees with HMdb; the depot stood about 4-5 m from the track. The 3D model follows the photo.')
+    # ------------------------------------------------ keep buildings off the platted streets
+    # The streets follow the 1883 plat (today's lot lines match it), and no 1885-86 photo shows a building standing in a
+    # street. Where a photo-placed footprint overlaps a street, it is slid off the street the way its evidence allows:
+    #  - placed by back-projection from ONE photo: along that photo's line of sight (the bearing is well fixed, the
+    #    distance is the uncertain part, +/-25 m);
+    #  - triangulated or from a written source: by the smallest move that clears the street.
+    CAMS = {'00042-00193': (610.3, -159.1), '00042-00071': (518.5, -7.1), '00042-00195': (494.7, -267.0)}
+    TOWN = Polygon([T.transform(lo, la) for lo, la in [(-103.5272, 46.9128), (-103.5200, 46.9128), (-103.5200, 46.9168), (-103.5272, 46.9168)]])
+    TOWN = Polygon([(x - ORIGIN[0], y - ORIGIN[1]) for x, y in TOWN.exterior.coords])
+    GRID = {'Main Street': 10 + 2 * 2.4, '3rd Avenue': 10, '2nd Avenue': 6, '3rd Street': 6, '4th Street': 6, '5th Street': 6, 'Broadway': 6}
+    sp = []
+    for f in osm['features']:
+        pr = f['properties']
+        if pr.get('kind') != 'road' or pr.get('name') not in GRID: continue
+        g = shape(f['geometry']); lines = [g] if g.geom_type == 'LineString' else list(g.geoms)
+        for l in lines:
+            L = LineString([(x - ORIGIN[0], y - ORIGIN[1]) for x, y in (T.transform(*c) for c in l.coords)]).intersection(TOWN)
+            if not L.is_empty: sp.append(L.buffer(GRID[pr['name']] / 2 + 0.5))
+    streets = unary_union(sp)
+    moved = {}
+    for pr in feats:
+        fid = pr['id']
+        if fid in style_add or pr.get('kind') in ('landmark', 'railroad', 'bridge'): continue
+        try: R0 = geom.get(fid) or orig_rect(fid)
+        except Exception: continue
+        P = Polygon(R0)
+        if P.area > 4000 or P.intersection(streets).area < 1.0: continue
+        ev = pr.get('evidence') or ''
+        cam = next((CAMS[k] for k in CAMS if ('solved camera of ' + k) in ev), None) if 'Back-projected' in ev else None
+        c = np.array(P.centroid.coords[0])
+        if cam is not None:
+            d = c - np.array(cam); d /= np.hypot(*d); cands = [d * t for t in sorted(np.arange(-35, 35.1, 0.5), key=abs)]
+            how = 'slid %.1f m along its line of sight from the camera of SHSND %s' % (0, next(k for k in CAMS if CAMS[k] == cam))
+        else:
+            cands = sorted([np.array([math.cos(a) * r, math.sin(a) * r]) for r in np.arange(0.5, 20.1, 0.5) for a in np.linspace(0, 2 * math.pi, 48, endpoint=False)], key=lambda v: np.hypot(*v))
+            how = 'moved by the smallest shift that clears the street'
+        for v in cands:
+            Q = Polygon([(x + v[0], y + v[1]) for x, y in R0])
+            if Q.intersection(streets).area < 0.5:
+                geom[fid] = [[round(x, 2), round(y, 2)] for x, y in Q.exterior.coords[:4]]
+                dist = float(np.hypot(*v)); moved[fid] = dist
+                note = ('Placement check (Oct 16, 2026): the footprint overlapped a platted street, so it was ' + (how.replace('0.0', '%.1f' % dist) if cam is not None else how) + ' (%.1f m) in the 3D view.' % dist)
+                props.setdefault(fid, {}); props[fid]['notes_add'] = ((props[fid].get('notes_add') or '') + ' ' + note).strip()
+                break
+    print('declash:', {k: round(v, 1) for k, v in moved.items()})
     return geom, extra, style_add, props

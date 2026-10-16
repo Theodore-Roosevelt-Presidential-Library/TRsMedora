@@ -71,3 +71,14 @@ Footprint changes and added buildings are in `tools/geom3d.py`. Looks are in `ST
 - **Still open:**
   - The plant's spur track needs the 1956–57 NPS plans; no source in hand locates it.
   - Von Hoffman House wall colour: the 1885 prints read light. Check the standing house, and its north roof end.
+
+## Placement check against the streets (Oct 16, evening)
+The streets follow the 1883 plat. Today's lot lines match it: no street centreline falls inside a modern parcel.
+
+Nine buildings overlapped a street, so the build now slides any such footprint off the street (`tools/geom3d.py`, "keep buildings off the platted streets"). How far a building may move depends on what placed it:
+- **Placed from one photo:** the bearing from the camera is well fixed, but the distance is only good to ±25 m. These buildings slide along the camera's line of sight. That covers photo85-u02, -u04, -u05, -u06, -u08, -u09 and -u12, which moved 1–9 m.
+- **Triangulated or placed from a written source:** these take the smallest move that clears the street.
+  - **Metropolitan Hotel:** moved 6.5 m north, towards today's Rough Riders Hotel on the same site (HMdb 87499).
+  - **Roller rink:** moved 3 m.
+
+Every move is within the stated uncertainty of the original placement and is recorded in the building's notes. No building now overlaps a street or another building in any date view.

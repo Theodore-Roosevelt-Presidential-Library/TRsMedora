@@ -110,7 +110,7 @@ def _orig_rect(fid, point=False):
         pu = Polygon([T.transform(*c) for c in g.exterior.coords]).minimum_rotated_rectangle
         return [[x - ORIGIN[0], y - ORIGIN[1]] for x, y in list(pu.exterior.coords)[:4]]
     raise KeyError(fid)
-GEOM3D, EXTRA3D, STYLE_ADD, PROPS3D = _overrides(_osm, T, ORIGIN, _orig_rect)
+GEOM3D, EXTRA3D, STYLE_ADD, PROPS3D = _overrides(_osm, T, ORIGIN, _orig_rect, [f['properties'] for f in _HF])
 def _utm_poly(rect): return Polygon([(x + ORIGIN[0], y + ORIGIN[1]) for x, y in rect])
 
 # ---------------------------------------------------------------- building pads
