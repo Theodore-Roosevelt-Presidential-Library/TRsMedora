@@ -495,6 +495,55 @@ add(id='medora-school', name='Early schoolhouse (probable site; later the Congre
     sources='Bismarck Weekly Tribune 1885-11-20; HMdb 88020; Billings County Pioneer 1951-02-01 (on the Historic Medora panel)', photos='shsnd:00042-00037 ("new schoolhouse", c.1930?)')
 upd('roberts-hall', evidence='+The Historic Medora "Billings County Courthouse" panel shows a winter photo captioned "Roberts Hall housed the first county offices" (1886): a two-story front-gabled frame hall with an upper-floor door, the same form as Hagedorn\'s 1919 "Bill Williams\' saloon".', sources='+; Historic Medora courthouse panel')
 upd('courthouse-cottages', notes='+Historic Medora panel: "Two small homes built in the 1880s were joined and the single building became the Billings County Courthouse in the early 1900s"; the second floor was added in 1913.')
+PH193 = 'shsnd:00042-00193 / houghton:3013473 (1885-86 butte-top view, camera solved)'
+add(id='photo85-u01', name='Unidentified building (small building beside the track, west of the depot)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.525256, 46.913249), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00071 ("B") to the lidar ground; position +/-25 m. Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00071; docs/photo-matching.md', photos=PH71)
+add(id='photo85-u02', name='Unidentified building (small building on Block 14 near Third Street)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.524492, 46.914618), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00071 ("P") and 00042-00193 to the lidar ground; position +/-25 m. Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00071; docs/photo-matching.md', photos=PH71 + '; ' + PH193)
+add(id='photo85-u03', name='Unidentified building (white house north of the Metropolitan, Block 9)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.524364, 46.915219), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00071 ("Q") and 00042-00193 to the lidar ground; position +/-25 m. Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00071; docs/photo-matching.md', photos=PH71 + '; ' + PH193)
+add(id='photo85-u04', name='Unidentified building (long white building south of Roberts Hall, toward the track)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.524566, 46.913525), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00193; docs/photo-matching.md', photos=PH193)
+add(id='photo85-u05', name='Unidentified building (small building near the track, south of Roberts Hall)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.524544, 46.913416), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00193; docs/photo-matching.md', photos=PH193)
+add(id='photo85-u06', name='Unidentified building (building by the track (near the freight-house placement))', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.524683, 46.913160), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00193; docs/photo-matching.md', photos=PH193)
+add(id='photo85-u07', name='Unidentified building (long white building north of Third Avenue near the rink)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.525288, 46.915184), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00193; docs/photo-matching.md', photos=PH193)
+add(id='photo85-u08', name='Unidentified building (building west of the Ferris store)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.526060, 46.914859), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00193; docs/photo-matching.md', photos=PH193)
+add(id='photo85-u09', name='Unidentified building (house with porch south-east of the Metropolitan)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.523382, 46.914674), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00193; docs/photo-matching.md', photos=PH193)
+add(id='photo85-u10', name='Unidentified building (building on Block 14, east side)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.523795, 46.914110), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00193; docs/photo-matching.md', photos=PH193)
+add(id='photo85-u11', name='Unidentified building (building at the far west edge of town, Block 12)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.526582, 46.914292), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00193; docs/photo-matching.md', photos=PH193)
+add(id='photo85-u12', name='Unidentified building (pair of large buildings west of Main Street near the company store)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.526066, 46.913979), 20, 30, 0),
+    evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
+    sources='00042-00193; docs/photo-matching.md', photos=PH193)
 upd('ferris-store', notes='+1885 photo: a two-story gabled building ("H") back-projects within about 25 m of this placement; its match in the other photos is not certain, so it is not triangulated.', photos='+; ' + PH71)
 upd('medora-depot', geom=rect(off(DEPOT_M, north=8), 24, 60, TRACK_BEARING % 180), form='B', stories='1 1/2',
     evidence='"near today\'s Medora Convenience Store" (HMdb 87986). Huffman\'s 1886 photo (MHS 72461) shows a one-and-a-half-story board-and-batten depot with its long side along the track, a bay window for the agent facing the track, a "MEDORA" sign with mileboards, and a covered freight end; HMdb\'s "perpendicular to the tracks" does not fit that photo. In the 1885-86 overviews a depot-sized building and loading sheds back-project within about 15-45 m of this spot.',

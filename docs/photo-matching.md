@@ -94,3 +94,11 @@ The block it stands on is De Mores Memorial Park on the 1957 NPS Tour map.
 2. Solve the Hagedorn 1919 overview with a free image centre, to measure Roberts Hall directly in 1919.
 3. Request higher-resolution copies of Haynes 91737/91738 and Huffman 72459 from MHS.
 4. Check whether De Mores Memorial Park was laid out on the hotel site.
+
+## Unidentified buildings (added Oct 16)
+
+The map also shows buildings the photos place but no source names. They are a way to show how dense the town really was.
+- **Two-photo buildings, location B:** `photo85-c`, `-f`, `-g`, `-m`, `-o`. These were triangulated from 00042-00071 and 00042-00195.
+- **Single-photo buildings, location C, form D:** `photo85-u01` to `-u12`. These were back-projected from the 00042-00071 or 00042-00193 camera, so each position is good to about ±25 m.
+
+When a *Cow Boy* clue or a deed names one of these buildings, give it the right name and fold it into the named feature.
