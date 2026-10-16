@@ -80,3 +80,38 @@ Live at `map3d/`, built by `tools/build_3d.py`.
 - Get the drone models of the Chateau and chimney from their owner.
 
 **Walk mode (added Oct 16).** You can drop a pin, or pick one of six preset spots in `tools/build_3d.py` (VIEWS), and stand there at eye height, 1.65 m above the lidar ground. Drag to look around, click the ground to walk to that spot, use the arrow keys or WASD to move, and scroll to zoom. The address bar keeps a shareable link to the current spot in the form `#walk=east,north,heading`, in local metres from the model origin. Walls don't stop you, so you can walk through buildings.
+
+## Detailed models, streets and the train (added Oct 16)
+
+**Buildings.** Each building is generated from a style entry (`STYLE` in `tools/build_3d.py`; renderer in `map3d/js/models.js`) that sets:
+- siding: clapboard, drop siding, board-and-batten, brick or log;
+- wall and trim colours;
+- roof covering and form;
+- the front side;
+- window bays per floor;
+- porches, outside stairs, chimneys, belfry, cupola, bay window and storefront.
+
+Every entry's `basis` field says where the look comes from, and the building's info panel shows it.
+- **From period photos:** the Hotel de Mores, Roberts Hall, the Metropolitan, the Ferris store, St. Mary's, the Von Hoffman House, the courthouse cottages, the company store, both depots, the Pyramid Park Hotel, the *Cow Boy* office and the packing-plant buildings.
+- **Best guesses:** sides no photo shows, and all paint colours except the Chateau's "green sides and red roof" (*Cow Boy*, 1885).
+- **Everything else:** a generic 1880s Dakota frame building, varied by id. Commercial buildings get a storefront and false front.
+
+**Hotel de Mores changes over time.** Before spring 1885 it is the white frame hotel of the 1883 photo. After that it has the brick veneer, porches and taller east block.
+
+**Streets.**
+- **Town streets:** the 1883 plat's north grid, the part the 1885 photos show built up, drawn as rutted dirt.
+- **Trails:** the road to the ford and Little Missouri, the road to the Chateau, and the Deadwood trail south.
+- **Sidewalks:** plank sidewalks along the Main Street business block (*Cow Boy*, Feb 1885).
+- The streets appear in the 1883 slice from late 1883 on.
+
+**Railroad.** The 3D track follows today's alignment through town, with ballast, ties and rails. The 1885–86 photos put the depot and sheds beside this alignment, not beside the plat's line. The 2D map still shows the plat's line.
+
+**The train.** It is a Northern Pacific 4-4-0 of the early 1880s with:
+- a balloon stack, brass dome and red drivers;
+- a tender, a baggage car, two coaches and a Pullman.
+
+It stands at the Medora depot, pointed west like the westbound Pacific Express. In the September 1883 slice it stands at the Little Missouri depot instead. The engine is representative of NP power of the period, not a model of any particular locomotive.
+
+**Chateau.** The Sketchfab drone models of the Chateau and the chimney show in the building panel. They can't be placed in the scene unless the owner provides the model files.
+
+**Performance.** Shadows are on by default. Add `?lite` to the URL to turn them off on slow machines.

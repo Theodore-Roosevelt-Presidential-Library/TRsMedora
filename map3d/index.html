@@ -107,9 +107,11 @@ button{font:inherit;color:inherit}
     <div class="legend-row"><span class="sw" style="background:#efe6d2"></span><span><b>Solid:</b> documented or supported (grade A or B)</span></div>
     <div class="legend-row"><span class="sw" style="background:rgba(239,230,210,.45);border-style:dashed"></span><span><b>See-through:</b> inferred (C)</span></div>
     <div class="legend-row"><span class="sw" style="background:none;border-style:dotted"></span><span><b>Outline:</b> conjectural (D)</span></div>
-    <p class="small">Colour shows walls: <span style="color:#8a3b2a">brick</span>, cream for frame, grey for unidentified buildings. Location and form are graded separately; the lower grade sets the look.</p>
+    <p class="small">Location and form are graded separately; the lower grade sets the look. Siding, colours, windows and porches follow the period photographs where one shows that side of the building; everything else is a best guess, and each building's panel says which.</p>
     <label><input type="checkbox" id="showUnk" checked> Show unidentified buildings</label>
     <label><input type="checkbox" id="showRiver" checked> Show the 1883 river channel</label>
+    <label><input type="checkbox" id="showDetail" checked> Detailed buildings (uncheck for plain shapes)</label>
+    <label><input type="checkbox" id="showTrain" checked> Show the train at the depot</label>
 
     <div class="detail" id="detail"><p class="empty">Click a building to see what is known about it.</p></div>
 
@@ -132,6 +134,8 @@ button{font:inherit;color:inherit}
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {makeTextures, buildDetailed, buildStreets, buildTrack, buildTrain} from './js/models.js';
+const TEX = makeTextures();
 
 const SLICES = [
   {t:1883.69, when:'Sept. 1883', what:'Roosevelt arrives'},
@@ -152,13 +156,20 @@ $('#loading').remove();
 
 // ---------- renderer, scene, camera
 const renderer = new THREE.WebGLRenderer({antialias:true});
+const LITE = /lite/.test(location.search);
+renderer.shadowMap.enabled = !LITE; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05; renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 stage.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xdfe3dc);
-scene.fog = new THREE.Fog(0xdfe3dc, 1800, 4200);
+{ const c=document.createElement('canvas'); c.width=4; c.height=256; const g=c.getContext('2d'); const gr=g.createLinearGradient(0,0,0,256);
+  gr.addColorStop(0,'#8fb0c8'); gr.addColorStop(.55,'#cfdbe2'); gr.addColorStop(1,'#e9e4d6'); g.fillStyle=gr; g.fillRect(0,0,4,256);
+  const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; scene.background=t; }
+scene.fog = new THREE.Fog(0xdcdcd2, 1800, 4200);
 scene.add(new THREE.HemisphereLight(0xf4f1e8, 0x6d6a5c, 1.1));
-const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-600, 900, 500); scene.add(sun);
+const sun = new THREE.DirectionalLight(0xfff3e0, 2.4); sun.position.set(-250, 420, 260); sun.target.position.set(-150, 0, 40);
+sun.castShadow = true; sun.shadow.mapSize.set(innerWidth<820?1024:2048, innerWidth<820?1024:2048); Object.assign(sun.shadow.camera,{left:-520,right:520,top:520,bottom:-520,near:10,far:1500}); sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.4;
+scene.add(sun, sun.target);
 const camera = new THREE.PerspectiveCamera(40, 1, 1, 8000);
 camera.position.set(330, 330, 620);
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -179,13 +190,13 @@ function zAt(e,n){
 {
   const step = innerWidth<820 ? 2 : 1;
   const cols = Math.floor((terr.cols-1)/step)+1, rows = Math.floor((terr.rows-1)/step)+1;
-  const pos = new Float32Array(cols*rows*3), col = new Float32Array(cols*rows*3);
+  const pos = new Float32Array(cols*rows*3), col = new Float32Array(cols*rows*3), uvs = new Float32Array(cols*rows*2);
   const flat = new THREE.Color(0xb2b98f), slope = new THREE.Color(0xcbb894), steep1 = new THREE.Color(0xb9ab98), steep2 = new THREE.Color(0x9b8f86), lig = new THREE.Color(0x6f6a64), sco = new THREE.Color(0xa45a43);
   const tmp = new THREE.Color();
   const zz=(r,c)=>H[Math.min(r,terr.rows-1)*terr.cols+Math.min(c,terr.cols-1)]*terr.scale+terr.z0;
   for(let j=0;j<rows;j++) for(let i=0;i<cols;i++){
     const r=j*step, c=i*step, e=terr.x0+(c+0.5)*terr.res, n=terr.y1-(r+0.5)*terr.res, u=zz(r,c);
-    const k=(j*cols+i)*3; pos[k]=e; pos[k+1]=u; pos[k+2]=-n;
+    const k=(j*cols+i)*3; pos[k]=e; pos[k+1]=u; pos[k+2]=-n; uvs[(j*cols+i)*2]=e; uvs[(j*cols+i)*2+1]=n;
     const dz = Math.hypot(zz(r,c+step)-u, zz(r+step,c)-u)/(terr.res*step);
     const s = Math.atan(dz)*180/Math.PI;
     if (s<6) tmp.copy(flat);
@@ -203,7 +214,8 @@ function zAt(e,n){
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos,3)); g.setAttribute('color', new THREE.BufferAttribute(col,3));
   g.setIndex(new THREE.BufferAttribute(idx,1)); g.computeVertexNormals();
-  ground = new THREE.Mesh(g, new THREE.MeshLambertMaterial({vertexColors:true})); scene.add(ground);
+  g.setAttribute('uv', new THREE.BufferAttribute(uvs,2));
+  ground = new THREE.Mesh(g, new THREE.MeshStandardMaterial({vertexColors:true, map:TEX.grass, roughness:1})); ground.receiveShadow = true; scene.add(ground);
 }
 
 // ---------- lines
@@ -262,17 +274,28 @@ function roofGeometry(f, z0){
   const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(v,3)); g.computeVertexNormals();
   return g;
 }
+let trackDense=null;
+const ctx = {
+  zAt, grade: f => worst(f.loc, f.form),
+  streetDir(f){ const c=f.rect.reduce((s,p)=>[s[0]+p[0]/4,s[1]+p[1]/4],[0,0]); let best=null, bd=1e9;
+    for (const s of scene0.streets||[]) if (s.kind==='street') for (const p of s.pts){ const d=Math.hypot(p[0]-c[0],p[1]-c[1]); if(d<bd){bd=d;best=p;} }
+    if(!best||bd>60) return [0,-1]; const dx=best[0]-c[0], dy=best[1]-c[1], L=Math.hypot(dx,dy)||1; return [dx/L,dy/L]; }
+};
+const detailGroups=[];
 for (const f of scene0.features){
   const grp = new THREE.Group(); grp.userData = f; const m = f.massing||{};
+  const det = (f.geom==='poly' && m.roof!=='chimney' && m.roof!=='none') ? buildDetailed(f, ctx) : null;
+  if (det){ det.userData=f; det.traverse(o=>{ if(o.isMesh){ o.userData=f; pickable.push(o);} }); grp.add(det); detailGroups.push([det, null]); }
   const grade = worst(f.loc, f.form);
   if (f.geom==='line'){
-    if (f.kind==='railroad') grp.add(ribbon(f.line, 3, 0x3b3330, 0.6));
+    if (f.kind==='railroad'){ const tr=buildTrack(f.line); grp.add(tr.grp); trackDense=tr.dense; }
     else grp.add(ribbon(f.line, 6, 0x6d5a4a, 1.2));
   } else if (f.geom==='point'){
     const g=new THREE.CylinderGeometry(1.2,1.2,6,8); g.translate(f.point[0], f.ground+3, -f.point[1]);
     const mesh=new THREE.Mesh(g, material(0x7e2a1e, grade)); mesh.userData=f; pickable.push(mesh); grp.add(mesh);
   } else if (f.ring){
-    const z0 = f.ground;
+    const z0 = f.ground; const mg=new THREE.Group(); const grpReal=grp; if (det) { grp.add(mg); detailGroups[detailGroups.length-1][1]=mg; }
+    { const grp = det ? mg : grpReal;
     if (m.roof==='chimney'){
       const c = f.ring.reduce((s,p)=>[s[0]+p[0]/f.ring.length, s[1]+p[1]/f.ring.length],[0,0]);
       const g=new THREE.BoxGeometry(2.4,20,2.4); g.translate(c[0], z0+10, -c[1]);
@@ -295,8 +318,19 @@ for (const f of scene0.features){
         if (rg){ const roof=new THREE.Mesh(rg, material(roofCol, grade)); roof.material.side=THREE.DoubleSide; roof.userData=f; pickable.push(roof); grp.add(roof, edges(rg,grade)); }
       }
     }
+    }
   }
   scene.add(grp); groups.push(grp);
+}
+
+// ---------- streets and trains
+const streets = buildStreets(scene0.streets||[]); scene.add(streets);
+const trains = [];
+if (trackDense){
+  const dep = scene0.features.find(f=>f.id==='medora-depot'), lmd = scene0.features.find(f=>f.id==='lm-depot');
+  const cen = f => f.ring.reduce((s,p)=>[s[0]+p[0]/f.ring.length, s[1]+p[1]/f.ring.length],[0,0]);
+  if (dep){ const t=buildTrain(trackDense, ...cen(dep)); t.userData={from:1884.3, to:9999}; scene.add(t); trains.push(t); }
+  if (lmd){ const t=buildTrain(trackDense, ...cen(lmd)); t.userData={from:0, to:1884.3}; scene.add(t); trains.push(t); }
 }
 
 // ---------- date slices and filters
@@ -310,6 +344,10 @@ function applyFilters(){
     g.visible = on;
   }
   river.visible = $('#showRiver').checked;
+  const det = $('#showDetail').checked;
+  for (const [d, m] of detailGroups){ d.visible = det; if (m) m.visible = !det; }
+  for (const s of streets.children) s.visible = (s.userData.street.built||0) <= t;
+  for (const tr of trains) tr.visible = $('#showTrain').checked && t>=tr.userData.from && t<tr.userData.to;
   [...document.querySelectorAll('#chain button')].forEach((b,i)=>b.setAttribute('aria-pressed', String(i===slice)));
 }
 SLICES.forEach((s,i)=>{
@@ -317,7 +355,7 @@ SLICES.forEach((s,i)=>{
   b.innerHTML=`<span class="stake" aria-hidden="true"></span><span class="when">${s.when}</span><span class="what">${s.what}</span>`;
   b.onclick=()=>{slice=i; applyFilters();}; li.appendChild(b); $('#chain').appendChild(li);
 });
-$('#showUnk').onchange=applyFilters; $('#showRiver').onchange=applyFilters;
+$('#showUnk').onchange=applyFilters; $('#showRiver').onchange=applyFilters; $('#showDetail').onchange=applyFilters; $('#showTrain').onchange=applyFilters;
 applyFilters();
 
 // ---------- detail panel and hover
@@ -329,6 +367,8 @@ function showDetail(f){
     ['Height', m.eave>0 ? `eaves ${m.eave} m, ridge ${m.ridge} m (${m.src})` : '']].filter(r=>r[1]);
   $('#detail').innerHTML = `<h3>${esc(f.name)}</h3><dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join('')}</dl>`
     + (f.evidence?`<div class="block"><strong>Evidence</strong>${esc(f.evidence)}</div>`:'')
+    + (f.model?`<div class="block"><strong>Drone model of the building today</strong><iframe title="3D drone model" style="width:100%;aspect-ratio:4/3;border:1px solid #B9C3BA;border-radius:3px" loading="lazy" allow="autoplay; fullscreen; xr-spatial-tracking" src="https://sketchfab.com/models/${esc(f.model)}/embed?ui_infos=0"></iframe></div>`:'')
+    + (f.style&&f.style.basis?`<div class="block"><strong>Appearance in the model</strong>${esc(f.style.basis)}</div>`:'')
     + (f.notes?`<div class="block"><strong>Notes</strong>${esc(f.notes)}</div>`:'')
     + (f.sources?`<div class="block"><strong>Sources</strong>${esc(f.sources)}</div>`:'');
 }
