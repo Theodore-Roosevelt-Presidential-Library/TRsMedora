@@ -149,15 +149,50 @@ class Bucket {                                             // collects geometrie
 }
 
 // ---------------------------------------------------------------- materials (cached by key)
-const MATS = new Map();
+const MATS = new Map(); const SIGNS = {};
+function signText(f) {
+  const n = (f.name || '').replace(/\(.*?\)/g, '').replace(/["']/g, '').trim();
+  // Guesses only. Buildings whose photographs show no sign (Hotel de Mores, the company store, the
+  // Pyramid Park Hotel) or illegible lettering (the Cow Boy office roof) are left out on purpose.
+  const map = [[/Ferris/i, 'J. A. FERRIS'], [/Metropolitan/i, 'METROPOLITAN HOTEL'], [/Malloy/i, 'MALLOY HOUSE'], [/roller rink/i, 'ROLLER RINK'],
+    [/drug/i, 'DRUGS'], [/Fisher/i, 'J. C. FISHER'], [/Nelson/i, 'JOHN NELSON'], [/saloon/i, 'SALOON']];
+  for (const [re, t] of map) if (re.test(n)) return t; return null;
+}
+// signs read off the period photographs
+function signTex(sg) {
+  const W = sg.aspect < 0.1 ? 4096 : 2048, Hh = Math.round(W * sg.aspect);
+  return canvasTex(W, Hh, (g) => {
+    if (sg.id === 'medora-depot') {
+      // Huffman 1886 (MHS 72461): dark board, white letters, MEDORA with St. Paul and Portland mileboards at the ends
+      g.fillStyle = '#1e1d1b'; g.fillRect(0, 0, W, Hh); g.strokeStyle = '#d9d4c6'; g.lineWidth = 10; g.strokeRect(10, 10, W - 20, Hh - 20);
+      g.fillStyle = '#ece7da'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.font = `bold ${Math.round(Hh * 0.62)}px Georgia`; g.fillText('M E D O R A', W / 2, Hh / 2 + 4);
+      g.font = `bold ${Math.round(Hh * 0.24)}px Georgia`; g.fillText('ST. PAUL', W * 0.105, Hh * 0.36, W * 0.17); g.fillText('PORTLAND', W * 0.895, Hh * 0.36, W * 0.17);
+      g.fillRect(W * 0.04, Hh * 0.62, W * 0.14, 6); g.fillRect(W * 0.82, Hh * 0.62, W * 0.14, 6);   // mileage figures: not legible in the scan
+      g.fillRect(W * 0.205, 20, 6, Hh - 40); g.fillRect(W * 0.79, 20, 6, Hh - 40);
+    } else if (sg.id === 'pp-rentfree') {
+      // SHSND 00042-00180: long white banner, two lines, RENT FREE in large letters at the right
+      g.fillStyle = '#e8e2d2'; g.fillRect(0, 0, W, Hh); g.fillStyle = '#1d1b19'; g.textBaseline = 'middle';
+      g.font = `bold ${Math.round(Hh * 0.42)}px Arial`; g.textAlign = 'left';
+      g.fillText('THIS BUILDING WITH MACHINERY  |  WILL BE FURNISHED', W * 0.01, Hh * 0.3, W * 0.8);
+      g.font = `bold ${Math.round(Hh * 0.3)}px Arial`; g.fillText('TO ANY RESPONSIBLE PARTY WHO WILL START  |  ANY INDUSTRY THEREIN.', W * 0.01, Hh * 0.75, W * 0.8);
+      g.font = `bold ${Math.round(Hh * 0.66)}px Arial`; g.textAlign = 'right'; g.fillText('RENT FREE', W * 0.995, Hh * 0.53, W * 0.17);
+      g.fillRect(W * 0.82, 0, 4, Hh);
+    } else {
+      g.fillStyle = sg.bg || '#2e2a25'; g.fillRect(0, 0, W, Hh); g.fillStyle = sg.fg || '#efe6cf'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.font = `bold ${Math.round(Hh * 0.6)}px Georgia`; g.fillText(sg.text || '', W / 2, Hh / 2);
+    }
+  }, [1, 1]);
+}
 function mat(key, grade) {
   const k = key + '|' + grade;
   if (MATS.has(k)) return MATS.get(k);
-  const [kind, color] = key.split('#');
+  const isSign = key.startsWith('sign:') || key.startsWith('signguess:');
+  const [kind, color] = isSign ? ['sign', null] : key.split('#');
   const col = color ? new THREE.Color('#' + color) : new THREE.Color(0xffffff);
   const map = {wall_clapboard: TEX.clapboard, wall_drop: TEX.drop, wall_boardbatten: TEX.boardbatten, wall_brick: TEX.brick, wall_yellowbrick: TEX.yellowbrick, wall_log: TEX.log,
     roof_shingle: TEX.shingle, roof_tin: TEX.tin, roof_sod: TEX.sod, window: TEX.window, windowArched: TEX.windowArched, door: TEX.door, storefront: TEX.storefront,
-    plank: TEX.plank, trim: null, stone: null, dark: null, coach: TEX.coach}[kind];
+    plank: TEX.plank, trim: null, stone: null, dark: null, coach: TEX.coach}[kind] || (isSign ? SIGNS[key] : undefined);
   const m = new THREE.MeshStandardMaterial({color: col, map: map || null, roughness: kind.startsWith('roof_tin') ? 0.55 : 0.92, metalness: kind === 'roof_tin' ? 0.3 : 0, side: THREE.DoubleSide});
   // confidence is shown by a marker above the building, not by transparency
   MATS.set(k, m); return m;
@@ -252,7 +287,10 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade) {
     const ax = fc.a[0] + (fc.b[0] - fc.a[0]) * t0 / fc.len, ay = fc.a[1] + (fc.b[1] - fc.a[1]) * t0 / fc.len;
     const bx = fc.a[0] + (fc.b[0] - fc.a[0]) * t1 / fc.len, by = fc.a[1] + (fc.b[1] - fc.a[1]) * t1 / fc.len;
     const pa = P2(F, ax, ay), pb = P2(F, bx, by), ox = fc.n[0] * out, oy = fc.n[1] * out;
-    bk.add(key, quad(V(pa[0] + ox, pa[1] + oy, z0 + bottom), V(pb[0] + ox, pb[1] + oy, z0 + bottom), V(pb[0] + ox, pb[1] + oy, z0 + bottom + h), V(pa[0] + ox, pa[1] + oy, z0 + bottom + h), [0, 0], [1, 0], [1, 1], [0, 1]));
+    // lettering must read left-to-right for someone facing the wall from outside
+    const flip = key.startsWith('sign') && ((pb[0] - pa[0]) * -fc.n[1] + (pb[1] - pa[1]) * fc.n[0]) < 0;
+    const [u0, u1] = flip ? [1, 0] : [0, 1];
+    bk.add(key, quad(V(pa[0] + ox, pa[1] + oy, z0 + bottom), V(pb[0] + ox, pb[1] + oy, z0 + bottom), V(pb[0] + ox, pb[1] + oy, z0 + bottom + h), V(pa[0] + ox, pa[1] + oy, z0 + bottom + h), [u0, 0], [u1, 0], [u1, 1], [u0, 1]));
   };
   for (const fc of faces) {
     const isFront = fc === front;
@@ -286,7 +324,19 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade) {
   // false front: a tall square facade hiding the gable
   if (st.false_front && roofType === 'gable' && !ridgeAlongU === front.long) {
     const p = front; bk.add(wallKey, quad(L3(p.a[0], p.a[1], H), L3(p.b[0], p.b[1], H), L3(p.b[0], p.b[1], ridgeH + .5), L3(p.a[0], p.a[1], ridgeH + .5), [0, H], [p.len, H], [p.len, ridgeH + .5], [0, ridgeH + .5]));
-    const q = [(p.a[0] + p.b[0]) / 2 + p.n[0] * 0.08 * 0, (p.a[1] + p.b[1]) / 2];
+    bk.add(trimKey, quad(L3(p.a[0], p.a[1], ridgeH + .5), L3(p.b[0], p.b[1], ridgeH + .5), L3(p.b[0], p.b[1], ridgeH + .75), L3(p.a[0], p.a[1], ridgeH + .75), [0, 0], [1, 0], [1, 1], [0, 1]));
+  }
+  // signs seen in the period photographs (st.signs, from build_3d.py); drawn as boards on a wall
+  for (const sg of (st.signs || [])) {
+    let fc = front; if (sg.side) { const d = DIRS[sg.side]; let best = -9; for (const x of faces) { const dd = x.n[0] * d[0] + x.n[1] * d[1]; if (dd > best) { best = dd; fc = x; } } }
+    const key = 'sign:' + sg.id; if (!SIGNS[key]) SIGNS[key] = signTex(sg);
+    const w = Math.min(sg.w_frac ? fc.len * sg.w_frac : sg.w, fc.len - 0.4);
+    put(fc, fc.len * (sg.along ?? 0.5), sg.at, w, w * sg.aspect, key, sg.out ?? 0.08);
+  }
+  // a likely name board for a known business (not seen in any photograph; hidden unless the viewer asks for it)
+  if (st.storefront && !f.id.startsWith('photo85') && signText(f)) {
+    const key = 'signguess:' + signText(f); if (!SIGNS[key]) SIGNS[key] = letterTex(signText(f), 1024, 160, '#2e2a25', '#efe6cf', 'bold 84px Georgia');
+    const w = Math.min(front.len - 0.8, 7.5); put(front, front.len / 2, Math.min(H - 1.0, (Math.max(1, Math.floor(st.stories || 1)) > 1 ? 3.5 : H - 0.9)), w, w * 0.16, key, 0.08);
   }
   // porches
   for (const pc of (st.porch || [])) {
@@ -403,7 +453,11 @@ export function buildDetailed(f, ctx) {
     buildBlock(bk, f, Object.assign({}, st, {ridge: 'front', porch: [], chimneys: 1, bays: 2, gable_bays: 3, stories: 2.5}), z0, H + st.end_block.extra, R, d, grade);
   }
   const grp = new THREE.Group();
-  for (const mesh of bk.meshes(k => mat(k, grade))) { mesh.userData = f; grp.add(mesh); }
+  for (const [mesh, k] of bk.meshes(k => mat(k, grade)).map((m, i) => [m, [...bk.m.keys()][i]])) {
+    mesh.userData = f; mesh.name = k;
+    if (k.startsWith('sign:')) { const sg = (st.signs || []).find(s => 'sign:' + s.id === k); mesh.name = k; mesh.userData = f; mesh.signFrom = sg?.from ?? 0; mesh.signTo = sg?.to ?? 9999; }
+    grp.add(mesh);
+  }
   return grp;
 }
 
@@ -651,4 +705,13 @@ export function gradeMarker(grade) {
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({map: MARK_TEX[grade], depthTest: true, transparent: true}));
   sp.center.set(0.5, 0); sp.renderOrder = 10; sp.userData.isMarker = true;
   return sp;
+}
+
+// front face of a detailed building, for placing details in front of / behind it
+export function frontInfo(f, ctx) {
+  const st = f.style || {}, Fr = rectFrame(f.rect);
+  const dir = st.front ? DIRS[st.front] : ctx.streetDir(f);
+  const cands = [[Fr.v, Fr.L, Fr.W], [[-Fr.v[0], -Fr.v[1]], Fr.L, Fr.W], [Fr.u, Fr.W, Fr.L], [[-Fr.u[0], -Fr.u[1]], Fr.W, Fr.L]];
+  let best = cands[0], bd = -9; for (const c of cands) { const d = c[0][0] * dir[0] + c[0][1] * dir[1]; if (d > bd) { bd = d; best = c; } }
+  return {c: Fr.c, front: best[0], len: best[1], depth: best[2]};
 }

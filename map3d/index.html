@@ -87,12 +87,20 @@ button{font:inherit;color:inherit}
   <aside>
     <h1>Roosevelt's Medora in 3D</h1>
     <p class="sub">The two towns and the Chateau as Roosevelt knew them, 1883 to 1887, as simple shapes on today's ground.</p>
-    <p class="small">Drag to turn, right-drag or two fingers to pan, scroll or pinch to zoom. Click to fly to a spot (and see a building's sources); double-click to stand there at eye level. <a href="../map/">Back to the 2D map</a>.</p>
+    <p class="small">Drag to turn, right-drag or two fingers to pan, scroll or pinch to zoom. <a href="../map/">Back to the 2D map</a>.</p>
+
+    <h2>Find a building</h2>
+    <select id="finder" aria-label="Fly to a building" style="font:14px var(--sans);padding:5px;border:1px solid var(--rule);border-radius:3px;width:100%"><option value="">Choose a building…</option></select>
 
     <h2>Walk the town</h2>
-    <p class="small">Drop a pin anywhere and stand there at eye height. Drag to look around, click the ground to walk to it, or use the arrow keys.</p>
-    <div class="btnrow" style="margin-top:0"><button class="btn" id="pinBtn" type="button">Drop a pin</button><button class="btn" id="exitWalk" type="button" hidden>Back to the overview</button></div>
-    <div class="views" id="spots" style="margin-top:10px"></div>
+    <ul class="small" style="margin:0 0 8px;padding-left:18px">
+      <li><b>Click once</b> on the model to fly to that spot. Click a building to read what is known about it.</li>
+      <li><b>Double-click</b> to stand on that spot at eye height, like street view.</li>
+      <li>Once you're standing: drag to look around, click the ground to walk to it, or use the arrow keys (Shift to run). Esc returns to the overview.</li>
+    </ul>
+    <div class="btnrow" style="margin-top:0"><button class="btn" id="exitWalk" type="button" hidden>Back to the overview</button></div>
+    <p class="small" style="margin:10px 0 0">Or start from one of these spots:</p>
+    <div class="views" id="spots" style="margin-top:6px"></div>
 
     <h2>Stand where the photographer stood</h2>
     <p class="small">Each button puts you at the camera position solved for a period photograph. Slide the photo over the model to check one against the other.</p>
@@ -112,9 +120,13 @@ button{font:inherit;color:inherit}
     <label for="markers" style="display:block;margin-top:8px">Show markers</label>
     <select id="markers" style="font:14px var(--sans);padding:5px;border:1px solid var(--rule);border-radius:3px;width:100%"><option value="uncertain">Only on uncertain buildings (C and D)</option><option value="all">On every building</option><option value="none">None</option></select>
     <label><input type="checkbox" id="showUnk" checked> Show unidentified buildings</label>
-    <label><input type="checkbox" id="showRiver" checked> Show the 1883 river channel</label>
+    <label><input type="checkbox" id="showRiver" checked> Show the river in its 1883 channel</label>
     <label><input type="checkbox" id="showDetail" checked> Detailed buildings (uncheck for plain shapes)</label>
     <label><input type="checkbox" id="showTrain" checked> Show the train at the depot</label>
+    <label><input type="checkbox" id="showGuessSigns"> Add likely business signs (guesses; only the depot and packing-plant signs appear in photographs)</label>
+    <label for="light" style="display:block;margin-top:8px">Light and season</label>
+    <select id="light" style="font:14px var(--sans);padding:5px;border:1px solid var(--rule);border-radius:3px;width:100%">
+      <option value="summer-mid">Summer, midday</option><option value="summer-eve">Summer, evening</option><option value="summer-morn">Summer, early morning</option><option value="winter">Winter (the hard winter of 1886-87)</option></select>
 
     <div class="detail" id="detail"><p class="empty">Click a building to see what is known about it.</p></div>
 
@@ -137,7 +149,8 @@ button{font:inherit;color:inherit}
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {makeTextures, buildDetailed, buildStreets, buildTrack, buildTrain, gradeMarker} from './js/models.js';
+import {makeTextures, buildDetailed, buildStreets, buildTrack, buildTrain, gradeMarker, frontInfo} from './js/models.js';
+import {buildVegetation, buildTelegraph, buildingDetails, buildWagons, buildRailFence} from './js/props.js';
 const TEX = makeTextures();
 
 const SLICES = [
@@ -234,7 +247,9 @@ function ribbon(pts, width, color, y=0.25){
   const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(v,3)); g.setIndex(ix); g.computeVertexNormals();
   return new THREE.Mesh(g,new THREE.MeshBasicMaterial({color, side:THREE.DoubleSide, transparent:true, opacity:.85, depthWrite:false}));
 }
-const river = ribbon(scene0.river_1883, 22, 0x3e6e86, 0.4); scene.add(river);
+const river = ribbon(scene0.river_1883, 30, 0x5d7a78, 0.0);
+river.material = new THREE.MeshStandardMaterial({color:0x6b8583, roughness:.12, metalness:.15, transparent:true, opacity:.92});
+river.renderOrder = 1; scene.add(river);
 
 // ---------- buildings
 const MAT = {brick:0x9a4a37, frame:0xefe6d2, unknown:0xc9ccc4, stone:0xd8d0bd};
@@ -284,11 +299,15 @@ const ctx = {
     for (const s of scene0.streets||[]) if (s.kind==='street') for (const p of s.pts){ const d=Math.hypot(p[0]-c[0],p[1]-c[1]); if(d<bd){bd=d;best=p;} }
     if(!best||bd>60) return [0,-1]; const dx=best[0]-c[0], dy=best[1]-c[1], L=Math.hypot(dx,dy)||1; return [dx/L,dy/L]; }
 };
-const detailGroups=[]; const markers=[];
+const detailGroups=[]; const markers=[]; const wagonSpots=[];
 for (const f of scene0.features){
   const grp = new THREE.Group(); grp.userData = f; const m = f.massing||{};
   const det = (f.geom==='poly' && m.roof!=='chimney' && m.roof!=='none') ? buildDetailed(f, ctx) : null;
   if (det){ det.userData=f; det.traverse(o=>{ if(o.isMesh){ o.userData=f; pickable.push(o);} }); grp.add(det); detailGroups.push([det, null]);
+    const u=(f.use||'').toLowerCase(), st=f.style||{};
+    const kind = (st.storefront || /hotel|store|saloon|office|drug|shop|restaurant|rink|billiard/.test(u)) ? 'commercial' : (/residence|dwelling|house|cottage/.test(u) || f.id.startsWith('photo85-u')) ? 'dwelling' : null;
+    if (kind && !/^pp-|depot|church|cantonment|chateau/.test(f.id)){ const fi=frontInfo(f,ctx); det.add(buildingDetails(f, fi, zAt, kind));
+      if (kind==='commercial' && ([...f.id].reduce((a,c)=>a+c.charCodeAt(0),0)%3===0)) { const p=[fi.c[0]+fi.front[0]*(fi.depth/2+7.5), fi.c[1]+fi.front[1]*(fi.depth/2+7.5)]; wagonSpots.push([p[0],p[1],Math.atan2(fi.front[0],fi.front[1])]); } }
     const g=worst(f.loc,f.form), box=new THREE.Box3().setFromObject(det), mk=gradeMarker(g), c=box.getCenter(new THREE.Vector3());
     mk.position.set(c.x, box.max.y+1.5, c.z); mk.userData={f, grade:g}; grp.add(mk); markers.push(mk); }
   const grade = worst(f.loc, f.form);
@@ -337,6 +356,12 @@ for (const f of scene0.features){
   scene.add(grp); groups.push(grp);
 }
 
+// ---------- vegetation, telegraph, wagons, stock fences
+let vegetation = buildVegetation(scene0, 'summer'); scene.add(vegetation);
+const telegraph = buildTelegraph(scene0.poles||[]); telegraph.userData={from:1880}; scene.add(telegraph);
+const wagons = buildWagons(wagonSpots, zAt); scene.add(wagons);
+for (const f of scene0.features) if (f.id==='pp-holding-pens' && f.ring){ const fe=buildRailFence(f.ring, zAt); fe.userData={f}; scene.add(fe); groups.push(Object.assign(new THREE.Group(),{userData:f, visible:true}).add(fe)); scene.add(groups[groups.length-1]); }
+
 // ---------- streets and trains
 const streets = buildStreets(scene0.streets||[]); scene.add(streets);
 const trains = [];
@@ -364,6 +389,10 @@ function applyFilters(){
   for (const mk of markers){ mk.userData.want = det && (mkMode==='all' || (mkMode==='uncertain' && 'CD'.includes(mk.userData.grade))); mk.visible = mk.userData.want; }
   for (const s of streets.children) s.visible = (s.userData.street.built||0) <= t;
   for (const tr of trains) tr.visible = $('#showTrain').checked && t>=tr.userData.from && t<tr.userData.to;
+  const guess = $('#showGuessSigns').checked;
+  for (const [d] of detailGroups) d.traverse(o=>{ if(!o.isMesh||!o.name) return;
+    if (o.name.startsWith('signguess:')) o.visible = guess;
+    else if (o.name.startsWith('sign:')) o.visible = t>=o.signFrom && t<o.signTo; });
   [...document.querySelectorAll('#chain button')].forEach((b,i)=>b.setAttribute('aria-pressed', String(i===slice)));
 }
 SLICES.forEach((s,i)=>{
@@ -371,7 +400,20 @@ SLICES.forEach((s,i)=>{
   b.innerHTML=`<span class="stake" aria-hidden="true"></span><span class="when">${s.when}</span><span class="what">${s.what}</span>`;
   b.onclick=()=>{slice=i; applyFilters();}; li.appendChild(b); $('#chain').appendChild(li);
 });
-$('#showUnk').onchange=applyFilters; $('#showRiver').onchange=applyFilters; $('#showDetail').onchange=applyFilters; $('#markers').onchange=applyFilters; $('#showTrain').onchange=applyFilters;
+const groundMatSummer = ground.material, groundMatWinter = new THREE.MeshStandardMaterial({color:0xe8ecef, roughness:.9, map:TEX.grass});
+function setLight(v){
+  const winter = v==='winter';
+  const sunPos = {'summer-mid':[-250,420,260], 'summer-eve':[-520,120,-60], 'summer-morn':[480,140,220], 'winter':[-300,160,420]}[v];
+  sun.position.set(...sunPos).add(sun.target.position);
+  sun.color.set(v==='summer-eve'?0xffc98a : v==='summer-morn'?0xffe0b8 : winter?0xdfe8f2:0xfff3e0);
+  sun.intensity = winter?1.6 : v==='summer-mid'?2.4:2.0;
+  ground.material = winter ? groundMatWinter : groundMatSummer;
+  scene.fog.color.set(winter?0xd8dde2:0xdcdcd2);
+  scene.remove(vegetation); vegetation = buildVegetation(scene0, winter?'winter':'summer'); scene.add(vegetation);
+  river.material.color.set(winter?0xdfe6ea:0x6b8583); river.material.roughness = winter?.6:.12;
+}
+$('#light').onchange=e=>setLight(e.target.value);
+$('#showUnk').onchange=applyFilters; $('#showRiver').onchange=applyFilters; $('#showDetail').onchange=applyFilters; $('#markers').onchange=applyFilters; $('#showTrain').onchange=applyFilters; $('#showGuessSigns').onchange=applyFilters;
 applyFilters();
 
 // ---------- detail panel and hover
@@ -404,7 +446,7 @@ renderer.domElement.addEventListener('pointerup',e=>{
     const h=hit(e);
     if (h && !picking){ showDetail(h.object.userData); return; }
     const gh=groundHit(e); if(!gh) return;
-    if (picking){ picking=false; stage.classList.remove('picking'); $('#pinBtn').textContent='Drop a pin';
+    if (picking){ picking=false; stage.classList.remove('picking');
       const fw=new THREE.Vector3(); camera.getWorldDirection(fw);
       startWalk(gh.point.x, -gh.point.z, Math.atan2(fw.x,-fw.z)*180/Math.PI); }
     else walkTo(gh.point.x, -gh.point.z);
@@ -419,9 +461,9 @@ renderer.domElement.addEventListener('pointerup',e=>{
   clickTimer=setTimeout(()=>{ clickTimer=null; if(h) showDetail(h.object.userData); if(pt) flyTo(pt); }, 260);
 });
 let clickTimer=null, fly=null;
-function flyTo(p){
-  const off=camera.position.clone().sub(controls.target); const d=off.length(), nd=Math.max(120, Math.min(d*0.6, d));
-  off.setLength(nd);
+function flyTo(p, dist){
+  const off=camera.position.clone().sub(controls.target); const d=off.length(), nd=dist || Math.max(120, Math.min(d*0.6, d));
+  off.setLength(nd); if (dist && off.y < dist*0.45){ off.y = dist*0.45; off.setLength(dist); }
   fly={t0:performance.now(), dur:900, fromT:controls.target.clone(), toT:p.clone(), fromC:camera.position.clone(), toC:p.clone().add(off)};
 }
 function flyStep(now){ if(!fly) return; const t=Math.min(1,(now-fly.t0)/fly.dur), s=t*t*(3-2*t);
@@ -512,12 +554,32 @@ function walkTo(e,n){
   const d=from.distanceTo(to); if(d<0.5) return;
   moveAnim={from,to,t0:performance.now(),dur:Math.min(4000, 400+d*25)};
 }
-$('#pinBtn').onclick=()=>{
-  if (walking) leaveWalk();
-  picking=!picking; stage.classList.toggle('picking',picking);
-  $('#pinBtn').textContent= picking ? 'Click the ground…' : 'Drop a pin';
-};
 $('#exitWalk').onclick=leaveWalk;
+// ---------- find a building: fly to it from the inventory list
+{
+  const named = groups.filter(g=>g.userData && g.userData.name && g.userData.geom!=='line' && g.children.length);
+  const seen = new Set(), byGroup = {Identified:[], 'Unidentified (seen in photographs)':[]};
+  for (const g of named){ const f=g.userData; if (seen.has(f.id)) continue; seen.add(f.id);
+    (f.id.startsWith('photo85-') ? byGroup['Unidentified (seen in photographs)'] : byGroup.Identified).push(f); }
+  for (const [label, list] of Object.entries(byGroup)){
+    if (!list.length) continue; const og=document.createElement('optgroup'); og.label=label;
+    list.sort((a,b)=>a.name.localeCompare(b.name)).forEach(f=>{ const o=document.createElement('option'); o.value=f.id; o.textContent=f.name; og.appendChild(o); });
+    $('#finder').appendChild(og);
+  }
+  $('#finder').onchange=e=>{
+    const id=e.target.value; if(!id) return;
+    const g=named.find(x=>x.userData.id===id), f=g.userData;
+    if (walking) leaveWalk();
+    if (photoCam) $('#exitPhoto').click();
+    // switch to a date when the building stood, if it isn't standing in the current view
+    const stands = t => (f.built==null || f.built<=t) && (f.removed==null || f.removed>t);
+    if (!stands(SLICES[slice].t)){ const i=SLICES.findIndex(s=>stands(s.t)); if(i>=0){ slice=i; applyFilters(); } }
+    if (f.id.startsWith('photo85-') && !$('#showUnk').checked){ $('#showUnk').checked=true; applyFilters(); }
+    const box=new THREE.Box3().setFromObject(g), c=box.getCenter(new THREE.Vector3()), sz=box.getSize(new THREE.Vector3());
+    flyTo(c, Math.max(55, Math.min(260, Math.hypot(sz.x, sz.z)*2.4)));
+    showDetail(f);
+  };
+}
 (scene0.viewpoints||[]).forEach(v=>{
   const b=document.createElement('button'); b.type='button'; b.innerHTML=`<b>${esc(v.title)}</b>`;
   b.onclick=()=>{ startWalk(v.at[0], v.at[1], v.heading); [...document.querySelectorAll('#spots button')].forEach(x=>x.setAttribute('aria-pressed',String(x===b))); };
@@ -534,7 +596,7 @@ renderer.domElement.addEventListener('pointermove',e=>{
 renderer.domElement.addEventListener('pointerup',()=>{ if(walking){ drag=null; updateHash(); } });
 renderer.domElement.addEventListener('wheel',e=>{ if(!walking) return; e.preventDefault();
   camera.fov=Math.max(15,Math.min(80,camera.fov+e.deltaY*0.03)); camera.updateProjectionMatrix(); },{passive:false});
-addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(walking) leaveWalk(); if(picking) $('#pinBtn').click(); } if(walking && !e.target.closest('input')) keys[e.key.toLowerCase()]=true; });
+addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(walking) leaveWalk(); if(picking){ picking=false; stage.classList.remove('picking'); } } if(walking && !e.target.closest('input')) keys[e.key.toLowerCase()]=true; });
 addEventListener('keyup',e=>{ keys[e.key.toLowerCase()]=false; });
 let lastT=performance.now();
 function walkStep(now){

@@ -93,7 +93,7 @@ Live at `map3d/`, built by `tools/build_3d.py`.
 
 Every entry's `basis` field says where the look comes from, and the building's info panel shows it.
 - **From period photos:** the Hotel de Mores, Roberts Hall, the Metropolitan, the Ferris store, St. Mary's, the Von Hoffman House, the courthouse cottages, the company store, both depots, the Pyramid Park Hotel, the *Cow Boy* office and the packing-plant buildings.
-- **Best guesses:** sides no photo shows, and all paint colours except the Chateau's "green sides and red roof" (*Cow Boy*, 1885).
+- **Best guesses:** sides no photo shows, and all paint colours. The Chateau uses the colours the State Historical Society of North Dakota keeps it in today (grey siding, red roof and trim); the *Cow Boy* of Nov. 1885 described "green sides and red roof", and the photos can't settle which.
 - **Everything else:** a generic 1880s Dakota frame building, varied by id. Commercial buildings get a storefront and false front.
 
 **Hotel de Mores changes over time.** Before spring 1885 it is the white frame hotel of the 1883 photo. After that it has the brick veneer, porches and taller east block.
@@ -115,3 +115,26 @@ It stands at the Medora depot, pointed west like the westbound Pacific Express. 
 **Chateau.** The Sketchfab drone models of the Chateau and the chimney show in the building panel. They can't be placed in the scene unless the owner provides the model files.
 
 **Performance.** Shadows are on by default. Add `?lite` to the URL to turn them off on slow machines.
+
+## Ground, setting, signs and navigation (added Oct 16)
+
+**1880s ground.** The lidar ground is today's. Before modelling, `build_3d.py`:
+- smooths the valley floor (below 704 m, gentle slopes) to remove modern fills and cuts;
+- fills today's river channel where it is away from the 1883 channel, and cuts the 1883 channel in (about 2.6 m deep);
+- levels a pad under each building (footprint plus 1.5 m, blended out over 8 m). The Chateau pad is fixed at 709.9 m, which removed the hill that ran through it.
+
+**Setting.** Cottonwoods along the 1883 channel, sage on the flats, telegraph poles beside the track, and small props around buildings (hitching rails, barrels, privies, woodpiles, fences, wagons, the plant's stock pens). All of these are representative, not documented one by one. A light-and-season menu offers summer midday, evening and morning, and winter.
+
+**Confidence markers.** Uncertain buildings are no longer drawn see-through. A pin floats above each one, coloured by its grade (A green, B blue, C amber, D red).
+
+**Signs.** Only two signs can be read in the period photographs, and only those are shown by default:
+- **Medora depot** (Huffman 1886, MHS 72461): a dark board with white letters across the bay window, MEDORA, with ST. PAUL and PORTLAND mileboards at its ends. The mileage figures are not legible in the scan, so they are left blank. A smaller board above the bay can't be read and is left out.
+- **Packing plant** (SHSND 00042-00180/-00181): the banner offering the closed plant "rent free" to anyone who would start an industry in it. The photo is undated and later than the plant's closing in late 1886, so the model shows it only in the spring 1887 view. Which wall it hung on is a guess (the north wall in the model).
+
+Photos checked that show no sign: the Hotel de Mores (SHSND 00042-00076/-00086, Houghton 3013534), the 1883 frame hotel (00042-00149), the company store (Houghton 3013533), the Pyramid Park Hotel and the Little Missouri depot (Haynes 1881). The *Cow Boy* office photo (Houghton 3013536) shows two lines of lettering laid into the roof in light shingles, but the words can't be read and the print may be later than 1887, so none is modelled.
+
+A checkbox adds likely name boards for known businesses (Ferris, the Metropolitan, the roller rink and others). These are guesses and are off by default.
+
+**Navigation.**
+- **Find a building:** a list of every named building flies the view to it and opens its panel. If the building wasn't standing in the current view, the view switches to a date when it was.
+- **Clicking:** one click flies to the spot (and opens a building's panel); a double-click stands you there at eye height. These replace the earlier "Drop a pin" button.
