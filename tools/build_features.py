@@ -424,6 +424,38 @@ add(id='tiser-house', name='Tiser House ("only original building of the town of 
     evidence='"about .1 of a mile west of the Medora bridge" in 1957 (BROOKS57 p. 32). Placed roughly 0.1 mi west of the river on the north side; the 1957 bridge position needs fixing from the 1957-62 aerials.',
     sources='BROOKS57 p. 32', notes='Standing in 1957, occupied by the Ira Tiser family.')
 
+# --- 1885 bird's-eye photo (SHSND 00042-00071), camera solved against the 2021 lidar terrain
+# See docs/photo-matching.md. Base points were back-projected to the ground; expect about +/-25 m,
+# mostly along the line of sight (east-west). Identities below are inferences, not labels on the photo.
+PH71 = 'shsnd:00042-00071 (1885 bird\'s-eye, camera solved)'
+add(id='photo85-d2', name='Large two-story building (1885 photo, building "D2")', town='Medora', bank='east', kind='building',
+    built=1885.0, built_text='standing in the 1885 photo', use='unknown: candidates are Roberts Hall or the Hotel de Mores', material='frame, light-coloured',
+    stories='2', footprint_ft='about 25 x 80 (scaled from the photo)', loc='B', form='B', method='photo',
+    geom=rect((-103.524783, 46.913921), 25, 80, 0),
+    evidence='Back-projected from the 1885 photo (base of east face, pixel 660,995; about 490 m from the camera). Long side faces the camera, so the long axis runs roughly north-south. A taller gabled block (D) stands directly behind it to the west and may be attached.',
+    sources='SHSND 00042-00071; this project\'s camera solution (docs/photo-matching.md)', photos=PH71,
+    notes='Size (about 80 ft long, two full stories) fits Roberts Hall (24 x 75, Cow Boy) and sits next to today\'s Old Town Hall Theater, but the Cow Boy puts Roberts Hall on lot 7, block 17 - about 300 m southeast. Also a candidate for the Hotel de Mores (100 x 25, north of the depot). Check against SHSND 00042-00076 (Hotel de Mores, 1885).')
+add(id='photo85-d', name='Tall gabled building behind D2 (1885 photo, building "D")', town='Medora', bank='east', kind='building',
+    built=1885.0, built_text='standing in the 1885 photo', use='unknown: likely the Hotel de Mores or part of it', stories='2-3 (gable end)',
+    footprint_ft='about 25 x 40 (placeholder)', loc='C', form='C', method='photo',
+    geom=rect((-103.5254, 46.91389), 25, 40, 90),
+    evidence='Back-projected from the 1885 photo. Its base is hidden behind D2, so the true spot lies between D2 and the back-projected point (-103.525717, 46.913863); placed midway. About 70 m north of the depot, consistent with the Hotel de Mores ("a few steps from the depot").',
+    sources='SHSND 00042-00071; docs/photo-matching.md', photos=PH71,
+    notes='The 1885 hotel rebuild added kitchen and laundry wings on the north side (Cow Boy), so D and D2 may be one hotel complex. Unresolved.')
+add(id='photo85-e', name='Row of three white gabled buildings (1885 photo, "E")', town='Medora', bank='east', kind='building group',
+    built=1885.0, built_text='standing in the 1885 photo', use='unknown (dwellings or company houses?)', material='frame, white', stories='1 1/2-2',
+    footprint_ft='row about 90 ft long (placeholder)', loc='B', form='C', method='photo',
+    geom=rect((-103.526357, 46.914082), 30, 90, 0),
+    evidence='Back-projected from the 1885 photo (pixel 782,895; about 610 m from the camera), on today\'s Block 12. Three matching front-gabled buildings facing east.',
+    sources='SHSND 00042-00071; docs/photo-matching.md', photos=PH71,
+    notes='Matching buildings suggest a single builder - perhaps de Mores company housing. Look for them in the Cow Boy and the Vallombrosa album.')
+upd('hotel-de-mores', notes='+1885 photo check (docs/photo-matching.md): the large buildings "D" and "D2" stand 40-90 m east of this placement; one of them is probably the hotel. Placement left unchanged until the identification is settled.')
+upd('roberts-hall', notes='+1885 photo check: a two-story building of about the right size ("D2") stands next to today\'s Old Town Hall Theater, near the Hotel de Mores as HMdb says. If D2 is Roberts Hall, the block 17 reading is wrong or the block numbers changed.')
+upd('ferris-store', notes='+Confirmed in the 1885 photo: a two-story gabled building back-projects within about 25 m of this placement (docs/photo-matching.md).', photos='+; '+PH71)
+upd('metropolitan-hotel', notes='+Confirmed in the 1885 photo: a flat-roofed two-story building ("J") back-projects onto the Rough Riders Hotel site (docs/photo-matching.md).', photos='+; '+PH71)
+upd('medora-depot', notes='+1885 photo: a depot-sized building and loading sheds back-project to within about 15-45 m of this placement, near today\'s convenience store (docs/photo-matching.md).', photos='+; '+PH71)
+upd('pp-ice-house', notes='+1885 photo: the plant\'s large building back-projects within about 15 m of this placement (docs/photo-matching.md).', photos='+; '+PH71)
+
 # --- known but not yet located
 UNPLACED = [
     ('company-store-offices', 'De Mores company office and store (NPRC store, post office, meat market, offices)', '1883-85', 'Photographed winter 1883-84 (houghton:3013533); labelled "company store" in the 1919 panorama. Former carriage-house store room (Cow Boy 1884-05-15); plank sidewalk in front of "the Co\'s stores" (1885-02-05); Howe scales in front of the offices (1885-06-25); NPRC general offices moved here from St. Paul, Oct 1885.'),

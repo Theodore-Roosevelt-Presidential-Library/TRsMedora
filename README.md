@@ -15,11 +15,13 @@ This is an internal experiment by the Theodore Roosevelt Presidential Library. I
 | `data/sources/cowboy_building_mentions_1884-1886.csv` | Every building mention in the *Bad Lands Cow Boy*, 1884–86 (446 rows, OCR-checked) |
 | `data/photos_trc_ranching_in_dakota.csv` | The 209 Harvard "Ranching in Dakota" photos, tagged and linked to buildings |
 | `data/reference/` | Today's lots (ND GIS Hub), survey sections, OpenStreetMap extract, and the plat fit (control points) |
+| `tools/photomatch/`, `data/photomatch/` | Camera solving and back-projection for period photos, and the solved cameras |
 | `tools/build_features.py` | The single spec for all historic features; writes the gazetteer and the map data |
 | `docs/research-log.md` | What has been done and found, and next steps |
 | `docs/timeline.md` | How the towns changed, 1879–1888 |
 | `docs/geography-and-overlay.md` | How the plat was fitted and how each building is placed |
 | `docs/sources.md` | Source keys, archives, photos, maps and what is still to read |
+| `docs/photo-matching.md` | How buildings are placed from period photos, with results |
 | `docs/archive-requests.md` | Exact citations to request from SHSND, MHS, MNHS and others |
 | `docs/arrival-train.md` | The train T.R. arrived on, and images of it |
 | `docs/modeling-approach.md` | Plan for the map and the 3D model |

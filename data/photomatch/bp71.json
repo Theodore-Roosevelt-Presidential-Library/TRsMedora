@@ -1,0 +1,346 @@
+[
+ {
+  "id": "A_depot_bldg",
+  "uv": [
+   295,
+   908
+  ],
+  "lon": -103.525983,
+  "lat": 46.913242,
+  "dist_m": 592,
+  "m_per_3px": 2.0,
+  "block": [],
+  "nearest_hist": "np-railroad",
+  "d_hist_m": 24,
+  "nearest_osm": "Medora Convenience Store",
+  "d_osm_m": 29
+ },
+ {
+  "id": "A2_loading_sheds",
+  "uv": [
+   455,
+   905
+  ],
+  "lon": -103.526163,
+  "lat": 46.913501,
+  "dist_m": 602,
+  "m_per_3px": 4.0,
+  "block": [],
+  "nearest_hist": "medora-depot",
+  "d_hist_m": 12,
+  "nearest_osm": "Medora Convenience Store",
+  "d_osm_m": 0
+ },
+ {
+  "id": "B_small_bldg_left",
+  "uv": [
+   243,
+   962
+  ],
+  "lon": -103.525256,
+  "lat": 46.913249,
+  "dist_m": 539,
+  "m_per_3px": 3.3,
+  "block": [],
+  "nearest_hist": "np-railroad",
+  "d_hist_m": 57,
+  "nearest_osm": 245865602,
+  "d_osm_m": 5
+ },
+ {
+  "id": "C_pair_left",
+  "uv": [
+   380,
+   1040
+  ],
+  "lon": -103.524266,
+  "lat": 46.913564,
+  "dist_m": 459,
+  "m_per_3px": 2.7,
+  "block": [],
+  "nearest_hist": "freight-house",
+  "d_hist_m": 39,
+  "nearest_osm": "Billings County Resource Center",
+  "d_osm_m": 23
+ },
+ {
+  "id": "D_tall_white_gable",
+  "uv": [
+   648,
+   930
+  ],
+  "lon": -103.525717,
+  "lat": 46.913863,
+  "dist_m": 564,
+  "m_per_3px": 3.7,
+  "block": [
+   "13"
+  ],
+  "nearest_hist": "hotel-de-mores",
+  "d_hist_m": 48,
+  "nearest_osm": "The Home Merchant",
+  "d_osm_m": 2
+ },
+ {
+  "id": "D2_big_block",
+  "uv": [
+   660,
+   995
+  ],
+  "lon": -103.524783,
+  "lat": 46.913921,
+  "dist_m": 494,
+  "m_per_3px": 2.8,
+  "block": [
+   "13"
+  ],
+  "nearest_hist": "paddock-livery",
+  "d_hist_m": 23,
+  "nearest_osm": "Old Town Hall Theater",
+  "d_osm_m": 0
+ },
+ {
+  "id": "E_three_white_gables",
+  "uv": [
+   782,
+   895
+  ],
+  "lon": -103.526357,
+  "lat": 46.914082,
+  "dist_m": 612,
+  "m_per_3px": 5.0,
+  "block": [
+   "12"
+  ],
+  "nearest_hist": "hotel-de-mores",
+  "d_hist_m": 12,
+  "nearest_osm": 246058516,
+  "d_osm_m": 3
+ },
+ {
+  "id": "F_bldgs_right_of_big",
+  "uv": [
+   812,
+   1030
+  ],
+  "lon": -103.524338,
+  "lat": 46.914148,
+  "dist_m": 460,
+  "m_per_3px": 2.5,
+  "block": [
+   "14"
+  ],
+  "nearest_hist": "paddock-livery",
+  "d_hist_m": 39,
+  "nearest_osm": "Hyde House",
+  "d_osm_m": 2
+ },
+ {
+  "id": "G_low_bldg_chimney",
+  "uv": [
+   615,
+   1030
+  ],
+  "lon": -103.524374,
+  "lat": 46.913875,
+  "dist_m": 464,
+  "m_per_3px": 2.6,
+  "block": [
+   "14"
+  ],
+  "nearest_hist": "paddock-livery",
+  "d_hist_m": 45,
+  "nearest_osm": 246058515,
+  "d_osm_m": 7
+ },
+ {
+  "id": "H_twostory_gable_cluster",
+  "uv": [
+   1320,
+   910
+  ],
+  "lon": -103.526079,
+  "lat": 46.915055,
+  "dist_m": 599,
+  "m_per_3px": 4.2,
+  "block": [],
+  "nearest_hist": "ferris-store",
+  "d_hist_m": 23,
+  "nearest_osm": "North Dakota Cowboy Hall of Fame",
+  "d_osm_m": 7
+ },
+ {
+  "id": "I_long_bldg",
+  "uv": [
+   1215,
+   925
+  ],
+  "lon": -103.525789,
+  "lat": 46.914839,
+  "dist_m": 573,
+  "m_per_3px": 4.1,
+  "block": [
+   "10"
+  ],
+  "nearest_hist": "ferris-store",
+  "d_hist_m": 21,
+  "nearest_osm": "Joe Ferris General Store",
+  "d_osm_m": 21
+ },
+ {
+  "id": "J_flatroof_twostory",
+  "uv": [
+   1330,
+   1010
+  ],
+  "lon": -103.524539,
+  "lat": 46.914897,
+  "dist_m": 481,
+  "m_per_3px": 2.6,
+  "block": [],
+  "nearest_hist": "jorgens-drug-store",
+  "d_hist_m": 9,
+  "nearest_osm": "Badlands Pizza & Saloon",
+  "d_osm_m": 10
+ },
+ {
+  "id": "K_bldgs_below_J",
+  "uv": [
+   1385,
+   1040
+  ],
+  "lon": -103.524192,
+  "lat": 46.914934,
+  "dist_m": 456,
+  "m_per_3px": 2.5,
+  "block": [
+   "9"
+  ],
+  "nearest_hist": "metropolitan-hotel",
+  "d_hist_m": 10,
+  "nearest_osm": "Rough Riders Hotel",
+  "d_osm_m": 0
+ },
+ {
+  "id": "L_bldg",
+  "uv": [
+   1388,
+   1090
+  ],
+  "lon": -103.523708,
+  "lat": 46.914876,
+  "dist_m": 420,
+  "m_per_3px": 2.0,
+  "block": [
+   "9"
+  ],
+  "nearest_hist": "kiefer-house",
+  "d_hist_m": 38,
+  "nearest_osm": "Medora Post Office",
+  "d_osm_m": 3
+ },
+ {
+  "id": "M_white_house_porch",
+  "uv": [
+   1200,
+   1095
+  ],
+  "lon": -103.523681,
+  "lat": 46.914635,
+  "dist_m": 414,
+  "m_per_3px": 2.0,
+  "block": [
+   "14"
+  ],
+  "nearest_hist": "metropolitan-hotel",
+  "d_hist_m": 57,
+  "nearest_osm": "Cedar Canyon Spa",
+  "d_osm_m": 0
+ },
+ {
+  "id": "N_white_gable_left",
+  "uv": [
+   930,
+   1035
+  ],
+  "lon": -103.524276,
+  "lat": 46.914311,
+  "dist_m": 455,
+  "m_per_3px": 2.4,
+  "block": [
+   "14"
+  ],
+  "nearest_hist": "paddock-livery",
+  "d_hist_m": 46,
+  "nearest_osm": 245865570,
+  "d_osm_m": 0
+ },
+ {
+  "id": "O_bldg",
+  "uv": [
+   1018,
+   1050
+  ],
+  "lon": -103.524127,
+  "lat": 46.914426,
+  "dist_m": 445,
+  "m_per_3px": 2.0,
+  "block": [
+   "14"
+  ],
+  "nearest_hist": "paddock-livery",
+  "d_hist_m": 63,
+  "nearest_osm": 245865570,
+  "d_osm_m": 3
+ },
+ {
+  "id": "P_small",
+  "uv": [
+   1135,
+   1020
+  ],
+  "lon": -103.524443,
+  "lat": 46.914606,
+  "dist_m": 470,
+  "m_per_3px": 2.4,
+  "block": [],
+  "nearest_hist": "jorgens-drug-store",
+  "d_hist_m": 30,
+  "nearest_osm": 245865568,
+  "d_osm_m": 7
+ },
+ {
+  "id": "Q_white_house_right",
+  "uv": [
+   1557,
+   1015
+  ],
+  "lon": -103.524485,
+  "lat": 46.915223,
+  "dist_m": 485,
+  "m_per_3px": 2.9,
+  "block": [],
+  "nearest_hist": "metropolitan-hotel",
+  "d_hist_m": 36,
+  "nearest_osm": "Rough Riders Hotel",
+  "d_osm_m": 9
+ },
+ {
+  "id": "R_far_bldg",
+  "uv": [
+   935,
+   895
+  ],
+  "lon": -103.52626,
+  "lat": 46.914363,
+  "dist_m": 604,
+  "m_per_3px": 3.4,
+  "block": [
+   "12"
+  ],
+  "nearest_hist": "hotel-de-mores",
+  "d_hist_m": 31,
+  "nearest_osm": 246058517,
+  "d_osm_m": 0
+ }
+]

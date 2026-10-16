@@ -1,5 +1,17 @@
 # Research log
 
+## 2026-10-15 (night): Photo matching begins
+
+**Done**
+- Solved the camera for the 1885 bird's-eye view (SHSND 00042-00071) against the 2021 lidar terrain: skyline fit 5.3 px, four control points. Method and results in [photo-matching.md](photo-matching.md); scripts in `tools/photomatch/`.
+- Back-projected 20 buildings from the photo onto today's map.
+- Added three photo-located buildings to the map (D, D2, and a row of three gabled buildings, E). The map now has 45 placed features.
+
+**Findings**
+- The Ferris store, the Metropolitan (Rough Riders) site, the depot and the packing-plant ice house all check out in the photo, to within about 25 m.
+- A long two-story building about 80 ft long stood next to today's Old Town Hall Theater in 1885. It may be Roberts Hall, which would contradict the *Cow Boy*'s "lot 7, block 17," or the Hotel de Mores.
+- A row of three matching white gabled buildings stood on today's Block 12.
+
 ## 2026-10-15 (late): Cow Boy pass, 1957 NPS maps, archive search, drone models
 
 **Done**
@@ -61,7 +73,7 @@
 
 ## Next steps
 1. Order the high-resolution plat scan (SHSND 00042-00183) and re-fit it.
-2. Study the 1883–86 overview photos (SHSND 00042-00151, -00071, -00193/4/5; Huffman 72459) to place the unlocated buildings.
+2. Photo matching: 00042-00071 done. Next: SHSND 00042-00151 (1883) and Huffman 72459 (1886, for triangulation), then 00042-00195/-00193/-00194. Identify buildings D and D2.
 3. Read BROOKS57 in full and place the stage company buildings and the brickyard.
 4. Request:
    - from SHSND: the 2025 Cantonment survey and the Goplen papers;
