@@ -1,0 +1,86 @@
+{
+ "St. Mary's Catholic Church": {
+  "status": "original 1884",
+  "ground_m": 691.31,
+  "pts": 360,
+  "footprint_m": [
+   16.8,
+   7.8
+  ],
+  "eave_m_p10": 4.17,
+  "mid_p50": 5.5,
+  "ridge_m_p98": 7.72
+ },
+ "Rough Riders Hotel": {
+  "status": "1963 replica + 2008 wing",
+  "ground_m": 691.29,
+  "pts": 10205,
+  "footprint_m": [
+   58.9,
+   56.7
+  ],
+  "eave_m_p10": 4.67,
+  "mid_p50": 7.99,
+  "ridge_m_p98": 11.39
+ },
+ "Von Hoffman House": {
+  "status": "original 1884",
+  "ground_m": 691.62,
+  "pts": 421,
+  "footprint_m": [
+   16.5,
+   11.8
+  ],
+  "eave_m_p10": 3.59,
+  "mid_p50": 5.2,
+  "ridge_m_p98": 7.24
+ },
+ "Old Town Hall Theater": {
+  "status": "modern",
+  "ground_m": 691.2,
+  "pts": 2459,
+  "footprint_m": [
+   23.6,
+   18.9
+  ],
+  "eave_m_p10": 4.98,
+  "mid_p50": 6.75,
+  "ridge_m_p98": 9.04
+ },
+ "Joe Ferris General Store": {
+  "status": "1963 reconstruction",
+  "ground_m": 690.8,
+  "pts": 698,
+  "footprint_m": [
+   17.6,
+   7.6
+  ],
+  "eave_m_p10": 6.48,
+  "mid_p50": 7.54,
+  "ridge_m_p98": 8.93
+ },
+ "Billings County Courthouse Museum": {
+  "status": "1884 cottages + 1913 upper floor + later additions",
+  "ground_m": 691.45,
+  "pts": 2448,
+  "footprint_m": [
+   30.5,
+   18.4
+  ],
+  "eave_m_p10": 3.15,
+  "mid_p50": 4.59,
+  "ridge_m_p98": 9.19
+ },
+ "Chateau de Mores": {
+  "status": "original 1883",
+  "ground_m": 709.85,
+  "pts": 1368,
+  "footprint_m": [
+   26.1,
+   24.6
+  ],
+  "eave_m_p10": 3.82,
+  "mid_p50": 7.03,
+  "ridge_m_p98": 9.35
+ }
+}

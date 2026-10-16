@@ -37,3 +37,23 @@ Match the Library's other 3D work (CampusMap, LBCSystems) so it can share hostin
 ## Out of scope for now
 
 Interiors, people and animals, the ranches (Maltese Cross and Elkhorn), and photorealistic texturing.
+
+## Lidar point cloud (added Oct 16, 2026)
+
+- **Source.** USGS 3DEP point cloud ND_SouthWest_1_D21 (2021), public on AWS: `s3://usgs-lidar-public/ND_SouthWest_1_D21/` (Entwine format). It has about 3.7 points per square metre over town. `tools/photomatch/ept_fetch.py` downloads any lon/lat box. The town box (-103.5365 to -103.5185, 46.9080 to 46.9185) is 195 tiles, about 41 MB, and 5.9 million points.
+- **Classes present.** Ground (2), building (6), unclassified (1), low noise (7), water (9), bridge (17), high noise (18) and 20.
+- **Elevations match the bare-earth terrain** used for photo matching. Ground at the Von Hoffman House is 691.6 m in both.
+- **Saved in the repo.**
+  - `data/reference/lidar2021_buildings_class6_utm13.npz`: all building-class points (UTM 13N, metres).
+  - `data/reference/lidar_building_heights.json`: per-building heights above surrounding ground. Eave is the 10th percentile of roof points, ridge the 98th.
+
+| Building | Status | Footprint (m) | Eave (m) | Ridge (m) |
+|---|---|---|---|---|
+| Von Hoffman House | original 1884 | 16.5 × 11.8 (with porch) | 3.6 | 7.2 |
+| St. Mary's Church | original 1884 | 16.8 × 7.8 | 4.2 | 7.7 (belfry too thin to register) |
+| Chateau de Mores | original 1883 | 26.1 × 24.6 | 3.8 | 9.4 |
+| Courthouse Museum | 1884 cottages, 1913 floor, later additions | 30.5 × 18.4 | 3.2 (cottage wings) | 9.2 |
+| Rough Riders | 1963 replica, 2008 wing | 58.9 × 56.7 | 4.7 | 11.4 |
+| Ferris store | 1963 reconstruction | 17.6 × 7.6 | 6.5 | 8.9 |
+
+Only the original buildings are used as references for measuring vanished buildings in the 1880s photos. The thin packing-plant chimney is mostly missed by the lidar.
