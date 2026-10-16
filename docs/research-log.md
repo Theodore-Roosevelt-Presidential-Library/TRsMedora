@@ -1,5 +1,21 @@
 # Research log
 
+## 2026-10-16 (morning): Lot numbers, more buildings, site photos
+
+**Done**
+- Found the online scan of the 1883 "Map of Medora with Lot Prices" and its price list (TRMF-01, Digital Horizons ndshs-dm 4188–4194). It is only about 600 px, which is too coarse to read block numbers on the map.
+- Triangulated five more unidentified 1885 buildings (C, F, G, M, O) and added them to the map. The map now has 48 placed buildings.
+- Located Sylvane Ferris's house photo (SHSND 00129-10002). It was not placed: the camera fit was not credible.
+- Ran a lidar relief check of the town and the Cantonment flats. Modern grading has erased small features in town. On the Cantonment flats the gravel pits dominate, and no building platforms are clearly visible.
+- Matt sent site photos of the Historic Medora panels and the Street View locations of the Ferris store, St. Mary's, the Cow Boy office, the Von Hoffman House, and the bank and post office.
+
+**Findings**
+- **Roberts Hall:** its triangulated position is on today's lot 7 of Block 13, the same lot number the *Cow Boy* gives. Today's Block 17 was empty sagebrush in 1885. So "block 17" is either the 1883 plat's number for this block or a misprint for 13.
+- **The Cow Boy office** is placed at the building Matt identified at 398 Main St, beside the marker. The office burned in January 1887, so today's building is not the original. Its shed roof also differs from the original's front gable in Houghton 3013536.
+- **Hotel de Mores:** the on-site panel says the hotel "faced west", but the HMdb transcription of the same marker says "faced north". "West" fits a front on Main Street.
+- **Coal mining panel:** the first NP mine, west of town, closed in 1884, and a new mine opened at the foot of the east butte. That second mine is not yet located.
+- **Not from TR's time:** the Stockmens State Bank dates from 1909 and the livery stable from the early 1900s. The Ferris store (1963) and the Rough Riders (1963) are reconstructions on their original sites.
+
 ## 2026-10-16: Harvard photos checked through the browser
 
 **Done**
