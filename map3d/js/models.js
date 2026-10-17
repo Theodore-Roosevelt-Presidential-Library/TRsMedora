@@ -564,7 +564,9 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
       const ux = Math.cos(rot) * e0, uy = Math.sin(rot) * e0;
       bk.add(roofKey, quad(V(s1[0] + ox + ux, s1[1] + oy + uy, z0 + fh + ph), V(s0[0] + ox - ux, s0[1] + oy - uy, z0 + fh + ph), V(s0[0] - ux, s0[1] - uy, z0 + fh + ph + (pc.rise ?? .7)), V(s1[0] + ux, s1[1] + uy, z0 + fh + ph + (pc.rise ?? .7)), [0, 0], [len, 0], [len, d], [0, d]));
       const posts = Math.max(2, Math.round(len / (pc.post_spacing || 2.5)) + 1);
-      for (let i = 0; i < posts; i++) { const t = i / (posts - 1); const x = s0[0] + (s1[0] - s0[0]) * t + fc.n[0] * (d - .15), y = s0[1] + (s1[1] - s0[1]) * t + fc.n[1] * (d - .15); bk.add(trimKey, box(x, z0 + fh + ph / 2, -y, .16, ph, .16)); }
+      let ts = Array.from({length: posts}, (_, i) => i / (posts - 1));
+      if (pc.posts_t) { const dd = DIRS[pc.posts_from || 'W'] || [-1, 0], flip = (s1[0] - s0[0]) * dd[0] + (s1[1] - s0[1]) * dd[1] > 0; ts = pc.posts_t.map(t => flip ? 1 - t : t); }   // measured post positions
+      for (const t of ts) { const x = s0[0] + (s1[0] - s0[0]) * t + fc.n[0] * (d - .15), y = s0[1] + (s1[1] - s0[1]) * t + fc.n[1] * (d - .15); bk.add(trimKey, box(x, z0 + fh + ph / 2, -y, .16, ph, .16)); }
     }
     if (pc.rail) { const ry = z0 + fh + .9; const a = [s0[0] + fc.n[0] * (d - .1), s0[1] + fc.n[1] * (d - .1)], b = [s1[0] + fc.n[0] * (d - .1), s1[1] + fc.n[1] * (d - .1)]; bk.add(trimKey, beam(V(a[0], a[1], ry), V(b[0], b[1], ry), .07)); }
   }

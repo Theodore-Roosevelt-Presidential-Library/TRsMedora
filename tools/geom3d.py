@@ -131,7 +131,7 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
         bridges=[dict(a=[-168.4, 172.4, 8.2], b=[-158.3, 174.2, 7.2], w=1.2, posts=True)])
     # cooling house of 1883 (SHSND 00042-00150, -00188; seen behind the plant in 00042-00074/-75, MHS 72460): not in the gazetteer
     CH = np.array((-171.10, 182.35))
-    extra.append(dict(id='pp-cooling-house', name='Cooling house (1883)', town='Medora', kind='building', built=1883.8, built_text='summer-fall 1883 (SHSND 00042-00188)',
+    extra.append(dict(id='pp-cooling-house', name='Cooling house (1883)', town='Medora', kind='building', built=1883.6, built_text='built from June 1883; finished when SHSND 00042-00188 was taken (1883)',
                       removed=None, removed_text='', use='refrigerated cooling house for dressed beef, with a car-loading platform', material='frame, painted clapboard',
                       stories='3', loc='B', form='B', rect=[[-175.14, 175.71], [-164.45, 178.31], [-167.05, 189.00], [-177.74, 186.40]], eave=9.4, ridge=12.4,
                       evidence='Located by its cupola, triangulated in the solved overviews SHSND 00042-00071 and -00195 and the two fitted plant photos (00042-00074, MHS 72460); good to about +/-2 m. Its south wall abuts the north-east corner of the main packing house.',
@@ -150,6 +150,19 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
                       rect=rect_c((-144.5, 171.0), 9, 4, U), eave=2.0, ridge=2.7,
                       evidence='A small log hut with a light shed roof in front of the east building in both plant photos (SHSND 00042-00074 and MHS 72460); located by crossing the two fitted cameras\' sight lines (+/-4 m); about 9 m long.',
                       sources='SHSND 00042-00074; MHS 72460', photos='shsnd:00042-00074; mhs:72460', notes='Added Oct 2026 from the plant photos.'))
+    # the timber frame going up north of the cooling house in SHSND 00042-00188 (1883), measured with that photo's fitted camera;
+    # very likely the long barn seen there in the later photos
+    FR = [[-157.6, 203.5], [-174.1, 197.8], [-179.31, 212.93], [-162.81, 218.63]]
+    extra.append(dict(id='pp-north-frame', name='Timber frame going up north of the cooling house', town='Medora', kind='building', built=1883.5, built_text='going up in 1883 (SHSND 00042-00188)',
+                      removed=1883.95, removed_text='closed in by 1884', use='building under construction', material='timber frame', stories='', loc='B', form='B',
+                      rect=FR, eave=5.0, ridge=5.0,
+                      evidence='Measured in SHSND 00042-00188 with its camera fitted to the cooling house (1.7% worst point): about 17.4 x 16 m, posts at about 2 m, wall plates about 5 m up, tie joists at plate height, diagonal and X bracing, gin poles at the south-east corner; +/-1.5 m in position.',
+                      sources='SHSND 00042-00188', photos='shsnd:00042-00188', notes='Added Oct 2026 at the user\'s request; shown as an open frame in the 1883 view.'))
+    extra.append(dict(id='pp-north-barn', name='Barn north of the cooling house', town='Medora', kind='building', built=1883.95, built_text='by 1884 (the frame of 1883 closed in)',
+                      removed=None, removed_text='', use='barn or storehouse for the plant', material='frame, dark boards', stories='1.5', loc='C', form='C',
+                      rect=FR, eave=5.0, ridge=7.5,
+                      evidence='The 1883 frame in SHSND 00042-00188 stands where a building about 7.5 m high appears in the later plant photos (joint solve of the overviews); taken to be the same building, closed in.',
+                      sources='SHSND 00042-00188; overviews 00042-00071, -00195', photos='shsnd:00042-00188', notes='Added Oct 2026.'))
     # ice house: SW corner from Huffman (72460), east end hidden behind the runway pier there; in front of the pier from the north (00042-00075)
     geom['pp-ice-house'] = [[-254.62, 154.08], [-226.66, 160.86], [-229.75, 173.60], [-257.71, 166.81]]
     # ------------------------------------------------ Chateau outbuildings (SHSND 00042-00152, 1883; 00042-00157, 1884)
