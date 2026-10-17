@@ -304,6 +304,10 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
   // jerkinhead (clipped) gable ends
   const jerk = new Set((st.jerkin || []).map(d => toward(DIRS[d]).name));
   const clip = st.jerkin_clip ?? 0.3;
+  // with a deep overhang the roof plane passes above the wall plate at the wall line: carry the walls up to meet it
+  // (closes the open wedge under the eaves and behind the gable rakes, through which the attic showed)
+  const oW = st.overhang ?? 0.35, RBw = ridgeAlongU ? hw : hl, bEw = RBw + oW;
+  const wallTop = (roofType === 'gable') ? Math.max(H, (H - 0.15) + (ridgeH - (H - 0.15)) * (1 - RBw / bEw)) : H;
   // walls (stone plinth below if asked)
   for (const fc of faces) {
     const A = fc.a, B = fc.b;
@@ -312,14 +316,18 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
       bk.add(wallKey, poly([L3(A[0], A[1], -0.4), L3(B[0], B[1], -0.4), L3(B[0], B[1], hB), L3(A[0], A[1], hA)], [[0, -0.4], [fc.len, -0.4], [fc.len, hB], [0, hA]]));
       continue;
     }
-    bk.add(wallKey, quad(L3(A[0], A[1], -0.4), L3(B[0], B[1], -0.4), L3(B[0], B[1], H), L3(A[0], A[1], H), [0, -0.4], [fc.len, -0.4], [fc.len, H], [0, H]));
     const isGableEnd = roofType === 'gable' && ((ridgeAlongU && !fc.long) || (!ridgeAlongU && fc.long));
+    const wt = (!isGableEnd && wallTop > H) ? wallTop : H;
+    bk.add(wallKey, quad(L3(A[0], A[1], -0.4), L3(B[0], B[1], -0.4), L3(B[0], B[1], wt), L3(A[0], A[1], wt), [0, -0.4], [fc.len, -0.4], [fc.len, wt], [0, wt]));
     if (isGableEnd) {
       const m = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
       if (jerk.has(fc.name)) {
         const hc = ridgeH - clip * (ridgeH - H), k = clip;   // wall stops at hc; points on the rakes
         const pa = [A[0] + (m[0] - A[0]) * (1 - k), A[1] + (m[1] - A[1]) * (1 - k)], pb = [B[0] + (m[0] - B[0]) * (1 - k), B[1] + (m[1] - B[1]) * (1 - k)];
         bk.add(wallKey, poly([L3(A[0], A[1], H), L3(B[0], B[1], H), L3(pb[0], pb[1], hc), L3(pa[0], pa[1], hc)], [[0, H], [fc.len, H], [fc.len * (1 - (1 - k) / 2), hc], [fc.len * (1 - k) / 2, hc]]));
+      } else if (wallTop > H + 0.02) {   // gable wall up to the underside of a deep-overhang roof
+        const rh = (b) => (H - 0.15) + (ridgeH - (H - 0.15)) * (1 - Math.abs(b) / bEw), half = fc.len / 2;
+        bk.add(wallKey, poly([L3(A[0], A[1], H), L3(B[0], B[1], H), L3(B[0], B[1], rh(half)), L3(m[0], m[1], ridgeH), L3(A[0], A[1], rh(half))], [[0, H], [fc.len, H], [fc.len, rh(half)], [half, ridgeH], [0, rh(half)]]));
       } else bk.add(wallKey, tri(L3(A[0], A[1], H), L3(B[0], B[1], H), L3(m[0], m[1], ridgeH), [0, H], [fc.len, H], [fc.len / 2, ridgeH]));
     }
   }
@@ -462,8 +470,8 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
           put(fc, al, sill, winW, wh2, winKey); put(fc, al, sill - .12, winW + .25, .12, trimKey, .08);
         } else put(fc, al, base + (s0 === 0 ? .95 : .76), winW, Math.min(1.6, sh * .5), winKey);
       } else {
-        const w = kind === 'double' ? 1.6 : 1.0; put(fc, al, base + .05, w, 2.25, 'door');
-        if (kind === 'archdoor') put(fc, al, base + 2.3, w + .5, 1.5, `blindArch#${(st.wall_color || '#e9e3d6').slice(1)}`, .03);
+        const w = kind === 'double' ? 1.6 : (st.door_w || 1.0), dh = st.door_h || 2.25; put(fc, al, base + .05, w, dh, 'door');
+        if (kind === 'archdoor') put(fc, al, base + dh + .05, w + (st.arch_extra ?? .5), st.arch_h || 1.5, `blindArch#${(st.wall_color || '#e9e3d6').slice(1)}`, .03);
         if (kind === 'hooddoor') {   // small gabled hood over the door on brackets
           const c = [A[0] + (B[0] - A[0]) * al / fc.len, A[1] + (B[1] - A[1]) * al / fc.len], ux = (B[0] - A[0]) / fc.len, uy = (B[1] - A[1]) / fc.len, n = fc.n;
           const pt = (x, o, h) => V(c[0] + ux * x + n[0] * o, c[1] + uy * x + n[1] * o, z0 + base + h);
@@ -610,14 +618,14 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
     const bf = st.belfry === true ? {} : st.belfry, bwid = bf.w || 2.6, back = (bf.back ?? 0.5) + bwid / 2;
     const fm = [(front.a[0] + front.b[0]) / 2, (front.a[1] + front.b[1]) / 2], L0 = Math.hypot(...fm) || 1;
     const c = [fm[0] - fm[0] / L0 * back, fm[1] - fm[1] / L0 * back], p = P2(F, c[0], c[1]);
-    const shingKey = wallKey.replace(/^wall_[a-z]+/, 'wall_clapboard');
+    const shingKey = bf.color ? `wall_clapboard#${bf.color.slice(1)}` : wallKey.replace(/^wall_[a-z]+/, 'wall_clapboard'), postKey = bf.color ? `trim#${bf.color.slice(1)}` : trimKey;
     bk.add(shingKey, box(p[0], z0 + ridgeH - .3 + (bf.base || .8) / 2, -p[1], bwid, (bf.base || .8) + .6, bwid, rotU));
     const sb = z0 + ridgeH + (bf.base || .8) - .3, stg = bf.stage || 2.3;
-    for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { const q = P2(F, c[0] + dx * (bwid / 2 - .15), c[1] + dy * (bwid / 2 - .15)); bk.add(trimKey, box(q[0], sb + stg / 2, -q[1], .3, stg, .3)); }
-    if (bf.mullion) for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) { const q = P2(F, c[0] + dx * (bwid / 2 - .1), c[1] + dy * (bwid / 2 - .1)); bk.add(trimKey, box(q[0], sb + stg / 2, -q[1], .16, stg, .16)); }   // centre post: two openings a face
+    for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { const q = P2(F, c[0] + dx * (bwid / 2 - .15), c[1] + dy * (bwid / 2 - .15)); bk.add(postKey, box(q[0], sb + stg / 2, -q[1], .3, stg, .3)); }
+    if (bf.mullion) for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) { const q = P2(F, c[0] + dx * (bwid / 2 - .1), c[1] + dy * (bwid / 2 - .1)); bk.add(postKey, box(q[0], sb + stg / 2, -q[1], .16, stg, .16)); }   // centre post: two openings a face
     if (bf.rail) bk.add(trimKey, box(p[0], sb + .45, -p[1], bwid - .1, .1, bwid - .1, rotU));
     bk.add('dark#2a2622', box(p[0], sb + stg / 2, -p[1], bwid * .55, stg * .8, bwid * .55, rotU));
-    bk.add(trimKey, box(p[0], sb + stg + .08, -p[1], bwid + .2, .16, bwid + .2, rotU));
+    bk.add(postKey, box(p[0], sb + stg + .08, -p[1], bwid + .2, .16, bwid + .2, rotU));
     const g = new THREE.ConeGeometry((bwid + (bf.overhang ?? .5)) / Math.SQRT2, bf.roof || 1.8, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], sb + stg + .16 + (bf.roof || 1.8) / 2, -p[1]); bk.add(roofKey, g);
   }
   // roof monitor on a flat roof: monitor true or {len_frac, at (-0.5..0.5 along), w}
@@ -701,6 +709,12 @@ function buildDecks(bk, st, zAt) {
     const h = fe.h || 1.2;
     if (fe.kind === 'board') for (let i = 0; i < fe.pts.length - 1; i++) { const a = fe.pts[i], b = fe.pts[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), za = zAt(a[0], a[1]), zb = zAt(b[0], b[1]);
       bk.add('plank#8a7a62', quad(V(a[0], a[1], za - .2), V(b[0], b[1], zb - .2), V(b[0], b[1], zb + h), V(a[0], a[1], za + h), [0, 0], [L, 0], [L, h], [0, h])); }
+    else if (fe.kind === 'worm') {     // zigzag (worm) split-rail fence: rails stacked on alternate corners
+      const key = 'trim#8a7c66', z = [];
+      for (let i = 0; i < fe.pts.length - 1; i++) { const a = fe.pts[i], b = fe.pts[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.round(L / 3.2)), nx = -(b[1] - a[1]) / L, ny = (b[0] - a[0]) / L;
+        for (let k = 0; k <= n; k++) { const t = k / n, sg = (k % 2 ? 1 : -1) * .45; z.push([a[0] + (b[0] - a[0]) * t + nx * sg, a[1] + (b[1] - a[1]) * t + ny * sg]); } }
+      for (let i = 0; i < z.length - 1; i++) for (const hh of [.25, .5, .75, 1.0].filter(x => x < h + .05)) bk.add(key, beam(V(z[i][0], z[i][1], zAt(z[i][0], z[i][1]) + hh), V(z[i + 1][0], z[i + 1][1], zAt(z[i + 1][0], z[i + 1][1]) + hh + .08), .09));
+    }
     else railLine(bk, fe.pts, zAt, h, 2.5, 'trim#7a6a55');
   }
 }

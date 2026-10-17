@@ -189,6 +189,9 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
                       rect=rect_c((257.0, -7.0), 13, 6, bearing_u(90)), eave=2.5, ridge=4.2,
                       evidence='Low gabled building inside the fenced yard north of the house, with a light roof and a small cross gable (SHSND 00042-00071, -00193; 00259-00003; background of 00042-00182).',
                       sources='SHSND 00042-00071/-00193/-00182', photos='shsnd:00042-00071; shsnd:00042-00193', notes='Added from the 2026 photo audit.'))
+    # St. Mary's: low stone step at the west door, and the zigzag split-rail fence behind the church in 00042-00077 (c.1886)
+    style_add['st-marys-church'] = dict(decks=[dict(rect=[[181.6, 27.6], [180.6, 27.6], [180.6, 32.2], [181.6, 32.2]], h=0.18)],
+                                        fences=[dict(kind='worm', h=1.0, pts=[[150.0, 70.0], [188.0, 81.0]]), dict(kind='worm', h=1.0, pts=[[205.0, 45.0], [236.0, 5.0]])])
     style_add['von-hoffman-house'] = dict(fences=[dict(kind='rail', h=1.2, pts=[[255.8, -40.5], [240.0, -40.5], [240.0, 3.0], [273.0, 3.0], [273.0, -23.0]])])
 
     # ------------------------------------------------ unidentified buildings: footprints the photos size differently
