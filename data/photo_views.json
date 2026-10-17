@@ -251,5 +251,28 @@
   "rms": 5.4,
   "worst_pct": 6.9,
   "slice": 3
+ },
+ {
+  "id": "trc0103",
+  "ref": "SHSND_0103",
+  "title": "Medora in winter from the west bluff",
+  "date": "1890s",
+  "img": "photos/trc0103.jpg",
+  "thumb": "photos/thumbs/trc0103.jpg",
+  "page": "https://www.theodorerooseveltcenter.org/Research/Digital-Library/Record?libID=o292512",
+  "credit": "State Historical Society of North Dakota (SHSND_0103), via the Theodore Roosevelt Center at Dickinson State University (o292512)",
+  "e": -819.37,
+  "n": 348.79,
+  "h": 6.96,
+  "yaw": 113.23,
+  "pitch": -0.27,
+  "roll": 1.26,
+  "vfov": 8.9,
+  "W": 1800,
+  "H": 653,
+  "fit": "points",
+  "rms": 6.6,
+  "worst_pct": 5.3,
+  "slice": 3
  }
 ]
