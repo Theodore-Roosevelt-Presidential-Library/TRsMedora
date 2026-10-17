@@ -637,44 +637,44 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
   if (st.vents && roofType !== 'flat') for (let i = 0; i < st.vents; i++) {
     const t = (i + 0.5) / st.vents - 0.5, a = ridgeAlongU ? [F.L * t * .9, 0] : [0, F.W * t * .9], p = P2(F, a[0], a[1]);
     bk.add(wallKey, box(p[0], z0 + ridgeH + .35, -p[1], 1.1, .8, 1.1)); const g = new THREE.ConeGeometry(.95, .6, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + 1.05, -p[1]); bk.add(roofKey, g); }
-  // galleries on one front (packing house): roofed porch at the ground, open framing above
+  // galleries on one front (packing house): roofed porch at the ground, open framing above.
+  // gallery: {side, frac, end} or {side, span: [m0, m1] metres from the 'from' end of that face (may run past the block's ends), from: compass end},
+  //          depth, levels, h (framing height, default the block's eave), porch (porch-roof height, default 3.2)
   if (st.gallery) {
-    const fc = toward(DIRS[st.gallery.side] || [0, -1]);
-    const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]), fr = st.gallery.frac || .35, dep = st.gallery.depth || 2.2;
+    const G = st.gallery, fc = toward(DIRS[G.side] || [0, -1]);
+    const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]), fr = G.frac || .35, dep = G.depth || 2.2, GH = G.h || H, ph = G.porch || 3.2;
     let ta = 0.5 - fr / 2, tb = 0.5 + fr / 2;
-    if (st.gallery.end) { const d = DIRS[st.gallery.end], toB = (s1[0] - s0[0]) * d[0] + (s1[1] - s0[1]) * d[1] > 0; [ta, tb] = toB ? [1 - fr - .02, .98] : [.02, fr + .02]; }
-    const lv = st.gallery.levels || 3, lh = H / lv, ang = Math.atan2(s1[1] - s0[1], s1[0] - s0[0]);
+    if (G.span) { const d = DIRS[G.from || 'W'], toB = (s1[0] - s0[0]) * d[0] + (s1[1] - s0[1]) * d[1] > 0, a = G.span[0] / fc.len, b = G.span[1] / fc.len; [ta, tb] = toB ? [1 - b, 1 - a] : [a, b]; }
+    else if (G.end) { const d = DIRS[G.end], toB = (s1[0] - s0[0]) * d[0] + (s1[1] - s0[1]) * d[1] > 0; [ta, tb] = toB ? [1 - fr - .02, .98] : [.02, fr + .02]; }
+    const lv = G.levels || 3, lh = (GH - ph) / Math.max(1, lv - 1), ang = Math.atan2(s1[1] - s0[1], s1[0] - s0[0]);
     const A = [s0[0] + (s1[0] - s0[0]) * ta, s0[1] + (s1[1] - s0[1]) * ta], B = [s0[0] + (s1[0] - s0[0]) * tb, s0[1] + (s1[1] - s0[1]) * tb];
     const M = [(A[0] + B[0]) / 2 + fc.n[0] * dep / 2, (A[1] + B[1]) / 2 + fc.n[1] * dep / 2], len = Math.hypot(B[0] - A[0], B[1] - A[1]);
-    bk.add('plank#8d8170', box(M[0], z0 + .3, -M[1], len, .3, dep, ang));            // raised floor
-    bk.add(roofKey, box(M[0], z0 + 3.2, -M[1], len + .3, .12, dep + .3, ang));        // porch roof at the ground level
-    for (let k = 2; k <= lv; k++) bk.add(timberKey, box(M[0] + fc.n[0] * dep / 2, z0 + k * lh, -(M[1] + fc.n[1] * dep / 2), len, .16, .16, ang));   // open frame above
-    const np = Math.round(len / 2.5) + 1; for (let i = 0; i < np; i++) { const t = i / (np - 1), x = A[0] + (B[0] - A[0]) * t + fc.n[0] * (dep - .1), y = A[1] + (B[1] - A[1]) * t + fc.n[1] * (dep - .1); bk.add(timberKey, box(x, z0 + H / 2, -y, .16, H, .16));
-      if (i < np - 1) { const t2 = (i + 1) / (np - 1), x2 = A[0] + (B[0] - A[0]) * t2 + fc.n[0] * (dep - .1), y2 = A[1] + (B[1] - A[1]) * t2 + fc.n[1] * (dep - .1); bk.add(timberKey, beam(V(x, y, z0 + 3.4), V(x2, y2, z0 + H - .3), .1)); } }
-    for (let k = 0; k < lv; k++) put(fc, fc.len * (ta + tb) / 2 + (k % 2 ? 1.5 : -1.5), k * lh + .1, 1.0, 2.1, 'door');
+    bk.add('plank#8d8170', box(M[0], z0 + .9, -M[1], len, .25, dep, ang));            // raised floor on posts
+    bk.add(roofKey, box(M[0], z0 + ph, -M[1], len + .3, .12, dep + .3, ang));          // porch roof at the ground level
+    for (let k = 1; k < lv; k++) bk.add(timberKey, box(M[0] + fc.n[0] * dep / 2, z0 + ph + k * lh, -(M[1] + fc.n[1] * dep / 2), len, .16, .16, ang));   // open frame above
+    bk.add(timberKey, box(M[0] + fc.n[0] * dep / 2, z0 + 1.9, -(M[1] + fc.n[1] * dep / 2), len, .08, .08, ang));   // porch rail
+    const np = Math.round(len / 2.5) + 1; for (let i = 0; i < np; i++) { const t = i / (np - 1), x = A[0] + (B[0] - A[0]) * t + fc.n[0] * (dep - .1), y = A[1] + (B[1] - A[1]) * t + fc.n[1] * (dep - .1); bk.add(timberKey, box(x, z0 + GH / 2, -y, .16, GH, .16));
+      if (i < np - 1) { const t2 = (i + 1) / (np - 1), x2 = A[0] + (B[0] - A[0]) * t2 + fc.n[0] * (dep - .1), y2 = A[1] + (B[1] - A[1]) * t2 + fc.n[1] * (dep - .1); bk.add(timberKey, beam(V(x, y, z0 + ph + .2), V(x2, y2, z0 + GH - .3), .1)); } }
+    if (G.doors !== false) for (let k = 0; k < Math.min(lv, 2); k++) put(fc, fc.len * Math.min(.95, Math.max(.05, (ta + tb) / 2)) + (k % 2 ? 1.5 : -1.5), k ? ph + .1 : 1.0, 1.0, 2.1, 'door');
   }
-  // horizontal enclosed runway from the top of the building out to a timber pier (packing house; Huffman 1886, SHSND 00042-00074/-75)
+  // enclosed runway from the top of the building out to a timber pier (packing house; SHSND 00042-00074/-75, Huffman 1886 = MHS 72460)
+  // runway: {end, len, h (roof top at the building), h2 (roof top at the pier; the deck slopes), depth (box depth), struts: [[[along, h], [along, h]], ...]}
   if (st.runway) {
-    const d = DIRS[st.runway.end] || [-1, 0], sg = Math.sign(F.u[0] * d[0] + F.u[1] * d[1]) || -1, L = st.runway.len || 24, top = st.runway.h ?? H + 1.0;
-    const start = sg * (F.L / 2 - (st.runway.inset || 0)), c = P2(F, start + sg * L / 2, 0);
-    if (st.runway.open) {     // roofed deck on an open timber truss (SHSND 00042-00074, MHS 72460)
-      bk.add(timberKey, box(c[0], z0 + top - .3, -c[1], L, .7, 2.2, rotU));
-      bk.add(wallKey, box(c[0], z0 + top + .45, -c[1], L, .9, 2.2, rotU));
-      bk.add(roofKey, box(c[0], z0 + top + 1.0, -c[1], L + .3, .12, 2.8, rotU));
-      const nb = Math.max(2, Math.round(L / 3.2)), dep = st.runway.truss || 2.2;
-      for (let i = 0; i <= nb; i++) for (const side of [-1, 1]) {
-        const a1 = start + sg * (L * i / nb), q1 = P2(F, a1, side * 1.0), a2 = start + sg * (L * Math.min(nb, i + 1) / nb), q2 = P2(F, a2, side * 1.0);
-        bk.add(timberKey, beam(V(q1[0], q1[1], z0 + top - .65), V(q1[0], q1[1], z0 + top - .65 - dep), .16));                       // vertical
-        if (i < nb) bk.add(timberKey, beam(V(q1[0], q1[1], z0 + top - .65 - dep), V(q2[0], q2[1], z0 + top - .65), .14));             // diagonal
-        if (i < nb) bk.add(timberKey, beam(V(q1[0], q1[1], z0 + top - .65 - dep), V(q2[0], q2[1], z0 + top - .65 - dep), .16));       // bottom chord
-      }
-    } else {
-      bk.add(wallKey, box(c[0], z0 + top, -c[1], L, 2.0, 2.2, rotU));
-      bk.add(roofKey, box(c[0], z0 + top + 1.1, -c[1], L + .3, .12, 2.8, rotU));
-    }
+    const R_ = st.runway, d = DIRS[R_.end] || [-1, 0], sg = Math.sign(F.u[0] * d[0] + F.u[1] * d[1]) || -1, L = R_.len || 24, top = R_.h ?? H + 1.0, top2 = R_.h2 ?? top, bd = R_.depth || 2.1;
+    const start = sg * (F.L / 2 - (R_.inset || 0)), off = R_.off || 0;
+    const at = (x, lat, h) => { const q = P2(F, start + sg * x, off + lat); return V(q[0], q[1], z0 + h); };
+    const topAt = (x) => top + (top2 - top) * x / L;
+    const slab = (x0, x1, h0, h1, w, th, key) => {      // sloping box along the runway centreline
+      const p = at(x0, 0, h0), q = at(x1, 0, h1), dv = new THREE.Vector3().subVectors(q, p), Ln = dv.length();
+      const g = new THREE.BoxGeometry(w, th, Ln).toNonIndexed(); g.applyMatrix4(new THREE.Matrix4().lookAt(new THREE.Vector3(0, 0, 0), dv, new THREE.Vector3(0, 1, 0)));
+      const c = p.clone().add(q).multiplyScalar(.5); g.translate(c.x, c.y, c.z); bk.add(key, g); };
+    slab(0, L, top - bd + .25, top2 - bd + .25, 2.2, .5, timberKey);              // floor
+    slab(0, L, top - bd / 2 + .2, top2 - bd / 2 + .2, 2.2, bd - .7, wallKey);    // boarded sides
+    slab(-.2, L + .2, top - .06, top2 - .06, 2.8, .12, roofKey);                  // roof
+    for (const [a, b] of (R_.struts || [])) for (const side of [-1, 1]) bk.add(timberKey, beam(at(a[0], side * .95, a[1] ?? topAt(a[0]) - bd), at(b[0], side * .95, b[1] ?? topAt(b[0]) - bd), .2));
     // pier: tapered square timber tower at the far end
-    const pc = P2(F, start + sg * (L - 2), 0), zg = ctxZ ? ctxZ(pc[0], pc[1]) : z0, ph = z0 + top - 1 - zg;
-    const g = new THREE.CylinderGeometry(3 / Math.SQRT2, 4 / Math.SQRT2, ph, 4, 1).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(pc[0], zg + ph / 2, -pc[1]); bk.add(timberKey, g);
+    const pc = P2(F, start + sg * (L - 2), off), zg = ctxZ ? ctxZ(pc[0], pc[1]) : z0, ph = z0 + top2 - bd - zg;
+    const g = new THREE.CylinderGeometry(3.2 / Math.SQRT2, 3.8 / Math.SQRT2, ph, 4, 1).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(pc[0], zg + ph / 2, -pc[1]); bk.add(timberKey, g);
   }
   // square tower with a pyramid-roofed cupola
   if (st.tower) {
