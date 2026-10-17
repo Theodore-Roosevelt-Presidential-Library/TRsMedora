@@ -914,7 +914,7 @@ function car(kind) {
   return {g, length: len + 2.2};
 }
 export function buildTrain(dense, atE, atN) {
-  // parked at the depot with the engine pointing west (the westbound Pacific Express)
+  // standing just west of the depot with the engine pointing west (the westbound Pacific Express)
   let bi = 0, bd = 1e9; dense.forEach((p, i) => { const d = Math.hypot(p[0] - atE, p[1] - atN); if (d < bd) { bd = d; bi = i; } });
   const cum = [0]; for (let i = 1; i < dense.length; i++) cum.push(cum[i - 1] + Math.hypot(dense[i][0] - dense[i - 1][0], dense[i][1] - dense[i - 1][1]));
   const fwd = dense[0][0] < dense[dense.length - 1][0] ? -1 : 1;     // direction of travel (west) in terms of s
@@ -926,10 +926,13 @@ export function buildTrain(dense, atE, atN) {
   };
   const grp = new THREE.Group();
   const place = (obj, s) => { const q = at(s); obj.position.set(q[0], q[2] + 0.35, -q[1]); obj.rotation.y = q[3]; grp.add(obj); };
-  const s0 = cum[bi] + fwd * 22;                    // engine (its origin) about 22 m west of the depot
+  // pulled up short of the station: the last car stops about 12 m west of the depot, so the depot stays in view
+  const cars = ['baggage', 'coach', 'coach', 'pullman'].map(k => car(k));
+  const len = 9.4 + cars.reduce((t, c) => t + c.length + 0.6, 0);
+  const s0 = cum[bi] + fwd * (12 + len);            // engine origin
   const loco = locomotive(); place(loco.g, s0);
   let s = s0 - fwd * 9.4;                           // rear of the tender (tender ends 9.3 m behind the engine origin)
-  for (const k of ['baggage', 'coach', 'coach', 'pullman']) { const c = car(k); s -= fwd * (c.length / 2 + 0.3); place(c.g, s); s -= fwd * (c.length / 2 + 0.3); }
+  for (const c of cars) { s -= fwd * (c.length / 2 + 0.3); place(c.g, s); s -= fwd * (c.length / 2 + 0.3); }
   grp.traverse(o => { if (o.isMesh) o.castShadow = true; });
   return grp;
 }
