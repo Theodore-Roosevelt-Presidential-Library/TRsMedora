@@ -78,7 +78,7 @@ The streets follow the 1883 plat. Today's lot lines match it: no street centreli
 Nine buildings overlapped a street, so the build now slides any such footprint off the street (`tools/geom3d.py`, "keep buildings off the platted streets"). How far a building may move depends on what placed it:
 - **Placed from one photo:** the bearing from the camera is well fixed, but the distance is only good to ±25 m. These buildings slide along the camera's line of sight. That covers photo85-u02, -u04, -u05, -u06, -u08, -u09 and -u12, which moved 1–9 m.
 - **Triangulated or placed from a written source:** these take the smallest move that clears the street.
-  - **Metropolitan Hotel:** moved 6.5 m north, towards today's Rough Riders Hotel on the same site (HMdb 87499).
+  - **Metropolitan Hotel:** moved 6.5 m north at first; superseded on Oct 17 (see below).
   - **Roller rink:** moved 3 m.
 
 Every move is within the stated uncertainty of the original placement and is recorded in the building's notes. No building now overlaps a street or another building in any date view.
@@ -131,3 +131,19 @@ Still open:
 - **Paddock's livery**: the re-solved cameras suggest the east side of Third Street, but the barn's gable faces east, which fits the west side. Left in place.
 - **1883 Hotel de Mores**: the photo suggests a narrower, taller block with a steeper roof than the recorded 100 x 25 ft. Not changed; seven points on one building cannot settle it.
 - **St. Mary's**: the 1886 roof reads slightly steeper than today's (eave about 4.1, ridge about 8.1), and the belfry about 0.5 m higher.
+
+## Second round with the overviews (Oct 17)
+Prompted by Matt's comparison of the gallery views, every building in the town core and the packing plant was checked against all five overview cameras at once.
+
+- **Packing plant rotated about 14 degrees.** The two ground photos could not fix the plant's rotation about the chimney: with the chimney as the only known point, any rotation fitted them about equally. The overviews 00042-00071 and -00195 do fix it. The runway pier and the cooling-house cupola, at opposite ends, give 15 and 12 degrees independently. The long axis now runs at a bearing of about 76 degrees (ENE-WSW); the tall block is 33 m long, eave about 10 m; the chimney 22.7 m. The two ground-photo cameras were refitted (2.5 and 0.7 px RMS). The road to the ford was rerouted around the plant. The DMC river panorama independently needed the plant's west end about 4 m further east, which the rotation supplies. That panorama also suggests the east tower and east building sit about 5 m further west; not applied (one 600 px view).
+- **Metropolitan Hotel (Rough Riders site): long axis east-west, not north-south.** A rectangle fitted to 13 corners in four overviews (2.4 px RMS) gives 22.4 x 10.1 m (about 74 x 33 ft, the Cow Boy's 35 x 80), eave 7.1 m, a low hipped roof, dark walls in 1885-86 and white by c.1905. The TRC view from the south-east hills agrees independently. The white, shorter building in front of it in 00042-00194 is the cottage photo85-m.
+- **Roberts Hall** about 8 m west. **Paddock's livery** moved to the east side of Third Street, where 00042-00071 shows a large barn with its gable and wagon door facing east (identity inferred; length a placeholder). **photo85-u07** and **-u11** moved to the buildings the photos show (40 m and 30 m). **photo85-u12** removed: it was the company store's left gables seen twice.
+- **Camera 193 (from the butte)** re-solved with terrain constraints as well as building picks: bluff skyline, the spur edge, the valley floor in front of town, and rays along the bottom of the frame. The photographer stood at the south-west tip of the butte plateau, 1.5 m above the ground; yesterday's ground-pinned camera stood 8 m too far back, where the plateau lip hid the lower town. Building RMS 4.5 px, skyline 4.5 px. Cameras 194 and 195 have no terrain problem and are unchanged.
+- **New views:** the TRC view from the south-east hills (SHSND 10797-00036, c.1890s-1906; 5.4 px RMS, worst 6.9% on St. Mary's) and the Dickinson Museum Center river panorama (DMC 25741, 1887-1907; a swing-lens panorama re-projected to a flat view; 2.2 px RMS, worst 5.6%). Both open at the spring 1887 slice, the latest the model has.
+
+Still open:
+- **Roller rink and Malloy's hotel:** 00042-00071 shows open ground at their mapped spots; no photo yet gives their true positions.
+- **Freight house:** two photos show open ground at its spot (grade D already).
+- **Stockyards:** the TRC south-east view shows a two-pen stockyard with two loading chutes about 115 m south of the main line (around local 277-345 E, -515 to -468 N). That photo is c.1890s, so the yard is not yet modelled for 1883-87.
+- **St. Mary's** reads about 8% shorter in the TRC south-east view than the lidar footprint; the church is trusted, so it is not changed. Worth checking whether the lidar includes a later addition.
+- **Chimney height:** the solves give 22.7 +/- 2 m from the plant photos, up to about 27 m from the far butte view. 22.7 m is used.

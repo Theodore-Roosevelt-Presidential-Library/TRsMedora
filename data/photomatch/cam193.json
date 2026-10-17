@@ -1,13 +1,13 @@
 {
  "C": [
-  612947.4999650528,
-  5196523.512261558,
-  777.5774591439223
+  612940.28814697,
+  5196527.96902466,
+  777.0914772292764
  ],
- "yaw": -67.09861604834677,
- "pitch": -10.334323695978782,
- "roll": 1.4658780892244085,
- "f": 3575.4291331696236,
+ "yaw": -67.29268383925825,
+ "pitch": -10.456930898536333,
+ "roll": 1.1618967514663303,
+ "f": 3344.924795330062,
  "cx": 1282,
  "cy": 817,
  "gcp": {
@@ -93,5 +93,19 @@
   ],
   "rms_px": 6.298020207080282,
   "note": "re-solved from corners/eaves of surviving buildings (Von Hoffman House, St. Mary's, Chateau) and the chimney top; camera kept on the ground where the free solve floated it (docs/photo-audit.md)"
+ },
+ "previous_2026_10_16": {
+  "C": [
+   612947.4999650528,
+   5196523.512261558,
+   777.5774591439223
+  ],
+  "yaw": -67.09861604834677,
+  "pitch": -10.334323695978782,
+  "roll": 1.4658780892244085,
+  "f": 3575.4291331696236
+ },
+ "control_2026_10_17": {
+  "note": "re-solved with building picks plus terrain constraints (bluff skyline, spur edge, valley floor, bottom-of-frame rays); camera 1.5 m above the DEM on the SW tip of the butte plateau; building RMS 4.5 px, skyline 4.5 px; town and near ground unoccluded"
  }
 }
