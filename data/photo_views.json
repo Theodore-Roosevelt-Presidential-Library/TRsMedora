@@ -228,5 +228,28 @@
   "rms": 2.2,
   "worst_pct": 5.6,
   "slice": 3
+ },
+ {
+  "id": "trc0102",
+  "ref": "SHSND 10797-00036",
+  "title": "Medora in winter from the south-east hills, with the stockyards",
+  "date": "c.1890s-1906",
+  "img": "photos/trc0102.jpg",
+  "thumb": "photos/thumbs/trc0102.jpg",
+  "page": "https://www.theodorerooseveltcenter.org/Research/Digital-Library/Record?libID=o292511",
+  "credit": "State Historical Society of North Dakota (10797-00036 / C1566), via the Theodore Roosevelt Center at Dickinson State University (o292511)",
+  "e": 520.14,
+  "n": -902.1,
+  "h": 1.6,
+  "yaw": -24.99,
+  "pitch": -2.28,
+  "roll": -0.72,
+  "vfov": 11.39,
+  "W": 1800,
+  "H": 868,
+  "fit": "points",
+  "rms": 5.4,
+  "worst_pct": 6.9,
+  "slice": 3
  }
 ]
