@@ -79,21 +79,23 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
         dict(rect=dW, eave=2.4, ridge=3.7, style=dict(_west=True)),
         dict(rect=dE, eave=2.6, ridge=3.9, style=dict(_east=True))],
         # Haynes 1881: no raised platform, only a plank walk from the east block's door down to a plank crossing along the main track
-        decks=[dict(rect=tn(q, u, nrm, 9.3, 10.8, -7.3, -0.05), h=0.08), dict(rect=tn(q, u, nrm, 3.0, 24.0, -8.4, -7.3), h=0.08)])
+        decks=[dict(rect=tn(q, u, nrm, 9.3, 10.8, -7.5, -0.05), h=0.12), dict(rect=tn(q, u, nrm, 0.0, 30.0, -8.75, -7.4), h=0.2)])
     q = np.array([-532.80, 219.57]); u = np.array([-521.81, 210.90]) - q; u /= np.hypot(*u); nrm = np.array([-u[1], u[0]])
-    geom['pyramid-park-hotel'] = tn(q, u, nrm, -6.2, 14, -0.4, 14)
+    # the pad covers the yard down to the depot so the hotel stands on the same level ground as in Haynes 1881 (no mound)
+    geom['pyramid-park-hotel'] = tn(q, u, nrm, -50, 16, -26, 13)
     style_add['pyramid-park-hotel'] = dict(skip_main=True, parts=[
         dict(rect=tn(q, u, nrm, 0, 14, 0, 8), eave=5.15, ridge=8.4, style=dict(_main=True)),
         dict(rect=tn(q, u, nrm, 6.8, 14, -0.4, 8), eave=5.15, ridge=8.9, style=dict(_cross=True)),
-        dict(rect=tn(q, u, nrm, -6.2, 0, 0, 4.5), eave=5.6, ridge=8.5, style=dict(_west=True)),
-        dict(rect=tn(q, u, nrm, -4, 0.5, 8, 14), eave=2.6, ridge=4.2, style=dict(_rear=True))],
+        dict(rect=tn(q, u, nrm, -6.2, 0, 0, 8), eave=5.15, ridge=8.4, style=dict(_west=True)),       # west end of the same roof, new light boards
+        dict(rect=tn(q, u, nrm, -9.5, -2.5, 4.5, 12.5), eave=5.0, ridge=8.2, style=dict(_rear=True))],  # light rear wing, its gable to the west
         )   # no porch or platform in front: Haynes 1881 shows the people standing on bare ground
     for fid, off in (('lm-roberts-saloon', 38), ('nelson-store', -30), ('mcgeeney-boarding-house', -30), ('fitzgerald-shack', -28), ('maunders-shack', 22)):
         try: R0 = orig_rect(fid)
         except KeyError: continue
         c0 = np.array(R0, float).mean(0); q, u, nrm = foot(c0)
         _, _, _, L, W = _rect_frame(R0)
-        if fid == 'maunders-shack': q = q + u * 32   # Haynes 1881 shows open ground in front of the hotel; kept east of it, toward the river
+        if fid == 'maunders-shack':   # the very small shack north-west of the hotel in Haynes 1881 (back-projected with the fitted camera)
+            geom[fid] = rect_c(np.array((-503.0, 252.0)), 2.6, 2.4, u); continue
         geom[fid] = rect_c(q + nrm * off, L, W, u)
         props[fid] = dict(notes_add='In the 3D view this building is placed against the 3D track (today\'s line) on the side Hagedorn gives.')
     for fid in ('lm-depot', 'pyramid-park-hotel'):

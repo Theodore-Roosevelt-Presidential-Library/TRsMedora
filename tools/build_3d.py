@@ -126,7 +126,7 @@ _XX, _YY = np.meshgrid(_xc, _yc)
 _Zorig = Z.copy()
 # pad heights fixed from photo solves (local metres): the Pyramid Park Hotel's floor in Haynes 1881 sits about 1.1 m above
 # the depot's; today's flood plain there is lower than in 1881
-PAD_Z = {'pyramid-park-hotel': 4.55}
+PAD_Z = {'pyramid-park-hotel': 3.5}
 _padsrc = [(f['properties'], _shape(f['geometry'])) for f in _HF] + [({'id': x['id'], 'kind': 'building', 'massing': {}}, None) for x in EXTRA3D]
 for pr, g in _padsrc:
     if pr['id'] in GEOM3D or g is None:
@@ -288,10 +288,10 @@ STYLE = {
                           front_openings=[['door', 0.07], ['win', 0.22], ['win', 0.36], ['win', 0.5], ['win', 0.64]], chimneys=3, chimney_h=0.7),
                      dict(wall='drop', wall_color='#7d6f60', trim='#d8d0c0', roof='shingle', front='S', ridge='front', stories=1.5, bays=1, gable_bays=2,
                           front_openings=[['door', 0.5]], chimneys=0),
-                     dict(wall='clapboard', wall_color='#ece6d6', trim='#ffffff', roof='shingle', front='S', ridge='front', stories=1.5, bays=1, gable_bays=1,
+                     dict(wall='clapboard', wall_color='#ece6d6', trim='#ffffff', roof='shingle', front='S', ridge='cross', stories=1.5, bays=1, gable_bays=1,
                           front_openings=[['win', 0.5]], chimneys=0),
-                     dict(wall='drop', wall_color='#8a7c6c', trim='#d8d0c0', roof='shingle', front='S', ridge='long', stories=1, bays=1, gable_bays=1, chimneys=1)],
-        basis='Haynes 1881 (SHSND 00119-00017): a main block with its ridge along the track and its front to the south, one tall storey with a loft under a steep roof (Hagedorn\'s "loft with 14 beds"), a front-facing cross gable with two upper windows at the east end, a separate light front-gabled block at the west end and a low block behind it. Dark weathered horizontal siding on the main block, new light boards on the west block, three or four stovepipes; no porch roof, only a plank walk. No sign is visible'),
+                     dict(wall='clapboard', wall_color='#e6dfcf', trim='#ffffff', roof='shingle', front='W', ridge='front', stories=1.5, bays=1, gable_bays=1, chimneys=1)],
+        basis='Haynes 1881 (SHSND 00119-00017): a main block with its ridge along the track and its front to the south, one tall storey with a loft under a steep roof (Hagedorn\'s "loft with 14 beds"), a front-facing cross gable with two upper windows at the east end; the west end of the same roof is boarded in new light boards, and a light rear wing behind it shows its gable to the west; a very small shack stands to the north-west. The ground between the depot and the hotel is level and open, with no road. Dark weathered horizontal siding on the main block, new light boards on the west block, three or four stovepipes; no porch roof, only a plank walk. No sign is visible'),
  'cantonment': dict(wall='vlog', wall_color='#8d877c', trim='#5b4a3a', roof='shingle', roof_color='#8f877a', front='N', ridge='long', stories=1, bays=6, gable_bays=0, chimneys=0, eave=1.9, rise=1.9,
         basis='Haynes 1880 (MHS 91738): long one-storey barracks of vertical cedar logs, stockade style, weathered grey, with a shingle or board gable roof (not sod), evenly spaced doors and windows along the long side; the photographed building measures about 29.5 x 6.8 m with an eave of about 1.9 m (camera fitted to the butte skyline). The barracks were 200 x 22 ft (HM52); the buildings here are the plat\'s schematic symbols, so their sizes are placeholders'),
  # ---- packing plant
@@ -449,7 +449,7 @@ for f in O['features']:
         if part.length > 20:
             streets.append({'name': pr['name'], 'kind': 'street' if pr['name'] in ('Main Street', '3rd Avenue') else 'lane', 'width': 10 if pr['name'] in ('Main Street', '3rd Avenue') else 6, 'built': 1883.9, 'pts': drape(list(part.coords))})
 TRAILS = [
- ('Road from Medora to the ford and Little Missouri', [(-103.5262, 46.9150), (-103.52767, 46.915625), (-103.528692, 46.915728), (-103.528973, 46.916001), (-103.5300, 46.91625), (-103.53085, 46.91629), (-103.5320, 46.9164), (-103.5328, 46.9163)], 1879.0),
+ ('Road from Medora to the ford and Little Missouri', [(-103.5262, 46.9150), (-103.52767, 46.915625), (-103.528692, 46.915728), (-103.528973, 46.916001), (-103.5300, 46.91625), (-103.53085, 46.91629), (-103.531328, 46.916329)], 1879.0),   # ends east of the Pyramid Park Hotel: Haynes 1881 shows no road between the depot and the hotel
  ('Road to the Chateau', [(-103.5326, 46.9160), (-103.5330, 46.9150), (-103.5334, 46.9138), (-103.5340, 46.9130), (-103.5345, 46.9127)], 1883.6),
  ('Deadwood trail south along the river', [(-103.5262, 46.9132), (-103.5262, 46.9110), (-103.5265, 46.9070), (-103.5265, 46.9040)], 1884.8),
 ]
