@@ -558,7 +558,7 @@ for v in json.load(open(R('data', 'photo_views.json'))):
     f = (v['H'] / 2) / math.tan(math.radians(v['vfov'] / 2))
     out['photo_views'].append(dict(id=v['id'], ref=v['ref'], title=v['title'], date=v['date'], url=v['img'], thumb=v['thumb'], page=_cat.get(key, v['page']),
                                    credit=v['credit'], fit=v.get('fit', 'points'), rms=v.get('rms'), W=v['W'], H=v['H'], C=[v['e'] + ORIGIN[0], v['n'] + ORIGIN[1], g + v['h']],
-                                   yaw=v['yaw'], pitch=v['pitch'], roll=v.get('roll', 0), f=round(f, 1), cx=v['W'] / 2, cy=v['H'] / 2, slice=v.get('slice')))
+                                   yaw=v['yaw'], pitch=v['pitch'], roll=v.get('roll', 0), f=round(f, 1), cx=v.get('cx', v['W'] / 2), cy=v.get('cy', v['H'] / 2), slice=v.get('slice')))
 
 # street-level viewpoints: (title, lon, lat, look-at lon, look-at lat)
 VIEWS = [
