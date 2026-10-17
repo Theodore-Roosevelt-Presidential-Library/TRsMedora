@@ -105,41 +105,39 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     geom['courthouse-cottages'] = rect_c(south_end + ns * 21.5 / 2, 21.5, 8.0, ns)
 
     # ------------------------------------------------ packing plant
-    # Solved jointly from SHSND 00042-00074 (1885) and MHS 72460 (1886) with both cameras fitted to the surviving
-    # chimney (Oct 16 evening): the chimney stands about 26 m north of the tall block's south face and about 5 m east of
-    # its south-west corner. Tall block 30.9 m long, eave 9.6 m; the photos cannot measure its depth, and 7 m keeps it
-    # clear of the cooling house behind its east end (the 1957 foundation note gives 14-24 ft). Annex 15.6 m, its south
-    # face 1.7 m back; the runway's timber pier about 25 m west of the tall block.
-    c, uu, vv, L, W = _rect_frame(orig_rect('pp-foundation'))
-    ew = uu if abs(uu[0]) >= abs(uu[1]) else vv; ew = ew if ew[0] > 0 else -ew; ns_ = np.array([-ew[1], ew[0]])
-    sw = np.array((-205.7, 164.9)); LT, WT, LA, WA, SA = 30.9, 7.0, 15.6, 10.0, 1.7
-    tall = rect_c(sw + ew * LT / 2 + ns_ * WT / 2, LT, WT, ew)
-    annex = rect_c(sw - ew * LA / 2 + ns_ * (SA + WA / 2), LA, WA, ew)
-    geom['pp-foundation'] = rect_c(sw + ew * (LT - LA) / 2 + ns_ * (SA + WA) / 2, LT + LA, SA + WA, ew)
+    # Solved jointly from the two ground photos (SHSND 00042-00074, 1885; MHS 72460, 1886) AND the town overviews
+    # 00042-00071 and -00195, whose cameras are fixed by surviving buildings (Oct 17). The overviews fix the plant's
+    # rotation about the chimney, which the ground photos alone could not: the long axis runs at a bearing of about 76
+    # degrees (ENE-WSW, +/-2.5), not due east. The runway pier and the cooling-house cupola, at opposite ends, agree.
+    # Block depths are not measurable (7 m tall block, 10 m annex kept); heights +/-8%.
+    U = np.array((0.972, 0.236)); ew = U; ns_ = np.array([-U[1], U[0]])
+    tall = [[-200.02, 161.08], [-167.75, 168.92], [-169.40, 175.72], [-201.67, 167.89]]
+    annex = [[-216.54, 158.83], [-200.42, 162.74], [-202.78, 172.45], [-218.90, 168.54]]
+    sw = np.array(tall[0]); LT = 33.2; WT = 7.0
+    geom['pp-foundation'] = [annex[0], tall[1], tall[2], [round(annex[0][0] + ns_[0] * 10, 2), round(annex[0][1] + ns_[1] * 10, 2)]]
     style_add['pp-foundation'] = dict(skip_main=True, parts=[
-        dict(rect=tall, eave=9.6, style=dict(_tall=True)),
-        dict(rect=annex, eave=8.5, style=dict(_annex=True))],
+        dict(rect=tall, eave=10.1, style=dict(_tall=True)),
+        dict(rect=annex, eave=9.0, style=dict(_annex=True))],
         decks=[dict(rect=rect_c(sw + ew * LT / 2 + ns_ * (WT + 1.5), LT, 3, ew), h=1.2,
                     rails=[[list(sw + ns_ * (WT + 2.9)), list(sw + ew * LT + ns_ * (WT + 2.9))]])])
     # cooling house of 1883 (SHSND 00042-00150, -00188; seen behind the plant in 00042-00074/-75, MHS 72460): not in the gazetteer
-    CH = np.array((-175.4, 178.1))
+    CH = np.array((-171.10, 182.35))
     extra.append(dict(id='pp-cooling-house', name='Cooling house (1883)', town='Medora', kind='building', built=1883.8, built_text='summer-fall 1883 (SHSND 00042-00188)',
                       removed=None, removed_text='', use='refrigerated cooling house for dressed beef, with a car-loading platform', material='frame, painted clapboard',
-                      stories='3', loc='B', form='B', rect=rect_c(CH, 11, 11, ew), eave=9.0, ridge=12.0,
-                      evidence='Located by triangulating its cupola in the two fitted plant photos (SHSND 00042-00074 and MHS 72460), which agree with the sight lines in the solved overviews 00042-00071 and -00193; good to about +/-2 m. The cupola top solves at 14.8 m, as modelled.',
+                      stories='3', loc='B', form='B', rect=[[-175.14, 175.71], [-164.45, 178.31], [-167.05, 189.00], [-177.74, 186.40]], eave=9.4, ridge=12.4,
+                      evidence='Located by its cupola, triangulated in the solved overviews SHSND 00042-00071 and -00195 and the two fitted plant photos (00042-00074, MHS 72460); good to about +/-2 m. Its south wall abuts the north-east corner of the main packing house.',
                       sources='SHSND 00042-00150, 00042-00188, 00042-00074, 00042-00075; MHS 72460',
                       photos='shsnd:00042-00150; shsnd:00042-00188; shsnd:00042-00074; mhs:72460',
                       notes='Added from the 2026 photo audit. A refrigerator car (NP 4800) stands at its loading platform in 00042-00150.'))
-    # east building: ridge east-west (its gable end faces east in 0039_00001 and 00042-00071); south face and west end from the fitted plant photos
-    geom['pp-east-building'] = rect_c(np.array((-160.0 + 15, 164.0 + 6.5)), 30, 13, ew)
+    # east building: gable roof with its ridge along the plant axis; its south-west corner meets the tower
+    geom['pp-east-building'] = [[-154.79, 175.98], [-125.64, 183.06], [-128.70, 195.69], [-157.86, 188.61]]
     extra.append(dict(id='pp-east-tower', name='Plant tower (east)', town='Medora', kind='building', built=1885.3, built_text='by 1885', removed=None, removed_text='',
                       use='unknown (a walkway from the main house reached it)', material='frame, dark boards', stories='', loc='C', form='C',
-                      rect=rect_c((-163.7, 168.8), 3.2, 3.2, ew), eave=9.2, ridge=10.7,
-                      evidence='A tall narrow dark tower with a pyramid cap stands at the west end of the east building, reached by an open walkway about 7 m up (SHSND 00042-00074, MHS 72460, 00042-00180). Its peak is triangulated in the two fitted plant photos (+/-3 m), top about 10.7 m.',
+                      rect=[[-157.90, 172.70], [-154.79, 173.46], [-155.55, 176.57], [-158.66, 175.81]], eave=9.7, ridge=11.2,
+                      evidence='A tall narrow dark tower with a pyramid cap stands at the west end of the east building, reached by an open walkway about 7 m up (SHSND 00042-00074, MHS 72460, 00042-00180). Its peak (about 11.2 m) is located by joint solve of the plant photos and the overviews (+/-3 m).',
                       sources='SHSND 00042-00074; MHS 72460; SHSND 00042-00180', photos='shsnd:00042-00074; mhs:72460', notes='Added from the 2026 photo audit.'))
-    # ice house: only Huffman shows it; its east end is hidden behind the runway pier, so it stands just north of the pier line
-    c, uu, vv, L, W = _rect_frame(orig_rect('pp-ice-house'))
-    geom['pp-ice-house'] = rect_c(np.array(((-260.1 - 231.9) / 2, 174.0 + W / 2)), 28.2, W, ew)
+    # ice house: SW corner from Huffman (72460), east end hidden behind the runway pier there; in front of the pier from the north (00042-00075)
+    geom['pp-ice-house'] = [[-254.62, 154.08], [-226.66, 160.86], [-229.75, 173.60], [-257.71, 166.81]]
     # ------------------------------------------------ Chateau outbuildings (SHSND 00042-00152, 1883; 00042-00157, 1884)
     extra.append(dict(id='chateau-outbuilding-east', name='Chateau outbuilding (east of the house)', town='Chateau', kind='building', built=1883.6, built_text='by 1883',
                       removed=None, removed_text='', use='outbuilding (kitchen or wash house?)', material='frame, light painted', stories='1', loc='C', form='C',
@@ -194,7 +192,7 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     style_add['hotel-de-mores'] = dict(parts=[dict(rect=rect_c(c + ew * (L / 2 - 6) + nn * (W / 2 + 2.0), 8, 4, ew), eave=3.2, ridge=4.6)])
     # cooling house loading platform (SHSND 00042-00150), north side
     ch = [x for x in extra if x['id'] == 'pp-cooling-house'][0]
-    style_add['pp-cooling-house'] = dict(decks=[dict(rect=rect_c(CH + np.array([-ew[1], ew[0]]) * 7.0, 11, 3, ew), h=1.2)])
+    style_add['pp-cooling-house'] = dict(decks=[dict(rect=rect_c(CH + np.array([-U[1], U[0]]) * 7.0, 11, 3, U), h=1.2)])
     # company store: three joined front-gabled buildings of unequal width (Houghton 3013533), south to north 7.3 : 6.0 : 4.3
     c, uu, vv, L, W = _rect_frame(orig_rect('company-store-offices'))
     ns = uu if uu[1] > 0 else -uu; eo = np.array([ns[1], -ns[0]])

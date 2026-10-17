@@ -594,7 +594,7 @@ MASS = {
  'hotel-de-mores':      dict(eave=8.5, ridge=10.5, roof='gable', src='photo scale bars, SHSND 00042-00195 (8.5/10.2) and -00071 (9.1/11.7 at the tall east block)'),
  'metropolitan-hotel':  dict(eave=7.6, ridge=7.6, roof='flat',  src='photo scale bar, SHSND 00042-00195 (flat roof, about 7.6 m)'),
  'ferris-store':        dict(eave=6.5, ridge=8.9, roof='gable', src='lidar 2021 of the 1963 reconstruction built to the original plan'),
- 'demores-packing-plant': dict(eave=0, ridge=21, roof='chimney', src='round, tapering brick stack about 21 m tall, scaled from Huffman 1886 (MHS 72460) and SHSND 00042-00075 against the main packing house (an estimate; only the lower ruin survives)'),
+ 'demores-packing-plant': dict(eave=0, ridge=22.7, roof='chimney', src='round, tapering brick stack; height solved at about 22.7 m (+/-2 m) from the fitted plant photos (00042-00074, MHS 72460) together with the town overviews (an estimate; only the lower ruin survives)'),
 }
 def massing(k):
     if k['id'] in MASS: return MASS[k['id']]
