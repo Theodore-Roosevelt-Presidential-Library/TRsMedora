@@ -457,7 +457,10 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
       const al = (l2r ? t : 1 - t) * fc.len, s0 = +fl, base = s0 === 0 ? 0 : s0 * sh;
       if (kind === 'win' || kind === 'shut') {
         if (kind === 'shut') put(fc, al, base + (s0 === 0 ? .95 : .76), winW * 1.05, Math.min(1.6, sh * .5), `trim#${(st.shutters || '#6b5a48').slice(1)}`, .07);   // shutters closed over the window
-        else put(fc, al, base + (s0 === 0 ? .95 : .76), winW, Math.min(1.6, sh * .5), winKey);
+        else if (st.arched === 'lancet') {     // tall pointed window with a stone sill
+          const sill = base + (st.win_sill ?? 1.0), wh2 = st.win_h || 2.6;
+          put(fc, al, sill, winW, wh2, winKey); put(fc, al, sill - .12, winW + .25, .12, trimKey, .08);
+        } else put(fc, al, base + (s0 === 0 ? .95 : .76), winW, Math.min(1.6, sh * .5), winKey);
       } else {
         const w = kind === 'double' ? 1.6 : 1.0; put(fc, al, base + .05, w, 2.25, 'door');
         if (kind === 'archdoor') put(fc, al, base + 2.3, w + .5, 1.5, `blindArch#${(st.wall_color || '#e9e3d6').slice(1)}`, .03);
@@ -611,9 +614,11 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
     bk.add(shingKey, box(p[0], z0 + ridgeH - .3 + (bf.base || .8) / 2, -p[1], bwid, (bf.base || .8) + .6, bwid, rotU));
     const sb = z0 + ridgeH + (bf.base || .8) - .3, stg = bf.stage || 2.3;
     for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { const q = P2(F, c[0] + dx * (bwid / 2 - .15), c[1] + dy * (bwid / 2 - .15)); bk.add(trimKey, box(q[0], sb + stg / 2, -q[1], .3, stg, .3)); }
+    if (bf.mullion) for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) { const q = P2(F, c[0] + dx * (bwid / 2 - .1), c[1] + dy * (bwid / 2 - .1)); bk.add(trimKey, box(q[0], sb + stg / 2, -q[1], .16, stg, .16)); }   // centre post: two openings a face
+    if (bf.rail) bk.add(trimKey, box(p[0], sb + .45, -p[1], bwid - .1, .1, bwid - .1, rotU));
     bk.add('dark#2a2622', box(p[0], sb + stg / 2, -p[1], bwid * .55, stg * .8, bwid * .55, rotU));
     bk.add(trimKey, box(p[0], sb + stg + .08, -p[1], bwid + .2, .16, bwid + .2, rotU));
-    const g = new THREE.ConeGeometry((bwid + .5) / Math.SQRT2, bf.roof || 1.8, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], sb + stg + .16 + (bf.roof || 1.8) / 2, -p[1]); bk.add(roofKey, g);
+    const g = new THREE.ConeGeometry((bwid + (bf.overhang ?? .5)) / Math.SQRT2, bf.roof || 1.8, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], sb + stg + .16 + (bf.roof || 1.8) / 2, -p[1]); bk.add(roofKey, g);
   }
   // roof monitor on a flat roof: monitor true or {len_frac, at (-0.5..0.5 along), w}
   if (st.monitor && roofType === 'flat') { const mo = st.monitor === true ? {} : st.monitor, lf = mo.len_frac ?? 0.7, at = mo.at ?? 0, mw = mo.w || 2.4, p = P2(F, F.L * at, 0);
@@ -642,8 +647,21 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
   if (st.runway) {
     const d = DIRS[st.runway.end] || [-1, 0], sg = Math.sign(F.u[0] * d[0] + F.u[1] * d[1]) || -1, L = st.runway.len || 24, top = st.runway.h ?? H + 1.0;
     const start = sg * (F.L / 2 - (st.runway.inset || 0)), c = P2(F, start + sg * L / 2, 0);
-    bk.add(wallKey, box(c[0], z0 + top, -c[1], L, 2.0, 2.2, rotU));
-    bk.add(roofKey, box(c[0], z0 + top + 1.1, -c[1], L + .3, .12, 2.8, rotU));
+    if (st.runway.open) {     // roofed deck on an open timber truss (SHSND 00042-00074, MHS 72460)
+      bk.add(timberKey, box(c[0], z0 + top - .3, -c[1], L, .7, 2.2, rotU));
+      bk.add(wallKey, box(c[0], z0 + top + .45, -c[1], L, .9, 2.2, rotU));
+      bk.add(roofKey, box(c[0], z0 + top + 1.0, -c[1], L + .3, .12, 2.8, rotU));
+      const nb = Math.max(2, Math.round(L / 3.2)), dep = st.runway.truss || 2.2;
+      for (let i = 0; i <= nb; i++) for (const side of [-1, 1]) {
+        const a1 = start + sg * (L * i / nb), q1 = P2(F, a1, side * 1.0), a2 = start + sg * (L * Math.min(nb, i + 1) / nb), q2 = P2(F, a2, side * 1.0);
+        bk.add(timberKey, beam(V(q1[0], q1[1], z0 + top - .65), V(q1[0], q1[1], z0 + top - .65 - dep), .16));                       // vertical
+        if (i < nb) bk.add(timberKey, beam(V(q1[0], q1[1], z0 + top - .65 - dep), V(q2[0], q2[1], z0 + top - .65), .14));             // diagonal
+        if (i < nb) bk.add(timberKey, beam(V(q1[0], q1[1], z0 + top - .65 - dep), V(q2[0], q2[1], z0 + top - .65 - dep), .16));       // bottom chord
+      }
+    } else {
+      bk.add(wallKey, box(c[0], z0 + top, -c[1], L, 2.0, 2.2, rotU));
+      bk.add(roofKey, box(c[0], z0 + top + 1.1, -c[1], L + .3, .12, 2.8, rotU));
+    }
     // pier: tapered square timber tower at the far end
     const pc = P2(F, start + sg * (L - 2), 0), zg = ctxZ ? ctxZ(pc[0], pc[1]) : z0, ph = z0 + top - 1 - zg;
     const g = new THREE.CylinderGeometry(3 / Math.SQRT2, 4 / Math.SQRT2, ph, 4, 1).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(pc[0], zg + ph / 2, -pc[1]); bk.add(timberKey, g);
@@ -714,7 +732,7 @@ export function buildDetailed(f, ctx) {
     });
   }
   // extra blocks: wings, lean-tos, annexes, towers. Each part: {rect, eave, ridge?, style: overrides}
-  const ONE_OFF = ['parts', 'porch', 'signs', 'chimney_at', 'bay_window', 'outside_stair', 'gallery', 'runway', 'tower', 'belfry', 'monitor', 'roof_extend', 'brackets', 'decks', 'fences', 'upper_door', 'fanlight', 'front_openings', 'chimneys', 'cupola', 'vents', 'plinth', 'jerkin', 'skip_main', 'rise', 'false_front', 'storefront', 'win_skip', 'rear_bays', 'size', 'eave'];
+  const ONE_OFF = ['parts', 'bridges', 'porch', 'signs', 'chimney_at', 'bay_window', 'outside_stair', 'gallery', 'runway', 'tower', 'belfry', 'monitor', 'roof_extend', 'brackets', 'decks', 'fences', 'upper_door', 'fanlight', 'front_openings', 'chimneys', 'cupola', 'vents', 'plinth', 'jerkin', 'skip_main', 'rise', 'false_front', 'storefront', 'win_skip', 'rear_bays', 'size', 'eave'];
   for (const p of (st.parts || [])) {
     const base = Object.fromEntries(Object.entries(st).filter(([k]) => !ONE_OFF.includes(k)));
     const s2 = Object.assign({chimneys: 0}, base, p.style || {});
@@ -722,6 +740,18 @@ export function buildDetailed(f, ctx) {
     buildBlock(bk, f, s2, z0, p.eave, p.rect, s2.front ? DIRS[s2.front] : frontDir, grade, p.ridge);
   }
   buildDecks(bk, st, ctx.zAt);
+  for (const br of (st.bridges || [])) {     // elevated open walkway between buildings: two stringers, plank deck, rails
+    const za = ctx.zAt(br.a[0], br.a[1]) + br.a[2], zb = ctx.zAt(br.b[0], br.b[1]) + br.b[2], w = br.w || 1.2, key = 'trim#7a6a58';
+    const dx = br.b[0] - br.a[0], dy = br.b[1] - br.a[1], L = Math.hypot(dx, dy), nx = -dy / L * w / 2, ny = dx / L * w / 2;
+    for (const sg of [-1, 1]) {
+      bk.add(key, beam(V(br.a[0] + sg * nx, br.a[1] + sg * ny, za), V(br.b[0] + sg * nx, br.b[1] + sg * ny, zb), .2));
+      bk.add(key, beam(V(br.a[0] + sg * nx, br.a[1] + sg * ny, za + 1), V(br.b[0] + sg * nx, br.b[1] + sg * ny, zb + 1), .08));
+    }
+    const np = Math.max(2, Math.round(L / 2.5));
+    for (let i = 0; i <= np; i++) { const t = i / np, x = br.a[0] + dx * t, y = br.a[1] + dy * t, z = za + (zb - za) * t;
+      bk.add(key, beam(V(x - nx, y - ny, z + .1), V(x + nx, y + ny, z + .1), .1));
+      if (br.posts && i > 0 && i < np) for (const sg of [-1, 1]) bk.add(key, beam(V(x + sg * nx, y + sg * ny, ctx.zAt(x, y)), V(x + sg * nx, y + sg * ny, z), .18)); }
+  }
   const grp = new THREE.Group();
   for (const [mesh, k] of bk.meshes(k => mat(k, grade)).map((m, i) => [m, [...bk.m.keys()][i]])) {
     mesh.userData = f; mesh.name = k;

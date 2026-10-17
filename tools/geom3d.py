@@ -78,7 +78,8 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     style_add['lm-depot'] = dict(skip_main=True, parts=[
         dict(rect=dW, eave=2.4, ridge=3.7, style=dict(_west=True)),
         dict(rect=dE, eave=2.6, ridge=3.9, style=dict(_east=True))],
-        decks=[dict(rect=tn(q, u, nrm, -5, 18, -3.0, -0.05), h=0.3)])
+        # Haynes 1881: no raised platform, only a plank walk from the east block's door down to a plank crossing along the main track
+        decks=[dict(rect=tn(q, u, nrm, 9.3, 10.8, -7.3, -0.05), h=0.08), dict(rect=tn(q, u, nrm, 3.0, 24.0, -8.4, -7.3), h=0.08)])
     q = np.array([-532.80, 219.57]); u = np.array([-521.81, 210.90]) - q; u /= np.hypot(*u); nrm = np.array([-u[1], u[0]])
     geom['pyramid-park-hotel'] = tn(q, u, nrm, -6.2, 14, -0.4, 14)
     style_add['pyramid-park-hotel'] = dict(skip_main=True, parts=[
@@ -86,12 +87,13 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
         dict(rect=tn(q, u, nrm, 6.8, 14, -0.4, 8), eave=5.15, ridge=8.9, style=dict(_cross=True)),
         dict(rect=tn(q, u, nrm, -6.2, 0, 0, 4.5), eave=5.6, ridge=8.5, style=dict(_west=True)),
         dict(rect=tn(q, u, nrm, -4, 0.5, 8, 14), eave=2.6, ridge=4.2, style=dict(_rear=True))],
-        decks=[dict(rect=tn(q, u, nrm, -6.2, 14, -2.1, -0.4), h=0.2)])
-    for fid, off in (('lm-roberts-saloon', 38), ('nelson-store', -30), ('mcgeeney-boarding-house', -30), ('fitzgerald-shack', -28), ('maunders-shack', 28)):
+        )   # no porch or platform in front: Haynes 1881 shows the people standing on bare ground
+    for fid, off in (('lm-roberts-saloon', 38), ('nelson-store', -30), ('mcgeeney-boarding-house', -30), ('fitzgerald-shack', -28), ('maunders-shack', 22)):
         try: R0 = orig_rect(fid)
         except KeyError: continue
         c0 = np.array(R0, float).mean(0); q, u, nrm = foot(c0)
         _, _, _, L, W = _rect_frame(R0)
+        if fid == 'maunders-shack': q = q + u * 32   # Haynes 1881 shows open ground in front of the hotel; kept east of it, toward the river
         geom[fid] = rect_c(q + nrm * off, L, W, u)
         props[fid] = dict(notes_add='In the 3D view this building is placed against the 3D track (today\'s line) on the side Hagedorn gives.')
     for fid in ('lm-depot', 'pyramid-park-hotel'):
@@ -122,7 +124,9 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
         dict(rect=tall, eave=10.1, style=dict(_tall=True)),
         dict(rect=annex, eave=9.0, style=dict(_annex=True))],
         decks=[dict(rect=rect_c(sw + ew * LT / 2 + ns_ * (WT + 1.5), LT, 3, ew), h=1.2,
-                    rails=[[list(sw + ns_ * (WT + 2.9)), list(sw + ew * LT + ns_ * (WT + 2.9))]])])
+                    rails=[[list(sw + ns_ * (WT + 2.9)), list(sw + ew * LT + ns_ * (WT + 2.9))]])],
+        # open walkway from the tall block's east end to the tower (MHS 72460, SHSND 00042-00074)
+        bridges=[dict(a=[-168.4, 172.4, 8.2], b=[-158.3, 174.2, 7.2], w=1.2, posts=True)])
     # cooling house of 1883 (SHSND 00042-00150, -00188; seen behind the plant in 00042-00074/-75, MHS 72460): not in the gazetteer
     CH = np.array((-171.10, 182.35))
     extra.append(dict(id='pp-cooling-house', name='Cooling house (1883)', town='Medora', kind='building', built=1883.8, built_text='summer-fall 1883 (SHSND 00042-00188)',
@@ -139,6 +143,11 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
                       rect=[[-157.90, 172.70], [-154.79, 173.46], [-155.55, 176.57], [-158.66, 175.81]], eave=9.7, ridge=11.2,
                       evidence='A tall narrow dark tower with a pyramid cap stands at the west end of the east building, reached by an open walkway about 7 m up (SHSND 00042-00074, MHS 72460, 00042-00180). Its peak (about 11.2 m) is located by joint solve of the plant photos and the overviews (+/-3 m).',
                       sources='SHSND 00042-00074; MHS 72460; SHSND 00042-00180', photos='shsnd:00042-00074; mhs:72460', notes='Added from the 2026 photo audit.'))
+    extra.append(dict(id='pp-log-hut', name='Log hut in front of the east building', town='Medora', kind='building', built=1885.3, built_text='by 1885', removed=None, removed_text='',
+                      use='unknown (shed or office)', material='logs, light shed roof', stories='1', loc='C', form='C',
+                      rect=rect_c((-144.5, 171.0), 9, 4, U), eave=2.0, ridge=2.7,
+                      evidence='A small log hut with a light shed roof in front of the east building in both plant photos (SHSND 00042-00074 and MHS 72460); located by crossing the two fitted cameras\' sight lines (+/-4 m); about 9 m long.',
+                      sources='SHSND 00042-00074; MHS 72460', photos='shsnd:00042-00074; mhs:72460', notes='Added Oct 2026 from the plant photos.'))
     # ice house: SW corner from Huffman (72460), east end hidden behind the runway pier there; in front of the pier from the north (00042-00075)
     geom['pp-ice-house'] = [[-254.62, 154.08], [-226.66, 160.86], [-229.75, 173.60], [-257.71, 166.81]]
     # ------------------------------------------------ Chateau outbuildings (SHSND 00042-00152, 1883; 00042-00157, 1884)
