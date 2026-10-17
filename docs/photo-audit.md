@@ -149,3 +149,21 @@ Still open:
 - **Stockyards:** the TRC south-east view shows a two-pen stockyard with two loading chutes about 115 m south of the main line (around local 277-345 E, -515 to -468 N). That photo is c.1890s, so the yard is not yet modelled for 1883-87.
 - **St. Mary's** reads about 8% shorter in the TRC south-east view than the lidar footprint; the church is trusted, so it is not changed. Worth checking whether the lidar includes a later addition.
 - **Chimney height:** the solves give 22.7 +/- 2 m from the plant photos, up to about 27 m from the far butte view. 22.7 m is used.
+
+## Grades revised (Oct 17)
+After the overview re-solve and the photo fits, location (first letter) and form (second) grades changed:
+
+| Building | Was | Now | Why |
+|---|---|---|---|
+| Packing house | C/C | B/B | Position and angle fixed by six photos and the chimney |
+| Ice house | C/C | B/C | Located consistently in four photos |
+| Company store and offices | C/C | B/B | Triangulated; gables match; storefronts measured from Houghton 3013533 |
+| Little Missouri depot | C/B | B/B | Fitted Haynes 1881 camera, about 1% |
+| Pyramid Park Hotel | C/B | B/B | Fitted Haynes 1881 camera (distance/size trade-off about 6 m) |
+| Chateau outbuilding (east) | C/C | B/C | Fitted 1883 Chateau photo; chimney in the 1886 one |
+| Medora depot | B/B | B/A | Huffman 1886 matched to about 1% |
+| Brick cottages | B/C | B/B | Two hipped cottages in three photos |
+| Plant east building | C/D | C/C | Form seen in several photos |
+| Roller rink | C/C | D/C | Open ground at its spot in 00042-00071 |
+| Mrs. Malloy's hotel | C/D | D/D | Open ground at its spot in 00042-00071 |
+| Metropolitan Hotel | B/A | B/B | Orientation and roof just corrected; front and porch inferred |

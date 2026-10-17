@@ -140,7 +140,7 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     geom['pp-ice-house'] = [[-254.62, 154.08], [-226.66, 160.86], [-229.75, 173.60], [-257.71, 166.81]]
     # ------------------------------------------------ Chateau outbuildings (SHSND 00042-00152, 1883; 00042-00157, 1884)
     extra.append(dict(id='chateau-outbuilding-east', name='Chateau outbuilding (east of the house)', town='Chateau', kind='building', built=1883.6, built_text='by 1883',
-                      removed=None, removed_text='', use='outbuilding (kitchen or wash house?)', material='frame, light painted', stories='1', loc='C', form='C',
+                      removed=None, removed_text='', use='outbuilding (kitchen or wash house?)', material='frame, light painted', stories='1', loc='B', form='C',
                       rect=rect_c((-705.0, -237.0), 6, 5, bearing_u(110)), eave=2.6, ridge=4.3,
                       evidence='A small light gabled one-storey building close east of the house, with smoke or steam beside it (SHSND 00042-00152, 1883), placed from that photo\'s fitted camera; a chimney seen past the east gable in 00042-00196 (1886) fits it.',
                       sources='SHSND 00042-00152', photos='shsnd:00042-00152', notes='Added from the 2026 photo audit.'))

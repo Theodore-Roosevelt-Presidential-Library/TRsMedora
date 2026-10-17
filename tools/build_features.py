@@ -569,6 +569,21 @@ upd('photo85-u07', geom=rect((-103.525118, 46.914827), 20, 46, 55),
     notes='+Moved about 40 m in Oct 2026: its east end triangulated in 00042-00071 and -00195 (2 px); the old spot is open ground in 71.')
 upd('photo85-u11', geom=rect((-103.526162, 46.914359), 20, 26, 0),
     notes='+Moved about 30 m in Oct 2026 to the light shed on the west side of Main Street in 00042-00071 (one sharp view; low confidence).')
+# Oct 17: grades revised after the overview cameras were re-solved and every gallery photo was fitted
+for _fid, _k, _why in (
+    ('pp-foundation', dict(loc='B', form='B'), 'position and angle fixed by six photos and the surviving chimney (joint solve); depth still assumed'),
+    ('pp-ice-house', dict(loc='B'), 'located consistently in four photos from different directions (MHS 72460, SHSND 00042-00075, -00071, DMC 25741)'),
+    ('company-store-offices', dict(loc='B', form='B'), 'triangulated in 00042-00071 and -00195, its three gables matching 71; storefronts measured from Houghton 3013533'),
+    ('lm-depot', dict(loc='B'), 'fixed by the Haynes 1881 camera fitted to the depot and the rails (about 1%)'),
+    ('pyramid-park-hotel', dict(loc='B'), 'fixed by the fitted Haynes 1881 camera; distance and size trade off by about 6 m'),
+    ('medora-depot', dict(form='A'), 'Huffman 1886 (MHS 72461) is clear and the model matches it to about 1%'),
+    ('courthouse-cottages', dict(form='B'), 'two separate hipped cottages in 00042-00194, -00195 and TRC o292511'),
+    ('pp-east-building', dict(form='C'), 'gable, two ventilators and dark siding seen in several photos; position still uncertain'),
+    ('roller-rink', dict(loc='D'), 'the 1885 bird\'s-eye view (00042-00071) shows open ground at this spot'),
+    ('malloy-medora', dict(loc='D'), 'the 1885 bird\'s-eye view (00042-00071) shows open ground at this spot'),
+    ('metropolitan-hotel', dict(form='B'), 'orientation and roof corrected Oct 2026; front and porch side still inferred'),
+):
+    upd(_fid, notes='+Grade revised Oct 2026 (' + ', '.join(k + ' ' + v for k, v in _k.items()) + '): ' + _why + '.', **_k)
 # photo85-u12 was the company store's two left gables seen again; drop it
 F[:] = [k for k in F if k['id'] != 'photo85-u12']
 
