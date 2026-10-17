@@ -238,6 +238,30 @@ function beam(p, q, t) {
   const m = new THREE.Matrix4().lookAt(new THREE.Vector3(0, 0, 0), d, Math.abs(d.y) / L > 0.99 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0));
   g.applyMatrix4(m); const c = p.clone().add(q).multiplyScalar(0.5); g.translate(c.x, c.y, c.z); return g;
 }
+function buildFrame(bk, R, z0, fr, key) {
+  // R: 4 corners; the frame's bents run across the short side, posts stand along both long sides
+  const P = R.map(p => [p[0], p[1]]), d01 = Math.hypot(P[1][0] - P[0][0], P[1][1] - P[0][1]), d12 = Math.hypot(P[2][0] - P[1][0], P[2][1] - P[1][1]);
+  const [A, B, C, D] = d01 >= d12 ? P : [P[1], P[2], P[3], P[0]];            // A-B and D-C are the long sides
+  const lerp = (p, q, t) => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t];
+  const nA = Math.max(2, fr.posts_along || 6), nX = Math.max(2, fr.posts_across || 2), ph = fr.post_h || 6, t = fr.size || 0.22, sill = z0 + 0.15;
+  const rise = fr.roof === 'rafters' ? (fr.rafter_rise || 2.5) : 0;
+  for (let i = 0; i < nA; i++) {
+    const u = i / (nA - 1), a = lerp(A, B, u), b = lerp(D, C, u);
+    for (let j = 0; j < nX; j++) { const q = lerp(a, b, j / (nX - 1)); bk.add(key, beam(V(q[0], q[1], sill), V(q[0], q[1], sill + ph), t)); }
+    bk.add(key, beam(V(a[0], a[1], sill + ph), V(b[0], b[1], sill + ph), t * 0.9));           // tie beam of the bent
+    if (fr.mid_tie) bk.add(key, beam(V(a[0], a[1], sill + ph * 0.5), V(b[0], b[1], sill + ph * 0.5), t * 0.8));
+    if (fr.braces !== false) {                                                                // knee braces at both posts
+      const kb = Math.min(1.2, ph * 0.2), w = Math.hypot(b[0] - a[0], b[1] - a[1]), ua = [(b[0] - a[0]) / w, (b[1] - a[1]) / w];
+      bk.add(key, beam(V(a[0], a[1], sill + ph - kb), V(a[0] + ua[0] * kb, a[1] + ua[1] * kb, sill + ph), t * 0.6));
+      bk.add(key, beam(V(b[0], b[1], sill + ph - kb), V(b[0] - ua[0] * kb, b[1] - ua[1] * kb, sill + ph), t * 0.6));
+    }
+    if (rise > 0) { const m = lerp(a, b, 0.5); bk.add(key, beam(V(a[0], a[1], sill + ph), V(m[0], m[1], sill + ph + rise), t * 0.7)); bk.add(key, beam(V(b[0], b[1], sill + ph), V(m[0], m[1], sill + ph + rise), t * 0.7)); }
+  }
+  for (const [p, q] of [[A, B], [D, C]]) { bk.add(key, beam(V(p[0], p[1], sill), V(q[0], q[1], sill), t)); bk.add(key, beam(V(p[0], p[1], sill + ph), V(q[0], q[1], sill + ph), t)); }   // sills and plates
+  for (const [p, q] of [[A, D], [B, C]]) bk.add(key, beam(V(p[0], p[1], sill), V(q[0], q[1], sill), t));
+  if (rise > 0) { const m1 = lerp(A, D, 0.5), m2 = lerp(B, C, 0.5); bk.add(key, beam(V(m1[0], m1[1], sill + ph + rise), V(m2[0], m2[1], sill + ph + rise), t * 0.8)); }   // ridge piece
+  if (fr.girts) for (const [p, q] of [[A, B], [D, C], [A, D], [B, C]]) bk.add(key, beam(V(p[0], p[1], sill + ph * 0.5), V(q[0], q[1], sill + ph * 0.5), t * 0.7));
+}
 // polygon (convex, ordered) as a triangle fan
 function poly(pts, uvs) {
   const g = new THREE.BufferGeometry(), P = [], U = [];
@@ -677,7 +701,10 @@ export function buildDetailed(f, ctx) {
   const H = m.eave > 0 ? m.eave : (st.stories >= 2 ? 7 : st.stories >= 1.5 ? 4.5 : 3.2);
   const bk = new Bucket(); ctxZ = ctx.zAt;
   let frontDir = st.front ? DIRS[st.front] : ctx.streetDir(f);
-  if (!st.skip_main) {
+  if (st.frame) {            // an open timber frame going up (posts, sills, plates, tie beams, rafters, knee braces)
+    const z0 = Math.min(...f.rect.map(p => ctx.zAt(p[0], p[1])));
+    buildFrame(bk, f.rect, z0, st.frame, `trim#${(st.timber || '#a08463').slice(1)}`);
+  } else if (!st.skip_main) {
     let rects = st.blocks || (st.split ? splitRect(f.rect, st.split.n, st.split.gap) : [f.rect]);
     rects.forEach((R, i) => {
       const z0 = Math.min(...R.map(p => ctx.zAt(p[0], p[1])));
