@@ -809,14 +809,15 @@ export function buildTrack(line) {
   const grp = new THREE.Group();
   // ballast bed
   const pos = [], uv = [], idx = []; let dist = 0;
-  const dense = []; for (let i = 0; i < line.length - 1; i++) { const a = line[i], b = line[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.ceil(L / 2)); for (let k = 0; k < n; k++) { const t = k / n; dense.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]); } } dense.push(line[line.length - 1]);
+  // a 4th element of 1 marks an open-deck point (on a trestle): no ballast bed there
+  const dense = [], open = []; for (let i = 0; i < line.length - 1; i++) { const a = line[i], b = line[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.ceil(L / 2)); for (let k = 0; k < n; k++) { const t = k / n; dense.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]); open.push(a[3] === 1 && (k === 0 || b[3] === 1)); } } dense.push(line[line.length - 1].slice(0, 3)); open.push(line[line.length - 1][3] === 1);
   dense.forEach((p, i) => {
     const a = dense[Math.max(0, i - 1)], b = dense[Math.min(dense.length - 1, i + 1)];
     let dx = b[0] - a[0], dy = b[1] - a[1]; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
     if (i) dist += Math.hypot(p[0] - dense[i - 1][0], p[1] - dense[i - 1][1]);
     const nx = -dy * 1.9, ny = dx * 1.9;
     pos.push(p[0] + nx, p[2] - .1, -(p[1] + ny), p[0] - nx, p[2] - .1, -(p[1] - ny)); uv.push(0, dist / 2, 2, dist / 2);
-    if (i) { const k = i * 2; idx.push(k - 2, k - 1, k, k - 1, k + 1, k); }
+    if (i && !(open[i] && open[i - 1])) { const k = i * 2; idx.push(k - 2, k - 1, k, k - 1, k + 1, k); }
   });
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
   const bed = new THREE.Mesh(g, new THREE.MeshStandardMaterial({map: TEX.ballast, roughness: 1, polygonOffset: true, polygonOffsetFactor: -3})); bed.receiveShadow = true; grp.add(bed);
@@ -985,6 +986,42 @@ function car(kind) {
   for (const s of [-1, 1]) g.add(truck(s * (len / 2 - 2.0), .45, 1.435, black, black));
   g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return {g, length: len + 2.2};
+}
+export function buildTrestle(bents, zAt) {
+  // open-deck timber pile trestle: bents = [[e, n, rail z], ...] one per bent, in order. Each bent has four round piles
+  // down to the ground (or the river bed) under a 12x12 in cap; X-bracing on the taller bents; four stringers under the
+  // ties and a guard timber each side. Rail level is the track's z (models.js buildTrack lays the ties and rails).
+  const grp = new THREE.Group(), B = new Bucket();
+  const PILES = [-1.9, -0.65, 0.65, 1.9], capTop = -0.505, capD = 0.35, capL = 4.8;
+  for (let i = 0; i < bents.length; i++) {
+    const [e, n, z] = bents[i], a = bents[Math.max(0, i - 1)], b = bents[Math.min(bents.length - 1, i + 1)];
+    const ang = Math.atan2(b[1] - a[1], b[0] - a[0]), ux = Math.cos(ang), uy = Math.sin(ang), px = -uy, py = ux;
+    const capZ = z + capTop - capD / 2;
+    B.add('cap', box(e, capZ, -n, 0.32, capD, capL, ang));       // box x along the track (rotY = ang), z across
+    let low = Infinity; const feet = [];
+    for (const o of PILES) {
+      const pe = e + px * o, pn = n + py * o, g = zAt(pe, pn) - 0.6, top = capZ - capD / 2;
+      if (top - g < 0.2) continue;
+      const c = new THREE.CylinderGeometry(0.15, 0.17, top - g, 8); c.translate(pe, (top + g) / 2, -pn); B.add('pile', c);
+      low = Math.min(low, g + 0.6); feet.push([pe, pn, o]);
+    }
+    const top = capZ - capD / 2, h = top - low;
+    if (h > 2.5) {          // sway bracing: two planks crossing between the outer piles, over the upper 4 m at most
+      const zb = top - Math.min(h - 0.5, 4.0), w = 3.8, len = Math.hypot(w, top - zb), tilt = Math.atan2(top - zb, w);
+      for (const sgn of [1, -1]) {
+        const g = new THREE.BoxGeometry(len, 0.25, 0.08); g.rotateZ(sgn * tilt); g.rotateY(ang + Math.PI / 2);
+        g.translate(e + ux * 0.2 * sgn, (top + zb) / 2, -(n + uy * 0.2 * sgn)); B.add('brace', g);
+      }
+    }
+    if (i < bents.length - 1) {     // stringers and guard timbers to the next bent
+      const L = Math.hypot(b[0] - e, b[1] - n), me = (e + b[0]) / 2, mn = (n + b[1]) / 2, mz = (z + b[2]) / 2;
+      for (const o of [-0.95, -0.45, 0.45, 0.95]) B.add('stringer', box(me + px * o, mz - 0.28, -(mn + py * o), L + 0.3, 0.45, 0.22, ang));
+      for (const o of [-1.35, 1.35]) B.add('stringer', box(me + px * o, mz + 0.12, -(mn + py * o), L + 0.05, 0.2, 0.2, ang));
+    }
+  }
+  const mats = k => new THREE.MeshStandardMaterial({color: k === 'pile' ? 0x5b4c3d : k === 'brace' ? 0x6a5a48 : 0x56483a, roughness: 1});
+  for (const m of B.meshes(mats)) grp.add(m);
+  return grp;
 }
 export function buildTrain(dense, atE, atN) {
   // standing just west of the depot with the engine pointing west (the westbound Pacific Express)

@@ -65,6 +65,20 @@ def _dist_to(line_utm):
         if 0 <= r < Z.shape[0] and 0 <= c < Z.shape[1]: m[r, c] = True
     return distance_transform_edt(~m) * meta['res']
 _riv83 = [T.transform(*c) for c in json.load(open(R('map', 'data', 'river_1883.geojson')))['features'][0]['geometry']['coordinates']]
+# 1880-86 reach at the railroad crossing (photo reconciliation of MHS 72459, SHSND 00119-00017 and the 1880s town views):
+# the plat trace runs the river straight under the grade; the photos put it in a loop south of the grade (a channel
+# along the south side of the track) that turns north under the west end of the trestle. Local metres, upstream (south)
+# first; it replaces the plat trace between (-458,-76) and (-136,391) and joins it again at (-464,-325) and (-89,476).
+RIVER_1880_86 = [(-430, -160), (-410, -80), (-372, -12), (-350, 22), (-400, 55), (-455, 78), (-505, 100), (-540, 118), (-548, 145),
+                 (-527, 170), (-500, 205), (-469, 255), (-400, 305), (-339, 348), (-245, 398), (-140, 458)]
+def _splice_river(pts):
+    lp = [(x - ORIGIN[0], y - ORIGIN[1]) for x, y in pts]
+    near = lambda q: min(range(len(lp)), key=lambda i: math.dist(lp[i], q))
+    i0, i1 = near((-89, 476)), near((-464, -325))          # kept: the plat trace runs north (index 0) to south
+    assert i0 < i1
+    new = [(x + ORIGIN[0], y + ORIGIN[1]) for x, y in reversed(RIVER_1880_86)]
+    return pts[:i0 + 1] + new + pts[i1:]
+_riv83 = _splice_river(_riv83)
 def _chaikin(pts, n=3):
     for _ in range(n):
         q = [pts[0]]
@@ -95,6 +109,20 @@ for d in np.arange(0, _rline.length, 6.0):
 _vals = np.array([w[2] for w in _wl])
 _vals = np.convolve(np.pad(_vals, 15, mode='edge'), np.ones(31) / 31, mode='valid')
 WATER83 = [(x, y, float(v)) for (x, y, _), v in zip(_wl, _vals)]
+# a narrow, shallow slough along the north side of the grade east of the crossing (low confidence: read from the
+# dark strip beside the grade in the 1880s views; width and depth are guesses)
+SLOUGH = [(-484.1, 162.5), (-449.9, 141.7), (-416.2, 120.2), (-364.5, 89.6), (-294.9, 50.0), (-225.8, 9.6), (-161.0, -37.6), (-111.5, -71.6)]
+_sl = _chaikin([(x + ORIGIN[0], y + ORIGIN[1]) for x, y in SLOUGH])
+_dsl = _dist_to(_sl)
+_fsl = gaussian_filter(Z, 3)                            # 9 m: the slough follows the local ground
+_slcut = np.clip(1 - (_dsl - 2.5) / 4.0, 0, 1)
+Z = np.minimum(Z, Z * (1 - _slcut) + (_fsl - 1.1) * _slcut)
+_sline = _LS(_sl); _swl = []
+for d in list(np.arange(0, _sline.length, 6.0)) + [_sline.length]:
+    q = _sline.interpolate(d); c = int((q.x - meta['x0']) / meta['res']); r = int((meta['y1'] - q.y) / meta['res'])
+    _swl.append((q.x, q.y, float(_fsl[min(max(r, 0), Z.shape[0] - 1), min(max(c, 0), Z.shape[1] - 1)]) - 0.55))
+_sv = np.array([w[2] for w in _swl]); _sv = np.convolve(np.pad(_sv, 4, mode='edge'), np.ones(9) / 9, mode='valid')
+WATER_SLOUGH = [(x, y, float(v)) for (x, y, _), v in zip(_swl, _sv)]
 
 # ---------------------------------------------------------------- photo-audit footprints and extra buildings (tools/geom3d.py)
 import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -126,7 +154,7 @@ _XX, _YY = np.meshgrid(_xc, _yc)
 _Zorig = Z.copy()
 # pad heights fixed from photo solves (local metres): the Pyramid Park Hotel's floor in Haynes 1881 sits about 1.1 m above
 # the depot's; today's flood plain there is lower than in 1881
-PAD_Z = {'pyramid-park-hotel': 3.5}
+PAD_Z = {'pyramid-park-hotel': 3.5, 'lm-depot': 4.25}  # LM depot platform level with the raised 1880s grade (rail ~4.5)
 _padsrc = [(f['properties'], _shape(f['geometry'])) for f in _HF] + [({'id': x['id'], 'kind': 'building', 'massing': {}}, None) for x in EXTRA3D]
 for pr, g in _padsrc:
     if pr['id'] in GEOM3D or g is None:
@@ -154,6 +182,97 @@ for pr, g in _padsrc:
     w = np.clip(1 - (d - 1.5) / 8.0, 0, 1)
     blk = Z[r0:r1, c0:c1]
     Z[r0:r1, c0:c1] = np.where(w > 0, blk * (1 - w) + pz * w, blk)
+
+# ---------------------------------------------------------------- railroad grade, trestle and sidings
+# The 3D view uses today's alignment (OpenStreetMap), clipped to the model area (see below). Chainage ('ch') runs
+# east from its west end. The 1880s grade (photo reconciliation of MHS 72459, SHSND 00119-00017 and the town views):
+# rail about +4.5..5.0 m (local) past Little Missouri, level at +4.5 across a timber pile trestle from ch 320 to 530
+# (about 210 m, bents every 4.6 m), easing down to +3.5 by ch 600 and to today's lidar grade by ch 760, which it
+# follows past the Medora depot. Where the rail is above the ground the grade is built up on fill (side slopes 1.5:1).
+from shapely.geometry import Polygon as _SP
+_O = _osm
+_rails = [shape(f['geometry']) for f in _O['features'] if f['properties'].get('kind') == 'rail']
+from shapely.ops import linemerge as _lm, unary_union as _uu
+_rl = _lm(_uu(_rails)); _rl = max(_rl.geoms, key=lambda g: g.length) if hasattr(_rl, 'geoms') else _rl
+_box = _SP([(meta['x0'] + 30, meta['y1'] - 30), (meta['x0'] + meta['cols'] * meta['res'] - 30, meta['y1'] - 30),
+            (meta['x0'] + meta['cols'] * meta['res'] - 30, meta['y1'] - meta['rows'] * meta['res'] + 30), (meta['x0'] + 30, meta['y1'] - meta['rows'] * meta['res'] + 30)])
+RAIL_SEG = LineString([T.transform(*c) for c in _rl.coords]).intersection(_box)
+RAIL_SEG = max(RAIL_SEG.geoms, key=lambda g: g.length) if hasattr(RAIL_SEG, 'geoms') else RAIL_SEG
+if RAIL_SEG.coords[0][0] > RAIL_SEG.coords[-1][0]: RAIL_SEG = LineString(list(RAIL_SEG.coords)[::-1])   # chainage from the west
+TRESTLE = (320.0, 530.0); TRESTLE_Z = 4.5; BENT = 4.6
+def _ch_pt(d, off=0.0):
+    """local (e, n) at chainage d, offset off m to the left (north-east side); negative = south"""
+    q = RAIL_SEG.interpolate(d); a = RAIL_SEG.interpolate(max(0, d - 2)); b = RAIL_SEG.interpolate(min(RAIL_SEG.length, d + 2))
+    tx, ty = b.x - a.x, b.y - a.y; L = math.hypot(tx, ty) or 1
+    return (q.x - ty / L * off - ORIGIN[0], q.y + tx / L * off - ORIGIN[1])
+def _drape_ch(d):
+    e, n = _ch_pt(d); return zat(e + ORIGIN[0], n + ORIGIN[1]) - ORIGIN[2] + 0.4
+_sm = lambda t: t * t * (3 - 2 * t)
+_CH = np.arange(0, RAIL_SEG.length, 2.0)
+_raw = np.array([_drape_ch(d) for d in _CH]); _des = _raw.copy()
+_z760 = float(np.interp(760, _CH, _raw))
+for i, d in enumerate(_CH):
+    if 200 <= d < 320: _des[i] = min(max(_raw[i], 4.5), 5.0)
+    elif TRESTLE[0] <= d <= TRESTLE[1]: _des[i] = TRESTLE_Z
+    elif TRESTLE[1] < d <= 600: _des[i] = TRESTLE_Z + (3.5 - TRESTLE_Z) * (d - TRESTLE[1]) / (600 - TRESTLE[1])
+    elif 600 < d <= 760: _des[i] = max(_raw[i], 3.5 + (_z760 - 3.5) * (d - 600) / 160)
+_k = np.ones(15) / 15                                    # 30 m running mean rounds off the breaks of grade
+_smz = np.convolve(np.pad(_des, 7, mode='edge'), _k, mode='valid')
+_w = np.clip((_CH - 170) / 30, 0, 1) * np.clip((790 - _CH) / 30, 0, 1)   # only between ch 170 and 790; drape elsewhere
+RAIL_Z = _des * (1 - _w) + _smz * _w
+RAIL_Z[(_CH >= TRESTLE[0] - 1) & (_CH <= TRESTLE[1] + 1)] = TRESTLE_Z
+rail_z = lambda d: float(np.interp(d, _CH, RAIL_Z))
+# sidings at Little Missouri (offset in m, negative = south of the main; chainage 'ch'): three tracks in Haynes 1881
+# (SHSND 00119-00017). Both sidings end west of the trestle. After the Little Missouri depot closed (1884.5) only the
+# inner siding is kept (MHS 72459, 1886).
+def _sid_inner(d):
+    if d < 40 or d > 305: return None
+    return -4.6 * (_sm((d - 40) / 30) if d < 70 else 1.0 if d <= 268 else 1 - _sm((d - 268) / 37))
+def _sid_outer(d):        # leaves the inner siding at ch 80 and rejoins it by ch 285
+    if d < 80 or d > 285: return None
+    return -4.6 - 4.6 * (_sm((d - 80) / 40) if d < 120 else 1.0 if d <= 240 else 1 - _sm((d - 240) / 45))
+SIDINGS = [dict(name='Siding at Little Missouri (Haynes 1881; kept after 1884)', built=1880.5, removed=None, f=_sid_inner, ch=(40, 305)),
+           dict(name='Second siding at Little Missouri (Haynes 1881)', built=1880.5, removed=1884.5, f=_sid_outer, ch=(80, 285))]
+def _south_width(d):
+    o = [s['f'](d) for s in SIDINGS]; o = [x for x in o if x is not None]
+    return -min(o) if o else 0.0
+# grade the terrain: fill under the formation (rail level - 0.4 m), 2.5 m either side of the outermost track, 1.5:1
+# side slopes, a fill cone under each end of the trestle; and a shallow cut where today's ground stands above it
+_gx0, _gy0, _gx1, _gy1 = LineString([(_ch_pt(d)[0] + ORIGIN[0], _ch_pt(d)[1] + ORIGIN[1]) for d in np.arange(0, 800, 10)]).buffer(40).bounds
+_c0, _c1 = int((_gx0 - meta['x0']) / _res), int((_gx1 - meta['x0']) / _res) + 1
+_ra, _rb = int((meta['y1'] - _gy1) / _res), int((meta['y1'] - _gy0) / _res) + 1
+from shapely import points as _pts2, line_locate_point as _llp
+_cells = _pts2(_XX[_ra:_rb, _c0:_c1].ravel(), _YY[_ra:_rb, _c0:_c1].ravel())
+_chs = _llp(RAIL_SEG, _cells)
+from shapely import distance as _sdist
+_near = _sdist(RAIL_SEG, _cells) < 40
+_blk = Z[_ra:_rb, _c0:_c1].ravel().copy()
+# under the trestle the lidar still shows today's embankment: take the ground there down to the flood plain either
+# side (the lower of the ground 18 m north and south of the centreline)
+def _zcell(e, n):
+    c = int((e + ORIGIN[0] - meta['x0']) / _res); r = int((meta['y1'] - n - ORIGIN[1]) / _res)
+    return float(Z[min(max(r, 0), _rows - 1), min(max(c, 0), _cols - 1)])
+_flood = {round(d): min(_zcell(*_ch_pt(d, 18)), _zcell(*_ch_pt(d, -18))) for d in np.arange(TRESTLE[0], TRESTLE[1] + 1, 1.0)}
+for i, (p, d) in enumerate(zip(_cells, _chs)):
+    if not _near[i] or d <= 0.5 or d > 790: continue
+    a = RAIL_SEG.interpolate(d - 1); b = RAIL_SEG.interpolate(d + 1); tx, ty = b.x - a.x, b.y - a.y; L = math.hypot(tx, ty) or 1
+    s = ((p.x - a.x) * -ty + (p.y - a.y) * tx) / L      # signed offset, + = north-east (left)
+    if abs(s) > 40: continue
+    fz = rail_z(d) - 0.4 + ORIGIN[2]
+    sw = _south_width(d)
+    dd = max(0.0, s - 2.5) if s >= 0 else max(0.0, -s - 2.5 - sw)
+    if TRESTLE[0] < d < TRESTLE[1]:
+        w = min(1.0, max(0.0, (16 - abs(s)) / 6)) * min(1.0, max(0.0, (d - TRESTLE[0] - 15) / 10), max(0.0, (TRESTLE[1] - 12 - d) / 10))
+        if w > 0: _blk[i] = min(_blk[i], _blk[i] * (1 - w) + _flood[round(d)] * w)
+        de = min(d - TRESTLE[0], TRESTLE[1] - d)
+        fill = fz - (dd + de) / 1.5
+    else:
+        fill = fz - dd / 1.5
+        if d < 760:
+            cut = fz + max(0.0, dd - 0.5) / 1.0
+            if _blk[i] > cut: _blk[i] = cut
+    if _blk[i] < fill: _blk[i] = fill
+Z[_ra:_rb, _c0:_c1] = _blk.reshape(Z[_ra:_rb, _c0:_c1].shape)
 q = np.round((Z - meta['z0']) / meta['scale']).clip(0, 65535).astype('<u2')
 q.tofile(R('map3d', 'data', 'terrain_pads.bin'))
 
@@ -206,6 +325,7 @@ riv = json.load(open(R('map', 'data', 'river_1883.geojson')))['features'][0]
 _, pts = utm_geom(shape(riv['geometry']))
 line = LineString(pts); dense = [line.interpolate(d) for d in np.arange(0, line.length, 6.0)]
 out['river_1883'] = [loc(x, y) + [round(v - ORIGIN[2], 2)] for x, y, v in WATER83]
+out['slough'] = [loc(x, y) + [round(v - ORIGIN[2], 2)] for x, y, v in WATER_SLOUGH]   # low confidence (see SLOUGH)
 out['terrain'] = {'x0': meta['x0'] - ORIGIN[0], 'y1': meta['y1'] - ORIGIN[1], 'res': meta['res'], 'cols': meta['cols'], 'rows': meta['rows'],
                   'z0': meta['z0'] - ORIGIN[2], 'scale': meta['scale'], 'file': 'terrain_pads.bin'}
 
@@ -467,36 +587,32 @@ out['streets'] = streets
 
 # Railroad for the 3D view: the 1885-86 photos put the depot, loading sheds and freight buildings beside today's
 # track through town, not beside the 1883 plat's line (which runs about 40-100 m south east of the river).
-# So the 3D view uses today's alignment (OpenStreetMap), clipped to the model area. See docs/modeling-approach.md.
-from shapely.ops import linemerge, unary_union
-rails = [shape(f['geometry']) for f in O['features'] if f['properties'].get('kind') == 'rail']
-rl = linemerge(unary_union(rails))
-rl = max(rl.geoms, key=lambda g: g.length) if hasattr(rl, 'geoms') else rl
-pts = [T.transform(*c) for c in rl.coords]
-box_ = SPoly([(meta['x0'] + 30, meta['y1'] - 30), (meta['x0'] + meta['cols'] * meta['res'] - 30, meta['y1'] - 30),
-              (meta['x0'] + meta['cols'] * meta['res'] - 30, meta['y1'] - meta['rows'] * meta['res'] + 30), (meta['x0'] + 30, meta['y1'] - meta['rows'] * meta['res'] + 30)])
-seg = LineString(pts).intersection(box_)
-seg = max(seg.geoms, key=lambda g: g.length) if hasattr(seg, 'geoms') else seg
+# So the 3D view uses today's alignment (OpenStreetMap), clipped to the model area (RAIL_SEG), on the 1880s grade
+# profile RAIL_Z worked out above. See docs/modeling-approach.md.
+_onbr = lambda d: TRESTLE[0] - 0.01 <= d <= TRESTLE[1] + 0.01
+_chs_main = sorted(set([round(float(d), 2) for d in np.arange(0, RAIL_SEG.length, 4.0)] + [RAIL_SEG.length, *TRESTLE]))
+def _rail_line(ds, off=lambda d: 0.0):
+    res = []
+    for d in ds:
+        o = off(d); e, n = _ch_pt(d, o if o is not None else 0.0); pt = [round(e, 2), round(n, 2), round(rail_z(d), 2)]
+        if _onbr(d): pt.append(1)                        # open deck: no ballast (models.js buildTrack)
+        res.append(pt)
+    return res
 for it in out['features']:
     if it['id'] == 'np-railroad':
-        it['line'] = drape(list(seg.coords), step=6.0, lift=0.4)
-        it['notes'] = (it.get('notes') or '') + ' In the 3D view the track follows today\'s alignment through town, which the 1885-86 photos support (the depot and sheds stand beside it).'
-
-# two sidings beside the main line at Little Missouri (three tracks in Haynes 1881, SHSND 00119-00017), south of the depot
-_tl = LineString([(x - ORIGIN[0], y - ORIGIN[1]) for x, y in seg.coords])
-_lmd = [it for it in out['features'] if it['id'] == 'lm-depot'][0]
-_d0 = _tl.project(Point(sum(p[0] for p in _lmd['rect']) / 4, sum(p[1] for p in _lmd['rect']) / 4))
+        it['line'] = _rail_line(_chs_main)
+        it['notes'] = (it.get('notes') or '') + ' In the 3D view the track follows today\'s alignment through town, which the 1885-86 photos support (the depot and sheds stand beside it). West of town it runs on a raised grade (rail about 4.5-5 m above the 690 m datum) and crosses the river and its flood channel on a timber pile trestle about 210 m long; the grade height, the trestle and the river\'s course at the crossing are reconstructed from MHS 72459 (1886), SHSND 00119-00017 (Haynes 1881) and the town views, not measured.'
+    if it['id'] == 'np-bridge':
+        it['line'] = _rail_line([TRESTLE[0] + BENT * k for k in range(int(round((TRESTLE[1] - TRESTLE[0]) / BENT)) + 1)])
+        it['line'] = [p[:3] for p in it['line']]
+        it['trestle'] = dict(bent=BENT, ch=list(TRESTLE), rail=TRESTLE_Z)
+        it['built'] = min(it.get('built') or 1880.5, 1880.5)
+        it['notes'] = ((it.get('notes') or '') + ' 3D view: a timber pile trestle (open deck, bents of four piles every 4.6 m, about 210 m) at rail level +4.5 m, spanning the river where it turns north under the grade and the flood channel east of it. Length, bent spacing and pile layout are reconstructed (photo reconciliation of MHS 72459 and SHSND 00119-00017), not documented.').strip()
+_tl = LineString([(x - ORIGIN[0], y - ORIGIN[1]) for x, y in RAIL_SEG.coords])
 out['sidings'] = []
-for off in (-4.6, -9.2):
-    pts = []
-    for d in np.arange(_d0 - 170, _d0 + 170, 4.0):
-        k = min(1.0, (d - (_d0 - 170)) / (40 if off == -4.6 else 60), ((_d0 + 170) - d) / (40 if off == -4.6 else 60))
-        a_, b_ = _tl.interpolate(max(0, d - 2)), _tl.interpolate(min(_tl.length, d + 2)); q_ = _tl.interpolate(d)
-        tx, ty = b_.x - a_.x, b_.y - a_.y; L = math.hypot(tx, ty) or 1
-        if tx < 0: tx, ty = -tx, -ty
-        e, n = q_.x - ty / L * off * k, q_.y + tx / L * off * k   # offset along the left normal; negative = south
-        pts.append([round(e, 2), round(n, 2), round(zat(e + ORIGIN[0], n + ORIGIN[1]) - ORIGIN[2] + 0.4, 2)])
-    out['sidings'].append({'name': 'Siding at Little Missouri (Haynes 1881)', 'removed': None, 'pts': pts})
+for sd in SIDINGS:
+    ds = list(np.arange(sd['ch'][0], sd['ch'][1], 4.0)) + [sd['ch'][1]]
+    out['sidings'].append({'name': sd['name'], 'built': sd['built'], 'removed': sd['removed'], 'pts': [p[:3] for p in _rail_line(ds, sd['f'])]})
 
 # ---------------------------------------------------------------- vegetation and poles (deterministic)
 rng = np.random.default_rng(1883)
@@ -542,16 +658,19 @@ while len(sage) < 9000:
     x, y = cx0 + e, cy0 + n; ee, nn = x - ORIGIN[0], y - ORIGIN[1]
     c = int((x - meta['x0']) / meta['res']); r = int((meta['y1'] - y) / meta['res'])
     if not (0 <= r < Z.shape[0] and 0 <= c < Z.shape[1]) or _slope[r, c] > 0.25: continue
-    if _d83[r, c] < 30 or not _free(ee, nn): continue
+    if _d83[r, c] < 30 or _dsl[r, c] < 6 or not _free(ee, nn): continue
     sage.append([round(ee, 1), round(nn, 1), round(zat(x, y) - ORIGIN[2], 2), round(float(rng.uniform(0.5, 1.3)), 2)])
 out['sage'] = sage
-# telegraph line along the railroad, poles every ~45 m on the north side
-poles = []; rl_ = LineString([(p[0], p[1]) for p in _rail])
-for d in np.arange(10, rl_.length, 45):
-    q = rl_.interpolate(d); a = rl_.interpolate(max(0, d - 2)); b = rl_.interpolate(min(rl_.length, d + 2))
-    tx, ty = b.x - a.x, b.y - a.y; L = math.hypot(tx, ty) or 1; nx, ny = -ty / L, tx / L
-    if ny < 0: nx, ny = -nx, -ny
-    e, n = q.x + nx * 11, q.y + ny * 11
+# telegraph line along the railroad: poles about 50 m apart on the south side, 11.5 m from the main (clear of the
+# second siding at Little Missouri); across the trestle they stand on the ends of the bent caps, 2.2 m from the centre
+poles = []
+for d in np.arange(10, RAIL_SEG.length, 50.0):
+    if TRESTLE[0] - 8 < d < TRESTLE[1] + 8:
+        d = TRESTLE[0] + BENT * round((d - TRESTLE[0]) / BENT); d = min(max(d, TRESTLE[0] + BENT), TRESTLE[1] - BENT)
+        e, n = _ch_pt(d, -2.2); poles.append([round(e, 1), round(n, 1), round(TRESTLE_Z - 0.5, 2)]); continue
+    for dd_ in (0, -5, 5, -10, 10, -15, 15, -20, 20):     # step along the line to keep the pole out of the river and the slough
+        e, n = _ch_pt(d + dd_, -11.5); c = int((e + ORIGIN[0] - meta['x0']) / _res); r = int((meta['y1'] - n - ORIGIN[1]) / _res)
+        if _d83[r, c] > 22 and _dsl[r, c] > 5: break
     poles.append([round(e, 1), round(n, 1), round(zat(e + ORIGIN[0], n + ORIGIN[1]) - ORIGIN[2], 2)])
 out['poles'] = poles
 
