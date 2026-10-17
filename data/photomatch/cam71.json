@@ -1,1 +1,111 @@
-{"C": [612818.524774314, 5196692.884171753, 775.6918549919633], "yaw": -86.79701832396508, "pitch": -6.4985627309802485, "roll": 0.4021123212438411, "f": 2961.961261753608, "cx": 1056, "cy": 820, "gcp": {"von_hoffman": [612, 1410], "st_marys": [1212, 1218], "chimney": [1690, 818], "bridge": [1328, 700]}}
+{
+ "C": [
+  612841.1274919831,
+  5196695.192859968,
+  781.678946560823
+ ],
+ "yaw": -87.0770120394366,
+ "pitch": -7.096149207521156,
+ "roll": -1.924918120812051,
+ "f": 3048.473818827202,
+ "cx": 1056,
+ "cy": 820,
+ "gcp": {
+  "von_hoffman": [
+   612,
+   1410
+  ],
+  "st_marys": [
+   1212,
+   1218
+  ],
+  "chimney": [
+   1690,
+   818
+  ],
+  "bridge": [
+   1328,
+   700
+  ]
+ },
+ "previous": {
+  "C": [
+   612818.524774314,
+   5196692.884171753,
+   775.6918549919633
+  ],
+  "yaw": -86.79701832396508,
+  "pitch": -6.4985627309802485,
+  "roll": 0.4021123212438411,
+  "f": 2961.961261753608
+ },
+ "control_2026_10_16": {
+  "picks": [
+   {
+    "name": "von_hoffman_SE_eave",
+    "uv": [
+     540.6,
+     1399.7
+    ]
+   },
+   {
+    "name": "von_hoffman_NE_eave",
+    "uv": [
+     708.6,
+     1397.5
+    ]
+   },
+   {
+    "name": "st_marys_E_apex",
+    "uv": [
+     1220.6,
+     1162.6
+    ]
+   },
+   {
+    "name": "st_marys_SE_eave",
+    "uv": [
+     1189.1,
+     1194.9
+    ]
+   },
+   {
+    "name": "st_marys_NE_eave",
+    "uv": [
+     1254.3,
+     1191.4
+    ]
+   },
+   {
+    "name": "st_marys_SE_ground",
+    "uv": [
+     1189.7,
+     1224.0
+    ]
+   },
+   {
+    "name": "st_marys_NE_ground",
+    "uv": [
+     1254.3,
+     1221.1
+    ]
+   },
+   {
+    "name": "chimney_top",
+    "uv": [
+     1688,
+     702
+    ]
+   },
+   {
+    "name": "chateau_E_apex",
+    "uv": [
+     330,
+     621
+    ]
+   }
+  ],
+  "rms_px": 5.792707506871433,
+  "note": "re-solved from corners/eaves of surviving buildings (Von Hoffman House, St. Mary's, Chateau) and the chimney top; camera kept on the ground where the free solve floated it (docs/photo-audit.md)"
+ }
+}

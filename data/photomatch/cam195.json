@@ -1,1 +1,114 @@
-{"C": [612794.7124642223, 5196432.961239487, 716.2403776803935], "yaw": -58.73761193106093, "pitch": -0.9696081642263349, "roll": -0.8087127611180254, "f": 3104.969280347492, "cx": 1024, "cy": 690, "gcp": {"von_hoffman": [1800, 862], "st_marys": [1745, 814], "chimney": [1140, 690]}}
+{
+ "C": [
+  612803.5315086077,
+  5196423.326412033,
+  719.9685126939961
+ ],
+ "yaw": -58.61793991695019,
+ "pitch": -1.3101829814518375,
+ "roll": -0.8869264752157251,
+ "f": 3126.543900716573,
+ "cx": 1024,
+ "cy": 690,
+ "gcp": {
+  "von_hoffman": [
+   1800,
+   862
+  ],
+  "st_marys": [
+   1745,
+   814
+  ],
+  "chimney": [
+   1140,
+   690
+  ]
+ },
+ "previous": {
+  "C": [
+   612794.7124642223,
+   5196432.961239487,
+   716.2403776803935
+  ],
+  "yaw": -58.73761193106093,
+  "pitch": -0.9696081642263349,
+  "roll": -0.8087127611180254,
+  "f": 3104.969280347492
+ },
+ "control_2026_10_16": {
+  "picks": [
+   {
+    "name": "von_hoffman_SE_eave",
+    "uv": [
+     1790,
+     841
+    ]
+   },
+   {
+    "name": "von_hoffman_NE_eave",
+    "uv": [
+     1893,
+     840
+    ]
+   },
+   {
+    "name": "von_hoffman_NE_ground",
+    "uv": [
+     1893,
+     860
+    ]
+   },
+   {
+    "name": "st_marys_SW_eave",
+    "uv": [
+     1692,
+     790
+    ]
+   },
+   {
+    "name": "st_marys_SW_ground",
+    "uv": [
+     1692,
+     813
+    ]
+   },
+   {
+    "name": "st_marys_SE_eave",
+    "uv": [
+     1777,
+     791
+    ]
+   },
+   {
+    "name": "st_marys_NE_eave",
+    "uv": [
+     1812,
+     791
+    ]
+   },
+   {
+    "name": "st_marys_E_apex",
+    "uv": [
+     1796,
+     764
+    ]
+   },
+   {
+    "name": "chimney_top",
+    "uv": [
+     1139,
+     650
+    ]
+   },
+   {
+    "name": "von_hoffman_SW_eave",
+    "uv": [
+     1707,
+     839
+    ]
+   }
+  ],
+  "rms_px": 6.5773855218308315,
+  "note": "re-solved from corners/eaves of surviving buildings (Von Hoffman House, St. Mary's, Chateau) and the chimney top; camera kept on the ground where the free solve floated it (docs/photo-audit.md)"
+ }
+}

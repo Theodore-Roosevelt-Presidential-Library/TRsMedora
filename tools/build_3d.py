@@ -124,6 +124,9 @@ _cols, _rows, _res = meta['cols'], meta['rows'], meta['res']
 _xc = meta['x0'] + (np.arange(_cols) + 0.5) * _res; _yc = meta['y1'] - (np.arange(_rows) + 0.5) * _res
 _XX, _YY = np.meshgrid(_xc, _yc)
 _Zorig = Z.copy()
+# pad heights fixed from photo solves (local metres): the Pyramid Park Hotel's floor in Haynes 1881 sits about 1.1 m above
+# the depot's; today's flood plain there is lower than in 1881
+PAD_Z = {'pyramid-park-hotel': 4.55}
 _padsrc = [(f['properties'], _shape(f['geometry'])) for f in _HF] + [({'id': x['id'], 'kind': 'building', 'massing': {}}, None) for x in EXTRA3D]
 for pr, g in _padsrc:
     if pr['id'] in GEOM3D or g is None:
@@ -145,6 +148,7 @@ for pr, g in _padsrc:
     inner = _Path(np.array(gu.buffer(1.5).exterior.coords)).contains_points(np.c_[sx.ravel(), sy.ravel()]).reshape(sx.shape)
     if inner.any():
         pz = float(np.median(_Zorig[r0:r1, c0:c1][inner])) if pr['id'] != 'chateau-de-mores' else 709.9
+    if pr['id'] in PAD_Z: pz = ORIGIN[2] + PAD_Z[pr['id']]
     from shapely import distance as _dist, points as _pts
     d = _dist(gu, _pts(sx.ravel(), sy.ravel())).reshape(sx.shape)
     w = np.clip(1 - (d - 1.5) / 8.0, 0, 1)
@@ -267,11 +271,11 @@ STYLE = {
  # ---- railroad
  'medora-depot': dict(wall='boardbatten', front='S', ridge='front', stories=1,
         part_styles=[dict(wall='boardbatten', wall_color='#6f5d4a', trim='#c9bfa8', timber='#5d4c3a', roof='shingle', front='S', ridge='front', stories=1,
-                          overhang=1.7, gable_overhang=1.2, brackets=dict(spacing=2.7, drop=1.0, strut=True), bays=3, gable_bays=0, rear_bays=0,
+                          overhang=1.6, gable_overhang=1.5, brackets=dict(spacing=2.7, drop=1.0, strut=True), bays=3, gable_bays=0, rear_bays=0,
                           front_openings=[['door', 0.223]], bay_window=dict(w=2.4, d=0.7, eave=3.0, offset=0.8, offset_dir='E'),
-                          chimney_at=dict(**{'from': 'S'}, at=[2.5, 8.0]), chimney_h=0.8, roof_extend=dict(end='N', len=8.0, deck=True, deck_h=0.45),
+                          chimney_at=dict(**{'from': 'S'}, at=[2.5, 8.0]), chimney_h=0.8, roof_extend=dict(end='N', len=2.3, deck=True, deck_h=0.45),
                           signs=[dict(id='medora-depot', w=3.4, aspect=0.15, at=2.62, out=0.76, on_bay=True, photo='MHS 72461')])],
-        basis='Huffman 1886 (MHS 72461), measured with the door (2.1 m) as scale: a one-storey board-and-batten depot whose gable end faces the track, about 4-5 m from it, standing at the back of a plank platform at rail height. The roof is about 30 degrees with very deep eaves (about 1.7 m at the sides, 1.2 m at the gable) on diagonal knee braces, and runs on past the north end wall over open X-braced posts. The gable end has a door with a transom west of a canted three-sided bay window with its own low hip roof; two corbelled brick chimneys; railings on the platform either side. 5.6 m across the track face, about 13.5 m of enclosed walls. The walls read mid-dark in the print; the actual colour is unknown. Sign: a dark board with white letters across the bay head reading MEDORA, with ST. PAUL and PORTLAND mileboards at its ends; the mileage figures are not reliably legible in the scan, so the model leaves them blank'),
+        basis='Huffman 1886 (MHS 72461), measured with the door (2.1 m) as scale: a one-storey board-and-batten depot whose gable end faces the track, about 4-5 m from it, standing at the back of a plank platform at rail height. The roof is about 30 degrees with very deep eaves (about 1.7 m at the sides, 1.2 m at the gable) on diagonal knee braces, and runs on one X-braced bay (about 2.3 m) past the north end wall over open posts (camera fitted to the building: eave about 3.5 m, ridge 5.6 m). The gable end has a door with a transom west of a canted three-sided bay window with its own low hip roof; two corbelled brick chimneys; railings on the platform either side. 5.6 m across the track face, about 13.5 m of enclosed walls. The walls read mid-dark in the print; the actual colour is unknown. Sign: a dark board with white letters across the bay head reading MEDORA, with ST. PAUL and PORTLAND mileboards at its ends; the mileage figures are not reliably legible in the scan, so the model leaves them blank'),
  'lm-depot': dict(wall='boardbatten', front='S', ridge='long', stories=1,
         part_styles=[dict(wall='boardbatten', wall_color='#e6dfcf', trim='#ffffff', roof='boards', front='S', ridge='long', stories=1, bays=2, gable_bays=1,
                           front_openings=[['win', 0.2], ['door', 0.5], ['win', 0.8]], chimney_at=dict(**{'from': 'W'}, at=[1.0]), chimney_h=0.6),
@@ -293,22 +297,22 @@ STYLE = {
  'pp-foundation': dict(wall='drop', front='S', ridge='flat', stories=3,
         part_styles=[dict(wall='drop', wall_color='#9e9586', trim='#8a8173', timber='#6e6558', roof='tin', roof_color='#77736c', front='S', ridge='flat', parapet=0.4, stories=3,
                           bays=0, gable_bays=0, blank=True, no_front_door=True, plinth=dict(h=0.9, color='#a39882'), monitor=dict(len_frac=0.2, at=-0.1, w=3.0),
-                          gallery=dict(side='S', levels=3, frac=0.38, end='E', depth=2.4), runway=dict(end='W', len=24, h=11.5), chimneys=0,
+                          gallery=dict(side='E', levels=3, frac=0.9, depth=2.4), runway=dict(end='W', len=25.1, h=11.5), chimneys=0,
                           signs=[dict(id='pp-rentfree', side='S', w=22, aspect=0.057, at=2.2, along=0.45, **{'from': 1887.0}, photo='SHSND 00042-00180')]),
                      dict(wall='drop', wall_color='#a39a8c', trim='#8a8173', roof='tin', roof_color='#77736c', front='S', ridge='flat', parapet=0.3, stories=3,
                           bays=6, gable_bays=2, no_front_door=True, monitor=dict(len_frac=0.5, w=2.0), chimneys=0)],
-        basis='SHSND 00042-00074 (= 00042-00153 and 0039_00001, the same 1885 exposure; the "1883" on the card is wrong), 00042-00075 (from the north), Huffman 1886 (MHS 72460) and 00042-00180: two parts, a tall nearly windowless block (eave about 10.5 m) of horizontal siding on a stone foundation course, with a short box ventilator on its low roof and three levels of galleries at the east end of its south face (a roofed porch below, open framing above); and a lower annex at the west end with three rows of small windows and a louvred monitor. An enclosed horizontal runway runs from the tall block over the annex to a tapered timber pier about 6 m beyond it; a raised loading platform runs along the north side. Lengths from the 1957 foundation line (46 m), split by the photos\' proportions. Sign: the undated "rent free" banner (00042-00180) is on the south wall; shown only in the spring 1887 view'),
+        basis='SHSND 00042-00074 (= 00042-00153 and 0039_00001, the same 1885 exposure; the "1883" on the card is wrong), 00042-00075 (from the north), Huffman 1886 (MHS 72460) and 00042-00180: two parts, a tall nearly windowless block (30.9 m long, eave about 9.6 m, placed and sized from the two photos with cameras fitted to the surviving chimney) of horizontal siding on a stone foundation course, with a short box ventilator on its low roof and three levels of galleries (a roofed porch below, open framing above) at its east end: in 1885 they wrap onto the east end of the south face, but Huffman\'s 1886 view shows that face plain, so the model puts them on the east face; and a lower annex at the west end with three rows of small windows and a louvred monitor. An enclosed horizontal runway runs from the tall block over the annex to a tapered timber pier about 25 m west of the tall block; a raised loading platform runs along the north side. Depth not measurable in the photos; 7 m keeps it clear of the cooling house (the foundation note gives 14-24 ft). Sign: the undated "rent free" banner (00042-00180) is on the south wall; shown only in the spring 1887 view'),
  'pp-ice-house': dict(wall='boardbatten', wall_color='#5e564c', trim='#4a443c', roof='shingle', roof_color='#4f4a44', front='S', ridge='long', stories=2, bays=0, gable_bays=0,
-        vents=2, chimneys=0, eave=5.8, rise=3.2, barn=True,
-        basis='MHS 72460 (left) and SHSND 00042-00075 (right): a long dark gabled shed of vertical boards, ridge east-west, two square ridge ventilators, eave about 5.8 m; 00042-00188 shows it being built in 1883. The tower and cupola once modelled here belong to the cooling house'),
+        vents=2, chimneys=0, eave=5.2, rise=3.0, barn=True,
+        basis='MHS 72460 (left) and SHSND 00042-00075 (right): a long dark gabled shed of vertical boards, ridge east-west, two square ridge ventilators, eave about 5.2 m (its distance and height trade off in Huffman\'s view, the only one that shows it; placed just behind the runway pier, which hides its east end); 00042-00188 shows it being built in 1883. The tower and cupola once modelled here belong to the cooling house'),
  'pp-cooling-house': dict(wall='clapboard', wall_color='#d9d3c4', trim='#bdb5a5', roof='shingle', roof_color='#5f5a54', front='N', ridge='hip', stories=3, bays=2, gable_bays=2,
         cupola=dict(w=2.0, h=1.6, cap=1.2), chimneys=0, rise=3.0,
         basis='SHSND 00042-00150 and -00188 (1883), seen behind the plant in 00042-00074/-00075 and MHS 72460: a near-cubic block of painted clapboard, eave about 9 m (scaled from the refrigerator car beside it), a hipped roof with a square louvred cupola, a loading platform on trestle legs at car-floor height'),
  'pp-east-building': dict(wall='boardbatten', wall_color='#5e564c', trim='#4a443c', roof='shingle', roof_color='#4f4a44', front='S', ridge='long', stories=1, bays=0, gable_bays=0,
-        vents=2, barn=True, chimneys=0, eave=6.0, rise=3.0,
-        basis='SHSND 00042-00074 (= 0039_00001), MHS 72460, 00042-00071: a dark gabled building of vertical boards with its ridge east-west and its gable end to the east, two ridge ventilators, eave about 6 m; identity unknown'),
+        vents=2, barn=True, chimneys=0, eave=5.2, rise=3.0,
+        basis='SHSND 00042-00074 (= 0039_00001), MHS 72460, 00042-00071: a dark gabled building of vertical boards with its ridge east-west and its gable end to the east, two ridge ventilators, eave about 5.2 m; south face and west end located in the two fitted plant photos; identity unknown'),
  'pp-east-tower': dict(wall='boardbatten', wall_color='#4f483f', trim='#4a443c', roof='shingle', roof_color='#4a453f', front='S', ridge='hip', stories=3, bays=0, gable_bays=0,
-        blank=True, no_front_door=True, chimneys=0, rise=1.8, basis='SHSND 00042-00074, MHS 72460: a tall narrow dark tower with a pyramid cap and an open-framed lower part. Position along the east building is a guess'),
+        blank=True, no_front_door=True, chimneys=0, rise=1.5, basis='SHSND 00042-00074, MHS 72460: a tall narrow dark tower with a pyramid cap and an open-framed lower part; its peak (about 10.7 m) triangulated in the two fitted plant photos'),
  # ---- Chateau outbuildings, and buildings added from the overviews
  'chateau-outbuilding-east': dict(wall='clapboard', wall_color='#e6e1d6', trim='#ffffff', roof='shingle', front='S', ridge='long', stories=1, bays=1, gable_bays=1, chimneys=1,
         basis='SHSND 00042-00152 (1883): small light gabled one-storey building east of the house'),
@@ -514,6 +518,14 @@ for lo, la in [(-103.52520, 46.91420), (-103.52450, 46.91432), (-103.52395, 46.9
     x, y = T.transform(lo, la)
     if min(math.dist((x - ORIGIN[0], y - ORIGIN[1]), c) for c in ((190.5, 30.0), (261.8, -32.2))) < 45: continue   # none beside St. Mary's or the Von Hoffman House in 1885
     trees.append([round(x - ORIGIN[0], 1), round(y - ORIGIN[1], 1), round(zat(x, y) - ORIGIN[2], 2), 13.0, int(rng.integers(0, 1000))])
+# no tree in the near foreground of a fitted photo view: none shows in those photographs, and one would block the comparison
+_pv = [(v['e'], v['n'], math.radians(v['yaw'])) for v in json.load(open(R('data', 'photo_views.json')))]
+def _blocks(t):
+    for e, n, y in _pv:
+        de, dn = t[0] - e, t[1] - n; along = de * math.sin(y) + dn * math.cos(y)
+        if 0 < along < 120 and abs(de * math.cos(y) - dn * math.sin(y)) < 0.35 * along + 8: return True
+    return False
+trees = [t for t in trees if not _blocks(t)]
 out['trees'] = trees
 # sagebrush and grass tussocks on the valley floor within ~1 km of town
 sage = []
@@ -536,7 +548,7 @@ for d in np.arange(10, rl_.length, 45):
     poles.append([round(e, 1), round(n, 1), round(zat(e + ORIGIN[0], n + ORIGIN[1]) - ORIGIN[2], 2)])
 out['poles'] = poles
 
-# single-building period photos with an approximate (hand-fitted) camera, for the photo gallery
+# single-building period photos with a camera fitted to the surviving or modelled buildings in them, for the photo gallery
 import csv as _csv
 _cat = {r['image']: r['url'] for r in _csv.DictReader(open(R('data', 'photo_catalog_1880s.csv')))}
 out['photo_views'] = []
@@ -545,8 +557,8 @@ for v in json.load(open(R('data', 'photo_views.json'))):
     g = zat(v['e'] + ORIGIN[0], v['n'] + ORIGIN[1])
     f = (v['H'] / 2) / math.tan(math.radians(v['vfov'] / 2))
     out['photo_views'].append(dict(id=v['id'], ref=v['ref'], title=v['title'], date=v['date'], url=v['img'], thumb=v['thumb'], page=_cat.get(key, v['page']),
-                                   credit=v['credit'], approx=True, fit=v.get('fit', 'eye'), W=v['W'], H=v['H'], C=[v['e'] + ORIGIN[0], v['n'] + ORIGIN[1], g + v['h']],
-                                   yaw=v['yaw'], pitch=v['pitch'], roll=v.get('roll', 0), f=round(f, 1), cx=v['W'] / 2, cy=v['H'] / 2))
+                                   credit=v['credit'], fit=v.get('fit', 'points'), rms=v.get('rms'), W=v['W'], H=v['H'], C=[v['e'] + ORIGIN[0], v['n'] + ORIGIN[1], g + v['h']],
+                                   yaw=v['yaw'], pitch=v['pitch'], roll=v.get('roll', 0), f=round(f, 1), cx=v['W'] / 2, cy=v['H'] / 2, slice=v.get('slice')))
 
 # street-level viewpoints: (title, lon, lat, look-at lon, look-at lat)
 VIEWS = [

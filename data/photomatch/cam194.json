@@ -1,1 +1,100 @@
-{"C": [612791.2402710711, 5196434.736782582, 715.8625541743038], "yaw": -58.977795058372735, "pitch": -4.568204052814384, "roll": 1.1532325299508215, "f": 1760.4268773731458, "cx": 1008, "cy": 680, "gcp": {"von_hoffman": [1460, 683], "st_marys": [1430, 652], "chimney": [1083, 575]}}
+{
+ "C": [
+  612802.116889394,
+  5196427.411785616,
+  718.40202838413
+ ],
+ "yaw": -58.85447280087287,
+ "pitch": -4.81647193925267,
+ "roll": 1.5618206901830725,
+ "f": 1820.8745176886002,
+ "cx": 1008,
+ "cy": 680,
+ "gcp": {
+  "von_hoffman": [
+   1460,
+   683
+  ],
+  "st_marys": [
+   1430,
+   652
+  ],
+  "chimney": [
+   1083,
+   575
+  ]
+ },
+ "previous": {
+  "C": [
+   612791.2402710711,
+   5196434.736782582,
+   715.8625541743038
+  ],
+  "yaw": -58.977795058372735,
+  "pitch": -4.568204052814384,
+  "roll": 1.1532325299508215,
+  "f": 1760.4268773731458
+ },
+ "control_2026_10_16": {
+  "picks": [
+   {
+    "name": "von_hoffman_SE_eave",
+    "uv": [
+     1453,
+     670
+    ]
+   },
+   {
+    "name": "von_hoffman_NE_eave",
+    "uv": [
+     1510,
+     669.5
+    ]
+   },
+   {
+    "name": "von_hoffman_NE_ground",
+    "uv": [
+     1510,
+     681
+    ]
+   },
+   {
+    "name": "st_marys_SW_eave",
+    "uv": [
+     1396,
+     639
+    ]
+   },
+   {
+    "name": "st_marys_SE_eave",
+    "uv": [
+     1446,
+     640
+    ]
+   },
+   {
+    "name": "st_marys_NE_eave",
+    "uv": [
+     1469,
+     640
+    ]
+   },
+   {
+    "name": "st_marys_E_apex",
+    "uv": [
+     1457.5,
+     624.5
+    ]
+   },
+   {
+    "name": "chimney_top",
+    "uv": [
+     1082,
+     544
+    ]
+   }
+  ],
+  "rms_px": 4.254924896382656,
+  "note": "re-solved from corners/eaves of surviving buildings (Von Hoffman House, St. Mary's, Chateau) and the chimney top; camera kept on the ground where the free solve floated it (docs/photo-audit.md)"
+ }
+}

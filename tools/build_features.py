@@ -336,6 +336,7 @@ upd('demores-packing-plant', name='De Mores packing plant: chimney', built=1885.
     footprint_ft='chimney only; see the other packing-plant features',
     notes='+BROOKS57: the new plant was finished about mid-April 1885 "except for the smoke stack," so an 1883-84 view should not show the chimney. Capacity 900 head a week (Cow Boy).',
     sources='+; Bad Lands Cow Boy 1885-03-26, 1885-06-18; BROOKS57 pp. 4, 17-19 and Fig. 6', model='889a6ec71b514d2cb59c1423647a6fd3')
+# Oct 16, 2026: positions re-triangulated after the overview cameras were re-solved from surviving landmarks (docs/photo-audit.md)
 upd('hotel-de-mores', geom=rect((-103.5262, 46.91395), 25, 100, 0),
     evidence='"a few steps from the depot" (Fitzgerald\'s ad, Cow Boy 1884); the race track ran to "Main street opposite the Northern Pacific hotel" (Cow Boy), so it fronted Main Street. HMdb 88037: north of the depot, faced north. Placed on Main Street just north of the depot site, long side along the street. Orientation conflicts with HMdb - check the 1885 overview photos.',
     notes='+1885 rebuild (Cow Boy, Feb-May 1885): new foundations, brick veneer by Peter Book, porches on the west and south sides, kitchen and laundry additions on the north side; lessee Arch Boyd; renamed the Northern Pacific Hotel June 4, 1885. Earlier managed by G. W. Fitzgerald. Arson attempt Oct 23, 1884.',
@@ -434,25 +435,25 @@ PH194 = 'shsnd:00042-00194 (1885-86 overview, same camera station as -00195)'
 PH259 = 'shsnd:00259-00003 (c.1905 postcard, camera solved)'
 TRI = 'Triangulated from two or more solved photos; sight lines cross within about 1-3 m, so the position is good to roughly +/-10 m once picking error is allowed for.'
 
-upd('hotel-de-mores', geom=rect((-103.525635, 46.913867), 25, 100, 90), loc='C', method='photo',
+upd('hotel-de-mores', geom=rect((-103.525718, 46.913854), 25, 100, 90), loc='C', method='photo',
     evidence='Probably building "D" of the 1885 bird\'s-eye view, triangulated from SHSND 00042-00071 and 00042-00195; the reprojected base agrees with both photos (5 px and 2 px), and swapping D with D2 fails that test by about 60 px. ' + TRI +
              ' Why the hotel: (1) a long two-story building with evenly spaced windows on both floors, the shape of the 1883 frame hotel (SHSND 00042-00149); (2) about 60 m north-east of the depot site - "a few steps from the depot" (Fitzgerald\'s ad, Cow Boy 1884); (3) long side facing north (HMdb 88037: "faced north"), with its west end on Main Street, which fits the race track running to "Main street opposite the Northern Pacific hotel" (Cow Boy) and the 1885 porch on the west side; (4) gone in the c.1905 postcard - the hotel burned in 1897.',
     notes='+Open conflict: in the 1885-86 overviews this building reads as white or light-painted, with an outside stair at its east end, while the Cow Boy says the hotel was brick-veneered in spring 1885 and SHSND 00042-00076 shows a long brick building. Either the overviews predate the veneer, the brick read light, or the brick building is a different structure. The site falls on the block the 1957 NPS Tour map shows as De Mores Memorial Park; whether the memorial park was laid out on the old hotel site is worth checking.',
     sources='+; SHSND 00042-00149, 00042-00071, 00042-00195 (camera solutions, docs/photo-matching.md); Bad Lands Cow Boy 1884-02-07 (Fitzgerald ad)',
     photos='+; ' + PH71 + '; ' + PH195 + '; ' + PH194)
-upd('roberts-hall', geom=rect((-103.524683, 46.913916), 24, 75, 0), loc='C', method='photo',
+upd('roberts-hall', geom=rect((-103.524628, 46.91393), 24, 75, 0), loc='C', method='photo',
     evidence='Possibly building "D2" of the 1885 bird\'s-eye view, triangulated from three photos (SHSND 00042-00071, 00042-00195 and the c.1905 postcard 00259-00003; the three sight lines agree within 0.5 degrees). ' + TRI +
              ' Why Roberts Hall: two full stories about 80 ft long as scaled from the photo (the footprint uses the Cow Boy\'s 24 x 75) with few upper windows (a hall, not hotel rooms), a raised front on its south end, long axis north-south; still standing about 1905 (Roberts Hall stood until 1923, while the hotel burned in 1897); next to today\'s Old Town Hall Theater (Roberts Hall may be the "town hall" of a 1903 stereo, still to be checked); near the hotel and in view of the railroad (HMdb).',
     notes='+Conflict: the Cow Boy puts Roberts Hall on "lot 7, block 17", and today\'s Block 17 is about 300 m southeast. The earlier placement on Block 17 is replaced; check the plat\'s block numbering on the high-resolution scan.',
     photos='+; ' + PH71 + '; ' + PH195 + '; ' + PH259)
-upd('metropolitan-hotel', geom=rect((-103.524125, 46.91485), 35, 80, 0), method='photo',
+upd('metropolitan-hotel', geom=rect((-103.524176, 46.914867), 35, 80, 0), method='photo',
     sources='+; SHSND 00042-00071, 00042-00195, 00259-00003 (camera solutions, docs/photo-matching.md)',
     evidence='Same site as today\'s Rough Riders Hotel (HMdb 87499). Triangulated from three photos: the dark, flat-roofed two-story building with rows of windows in SHSND 00042-00071 ("J") and 00042-00195, and the same building, white-painted, in the c.1905 postcard (00259-00003), where it is the Rough Riders Hotel. The three sight lines agree within 0.06 degrees (in the 00042-00071 photo the reprojected base sits about 40 px below the picked base, a known depth bias of that camera at the north end of town). ' + TRI + ' It stands about 30 m south of the centre of today\'s (much larger) Rough Riders complex, i.e. at its south end.',
     photos='+; ' + PH71 + '; ' + PH195 + '; ' + PH259)
 add(id='company-store-offices', name='De Mores company office and store (probable), three joined front-gabled buildings; on the site later given to the Medora Stage & Forwarding Co.', town='Medora', bank='east', kind='building group',
     built=1883.9, built_text='photographed winter 1883-84 (Houghton 3013533); standing in the 1885 photos', use='NPRC store, post office, meat market and company offices (Cow Boy); probably also the office, warehouse and baggage room of the Medora-Deadwood stage line (NPSHB), Oct 1884-May 1885', material='frame, white-painted', stories='1 1/2-2',
     footprint_ft='row about 90 ft long (placeholder)', loc='C', form='C', method='photo',
-    geom=rect((-103.526333, 46.914082), 30, 90, 0),
+    geom=rect((-103.526429, 46.914076), 30, 90, 0),
     evidence='Building group "E" of the 1885 bird\'s-eye view, triangulated from SHSND 00042-00071 and 00042-00195. ' + TRI + ' Three matching front-gabled buildings facing east, on the west side of Main Street.',
     sources='SHSND 00042-00071, 00042-00195; HMdb 88033, 303699; NPSHB p. 58 and the 1957 NPS "Tour of Medora" map (site 3); BROOKS57 pp. 19, 22 and Fig. 8', photos=PH71 + '; ' + PH195,
     notes='Identification is inferred: the 1957 Tour map puts the Medora Stage & Forwarding Co. (described as three buildings - office, warehouse and baggage room) on the small triangular block west of De Mores Memorial Park, which is where this group stands. In 1957 one stood on its original site and two had been moved a few feet (BROOKS57 pp. 19, 22). Location graded C because it rests on this identification.')
@@ -474,15 +475,15 @@ upd('courthouse-cottages', notes='+Confirmed in SHSND 00042-00195: two matching 
 UNK = 'Unidentified building triangulated from SHSND 00042-00071 and 00042-00195 (docs/photo-matching.md); position about +/-10 m. Size is a placeholder.'
 add(id='photo85-g', name='Small dark building beside Roberts Hall (1885 photos, "G")', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885 photos',
     use='unknown; possibly the cottage Bob Roberts and E. G. Paddock built "on the former\'s lot [by] the new hall" (Cow Boy 1884-08-07)', stories='1', footprint_ft='about 16 x 24 (placeholder)',
-    loc='B', form='C', method='photo', geom=rect((-103.524355, 46.913876), 16, 24, 0), evidence=UNK, sources='SHSND 00042-00071, 00042-00195; Bad Lands Cow Boy 1884-08-07', photos=PH71 + '; ' + PH195)
+    loc='B', form='C', method='photo', geom=rect((-103.524411, 46.913864), 16, 24, 0), evidence=UNK, sources='SHSND 00042-00071, 00042-00195; Bad Lands Cow Boy 1884-08-07', photos=PH71 + '; ' + PH195)
 add(id='photo85-c', name='Dark building with sheds south of Roberts Hall (1885 photos, "C")', town='Medora', bank='east', kind='building group', built=1885.0, built_text='standing in the 1885 photos',
-    use='unknown', stories='1', footprint_ft='about 24 x 40 (placeholder)', loc='B', form='D', method='photo', geom=rect((-103.524186, 46.913573), 24, 40, 90), evidence=UNK, sources='SHSND 00042-00071, 00042-00195', photos=PH71 + '; ' + PH195)
+    use='unknown', stories='1', footprint_ft='about 24 x 40 (placeholder)', loc='B', form='D', method='photo', geom=rect((-103.524213, 46.913595), 24, 40, 90), evidence=UNK, sources='SHSND 00042-00071, 00042-00195', photos=PH71 + '; ' + PH195)
 add(id='photo85-f', name='Small gabled building on Third Street (1885 photos, "F")', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885 photos',
-    use='unknown', stories='1', footprint_ft='about 16 x 24 (placeholder)', loc='B', form='C', method='photo', geom=rect((-103.524318, 46.914148), 16, 24, 0), evidence=UNK, sources='SHSND 00042-00071, 00042-00195', photos=PH71 + '; ' + PH195)
+    use='unknown', stories='1', footprint_ft='about 16 x 24 (placeholder)', loc='B', form='C', method='photo', geom=rect((-103.524371, 46.914151), 16, 24, 0), evidence=UNK, sources='SHSND 00042-00071, 00042-00195', photos=PH71 + '; ' + PH195)
 add(id='photo85-m', name='White house with front porch, south of Third Avenue (1885 photos, "M")', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885 photos',
-    use='dwelling (unidentified)', stories='1 1/2', footprint_ft='about 20 x 30 (placeholder)', loc='B', form='C', method='photo', geom=rect((-103.523668, 46.914634), 20, 30, 0), evidence=UNK, sources='SHSND 00042-00071, 00042-00195', photos=PH71 + '; ' + PH195)
+    use='dwelling (unidentified)', stories='1 1/2', footprint_ft='about 20 x 30 (placeholder)', loc='B', form='C', method='photo', geom=rect((-103.523710, 46.914641), 20, 30, 0), evidence=UNK, sources='SHSND 00042-00071, 00042-00195', photos=PH71 + '; ' + PH195)
 add(id='photo85-o', name='Building with yard fence, Block 14 (1885 photos, "O")', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885 photos',
-    use='unknown', stories='1', footprint_ft='about 20 x 30 (placeholder)', loc='B', form='D', method='photo', geom=rect((-103.524129, 46.914426), 20, 30, 0), evidence=UNK, sources='SHSND 00042-00071, 00042-00195', photos=PH71 + '; ' + PH195)
+    use='unknown', stories='1', footprint_ft='about 20 x 30 (placeholder)', loc='B', form='D', method='photo', geom=rect((-103.524214, 46.914413), 20, 30, 0), evidence=UNK, sources='SHSND 00042-00071, 00042-00195', photos=PH71 + '; ' + PH195)
 upd('hotel-de-mores', notes='+Facing conflict: the Historic Medora panel on site (photographed by Matt Briney, 2026) reads "located north of the railroad depot and faced west", while the HMdb transcription of the same marker reads "faced north". "Faced west" fits a front on Main Street - the west gable end of building D. Check the panel text against the marker sponsor (Historic Medora).')
 upd('ferris-store', notes='+Historic Medora panel: 25 x 75 ft two-story; Ferris sold it in 1909; the store closed 1925; Harold Schafer\'s Gold Seal Co. bought it in 1963 and rebuilt it. Site confirmed by Matt Briney (231 Main St). Treat today\'s building as a reconstruction on the original site.')
 upd('metropolitan-hotel', notes='+Historic Medora panel: begun Nov 1884, opened Feb 1885, closed 1886; reopened 1901 by J. J. Rozell as the Rough Riders; disassembled and replaced by a replica in 1963; conference wing added 2008.')
@@ -497,7 +498,7 @@ upd('roberts-hall', evidence='+The Historic Medora "Billings County Courthouse" 
 upd('courthouse-cottages', notes='+Historic Medora panel: "Two small homes built in the 1880s were joined and the single building became the Billings County Courthouse in the early 1900s"; the second floor was added in 1913.')
 PH193 = 'shsnd:00042-00193 / houghton:3013473 (1885-86 butte-top view, camera solved)'
 add(id='photo85-u01', name='Unidentified building (small building beside the track, west of the depot)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
-    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.525256, 46.913249), 20, 30, 0),
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.525602, 46.913178), 20, 30, 0),
     evidence='Back-projected from the solved camera of 00042-00071 ("B") to the lidar ground; position +/-25 m. Not identified; it is on the map so the town\'s density reads correctly.',
     sources='00042-00071; docs/photo-matching.md', photos=PH71)
 add(id='photo85-u02', name='Unidentified building (small building on Block 14 near Third Street)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
@@ -529,7 +530,7 @@ add(id='photo85-u08', name='Unidentified building (building west of the Ferris s
     evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
     sources='00042-00193; docs/photo-matching.md', photos=PH193)
 add(id='photo85-u09', name='Unidentified building (house with porch south-east of the Metropolitan)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
-    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.523382, 46.914674), 20, 30, 0),
+    use='unknown', stories='', footprint_ft='placeholder 20 x 30', loc='C', form='D', method='photo', geom=rect((-103.523207, 46.914638), 20, 30, 0),
     evidence='Back-projected from the solved camera of 00042-00193 to the lidar ground; position +/-25 m (about 10 m per 3 px of picking error at this range). Not identified; it is on the map so the town\'s density reads correctly.',
     sources='00042-00193; docs/photo-matching.md', photos=PH193)
 add(id='photo85-u10', name='Unidentified building (building on Block 14, east side)', town='Medora', bank='east', kind='building', built=1885.0, built_text='standing in the 1885-86 photos',
@@ -552,6 +553,11 @@ upd('pp-ice-house', notes='+1885 photo: the plant\'s large building back-project
 upd('courthouse-cottages', notes='+SHSND 00042-00176 (1883-86) shows the Von Hoffman House with a one-story, low-roofed house with a front porch to its right against the east bluff - probably one of the brick cottages. BROOKS57 Fig. 13 ("Medora 1886") shows the two cottages; Fig. 8 (about 1900) labels the court house.',
     photos='+; shsnd:00042-00176')
 upd('demores-packing-plant', notes='+SHSND 00042-00153 is captioned "de Mores Packing Plant, Medora, N.D. 1883" on the card but shows a tall stack; either the caption date is later than the photo, or the 1883 plant had a stack of its own before Peter Book\'s 1885 chimney. Huffman 1886 (MHS 72460, 72459) and SHSND 00042-00074/-00075 (1885) show the finished plant.')
+
+# Oct 16 evening: buildings re-placed with the re-solved overview cameras (survivor control points, 4-7 px RMS) by
+# multi-view matching; each move is within the stated uncertainty of the earlier placement.
+for _fid, _m in (('photo85-u01', '27.5 m west'), ('photo85-g', '4.5 m'), ('photo85-f', '4 m'), ('photo85-c', '3 m'), ('photo85-o', '6.6 m'), ('photo85-u09', '10.9 m east'), ('photo85-m', '3.3 m')):
+    upd(_fid, notes='+Moved ' + _m + ' in Oct 2026 after the overview cameras were re-solved from surviving buildings (docs/photo-audit.md).')
 
 # --- known but not yet located
 UNPLACED = [
@@ -637,3 +643,4 @@ nw, se = plat(0, 0), plat(W, H)
 json.dump({'plat_bounds': [[se[1], nw[0]], [nw[1], se[0]]], 'plat_image': GEO['image']['web_image'], 'crossing_1883': CROSS},
           open(R('map', 'data', 'config.json'), 'w'), indent=1)
 print(len(F), 'placed features;', len(UNPLACED), 'not yet placed; track bearing', round(TRACK_BEARING, 1))
+

@@ -95,9 +95,39 @@ Every move is within the stated uncertainty of the original placement and is rec
 - **St. Mary's:** the 1886 photo governs. It shows a single door under a pointed blind arch and pointed side windows. Today the door and arch are the same but the side windows are round-headed, a later change. The door is now drawn that way.
 
 ## Photo gallery
-"Compare with the period photographs" opens a gallery of the photos with a camera. Choosing one draws the model from the photographer's position, with an opacity slider and Model only / Photo only buttons. Each photo is one of three kinds:
-- **Matched:** the five town overviews, solved from control points across the town.
-- **Fitted:** a few points on one building fix the camera, using `fitcam.py`-style least squares on corners and gable peaks. This covers the depot (8 px RMS), St. Mary's, the 1883 hotel and the Haynes Little Missouri view (about 15–23 px).
-- **Approximate:** set by eye. This covers the Von Hoffman House, the packing plant (two views) and the Chateau (two views).
+"Compare with the period photographs" opens a gallery of the photos with a camera. Choosing one draws the model from the photographer's position, at the date slice the photo shows, with an opacity slider and Model only / Photo only buttons.
+
+Every view's camera is solved by least squares on control points: the corners, eaves and gable peaks of surviving buildings (Von Hoffman House, St. Mary's, the Chateau, the plant chimney) and of buildings placed from other evidence. The target is a worst-point error under 5% of the building's width in the photo; every view now meets it.
+
+| View | Camera fitted to | RMS (px, original scan) | Worst point, % of building width |
+|---|---|---|---|
+| Town overviews 00042-00071, -00195, -00194, -00193, 00259-00003 | survivors across the town | 5.8, 6.6, 4.3, 6.3, 4.6 | – |
+| MHS 72461, Medora depot | depot roof, eaves, wall base, chimneys | 4.4 | 1.2 |
+| 00042-00077, St. Mary's | church (lidar geometry) | 8.9 | 1.8 |
+| 00042-00149, 1883 hotel | hotel corners, gable | 15.2 | 2.3 |
+| 00042-00176, horse and Von Hoffman House | house ridge and eaves, St. Mary's | 4.7 | 2.5 |
+| 00119-00017, Haynes 1881 | LM depot, main-line rails | 3.9 | 1.3 |
+| 00042-00074, plant 1885 | chimney top, plant blocks (joint solve) | 2.1 | 1.3 |
+| MHS 72460, plant 1886 | chimney top, plant blocks (joint solve) | 0.7 | 0.5 |
+| 00042-00152, Chateau 1883 | Chateau corners and ridge; hotel and company store in the distance | 5.8 | 2.7 |
+| 00042-00196, Chateau 1886 | Chateau east gable, eave and ridge lines; far waterline sets the distance | 2.1 | 2.3 |
 
 The view definitions are in `data/photo_views.json`. Copies of those photos, downsized to 1800 px, with thumbnails, are in `map3d/photos/`. Each record links back to the holding archive. The town overviews still load from the State Historical Society's servers.
+
+## Camera re-solve and what it moved (Oct 16, late)
+The five overview cameras had been solved from three or four points each. Re-solved from surviving-building control points, they now fit at 4-7 px. With the better cameras, and with a camera fitted to every single-building photo, the buildings were checked again. Model changes that followed (each is within the earlier placement's stated uncertainty and is noted on the building):
+- **Packing plant** (both plant photos solved together, chimney fixed): the tall block moved about 13 m west and 13 m north, so the chimney stands about 26 m behind its south face; 30.9 m long, eave 9.6 m (was 10.5), 7 m deep. The runway pier is 25 m west of it. The cooling house, east tower and east building moved 2-22 m; the east building's eave is 5.2 m. The galleries move to the east face: Huffman's 1886 view shows the south face plain.
+- **Ice house**: only Huffman shows it, and its height and distance trade off. It now stands just behind the runway pier (which hides its east end), eave 5.2 m. Low confidence.
+- **Little Missouri depot** (Haynes 1881 camera fitted to the depot and rails): 2.5 m further north; the two blocks re-sized (west 6.0 x 3.6 m, east 7.3 x 6.2 m).
+- **Pyramid Park Hotel**: about 30 m further east than before: its front is about 38 m north of the main track and about 50 m east of the depot's west end, parallel to the track, 14 m frontage with a 7.2 m cross gable. Its floor sits about 1.1 m above the depot's, so its pad is raised. Distance and size trade off (an 11.4 m frontage would put it 6 m nearer).
+- **Medora depot**: the roof runs on one X-braced bay (about 2.3 m) past the north wall, not 8 m; ridge 5.6 m.
+- **Chateau outbuilding (east)**: about 6 m west-north-west, on the terrace.
+- **photo85-x2 and x2b**: 12-17 m east, from the horse photo (00042-00176).
+- **Overview buildings**: photo85-u01 (27.5 m west), -u09 (10.9 m east), -o, -g, -f, -m, -c (3-7 m).
+- Trees are kept out of the near foreground of each photo view; none shows in those photographs.
+
+Still open:
+- **Chateau stable**: neither Chateau photo shows a long building at its provisional place. The 1883 photo shows two gabled sheds in the bottom land south of the house instead, around 100-120 m south.
+- **Paddock's livery**: the re-solved cameras suggest the east side of Third Street, but the barn's gable faces east, which fits the west side. Left in place.
+- **1883 Hotel de Mores**: the photo suggests a narrower, taller block with a steeper roof than the recorded 100 x 25 ft. Not changed; seven points on one building cannot settle it.
+- **St. Mary's**: the 1886 roof reads slightly steeper than today's (eave about 4.1, ridge about 8.1), and the belfry about 0.5 m higher.
