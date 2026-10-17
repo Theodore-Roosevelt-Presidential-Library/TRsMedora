@@ -25,6 +25,7 @@ The questions below are the ones the photographs and papers can't settle. Any an
 ## 2. Packing plant and stockyards
 
 - **2.1 Plant layout.** The photos put the main packing house about 14 degrees off due east (long axis running east-north-east), about 33 m long and 10 m to the eave, with a lower annex at its west end, an enclosed runway to a timber pier, the cooling house behind its east end, an ice house to the west and a dark building with a tower to the east. Does that match what's known of the foundations or the 1950s NPS plans? Where can we get those plans?
+- **2.1a Galleries.** The 1885 photo shows open galleries along the east end of the plant; by 1886 they appear gone. Were they construction staging?
 - **2.2 Plant buildings.** What were the "east building" with two roof ventilators and the tall dark tower beside it? A panorama suggests both sat about 5 m further west, right against the main block.
 - **2.3 Chimney height.** The photos give about 23 m (estimates range from 21 to 27 m). Is the original height recorded?
 - **2.4 Spur track.** Where did the plant's spur and the cooling house's loading siding run?
@@ -46,7 +47,8 @@ The questions below are the ones the photographs and papers can't settle. Any an
 - **4.4 Medora depot.** By the 1890s the depot reads taller. Was it rebuilt or given a second storey? Can anyone read the mileboards (about "595.3 M" to St. Paul)?
 - **4.5 Hotels and houses.** Where were Peter Malloy's hotel at Little Missouri (the Western House?), the Pioneer Hotel ("close to the depot"), the NP section house and water tank, the Tiser House, Gifford Bros. store, the 1883 saloons and Paddock's 1880 cabin?
 - **4.6 The Cantonment.** Haynes's 1880 photo shows a log building about 97 x 22 ft, long axis WNW-ESE, about 90 m west of where the 1883 plat's symbols put the post. Which building is it, and how were the buildings laid out around the parade ground?
-- **4.7 The river.** A late-1880s panorama shows a water channel running between the track and the packing plant. Was that the river's main channel then, or a slough?
+- **4.7 The bridge.** Haynes's 1880 photo and Huffman's 1886 view show a long pile trestle (we model about 210 m on a raised grade). How long was the original NP bridge at Little Missouri, and when was it replaced by fill?
+- **4.8 The river.** A late-1880s panorama shows a water channel running between the track and the packing plant. Was that the river's main channel then, or a slough? We now show a narrow slough north of the track and the main channel looping south of it in 1880-86.
 
 ## 5. Photographs
 
