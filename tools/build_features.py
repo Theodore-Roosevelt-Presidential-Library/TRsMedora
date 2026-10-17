@@ -465,7 +465,7 @@ upd('hotel-de-mores', loc='B',
 upd('roberts-hall', loc='B',
     evidence='+Further support (Oct 16): Hagedorn\'s 1919 photo of "Bill Williams\' saloon" (Houghton 3013539) shows a two-story frame hall with a fanlight in its front gable and a door to the upper floor; in his 1919 overview (Houghton 3013472) a dark two-story gabled building of that form, long axis north-south, stands south of the Rough Riders and north of the depot, which is where D2 is. The Roberts Hall marker (HMdb 88016) stands in a small park next to the Old Town Hall Theater, about 10 m from this point. Location raised to B; the Cow Boy\'s "lot 7, block 17" remains unexplained.',
     sources='+; Houghton 3013539, 3013472; HMdb 88016 (marker location)', photos='+; houghton:3013539 (1919); houghton:3013472 (1919)')
-upd('cowboy-office', geom=rect((-103.52620, 46.91455), 16, 24, 90), loc='B', method='marker',
+upd('cowboy-office', geom=rect((-103.52620, 46.91455), 16, 40, 90), loc='B', method='marker',
     evidence='Site identified by Matt Briney (Oct 16, 2026): the small one-story frame building at 398 Main St, beside the HMdb "Bad Lands Cow Boy" marker (88045, at Main Street and 3rd Avenue, 46.9146 N, 103.5261 W). Placed there, with the long side east-west. Replaces the earlier placement inferred from Hagedorn ("opposite Fisher\'s rink and Joe Ferris\'s store"), which was about 80 m north.',
     notes='+The office burned on Jan 12, 1887 (HMdb 88045), so the building standing today cannot be the 1884 original; it is a later or reconstructed building on (or near) the site. Compare its form with Houghton 3013536 (Packard at the office door: one-story, front gable, side entry). A saloon stood "next door" and a frame building to rent south of it (Cow Boy 1884-04-24). Painted April 1884 (Cow Boy).',
     sources='+; Google Street View, 398 Main St (Sep 2025)')
@@ -584,6 +584,9 @@ for _fid, _k, _why in (
     ('metropolitan-hotel', dict(form='B'), 'orientation and roof corrected Oct 2026; front and porch side still inferred'),
 ):
     upd(_fid, notes='+Grade revised Oct 2026 (' + ', '.join(k + ' ' + v for k, v in _k.items()) + '): ' + _why + '.', **_k)
+# Little Missouri buildings not standing in Huffman's spring 1886 view from the west bluff (MHS 72459, camera fitted)
+for _fid in ('pyramid-park-hotel', 'mcgeeney-boarding-house', 'fitzgerald-shack', 'maunders-shack'):
+    upd(_fid, removed=1886.0, removed_text='gone by spring 1886 (open ground in Huffman\'s view, MHS 72459); exact date unknown')
 # photo85-u12 was the company store's two left gables seen again; drop it
 F[:] = [k for k in F if k['id'] != 'photo85-u12']
 

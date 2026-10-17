@@ -200,10 +200,10 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     for w in fr:
         seg = L * w / tot; parts.append(dict(rect=rect_c(c + ns * (pos + seg / 2), seg, W, ns), eave=3.2, ridge=5.4)); pos += seg
     style_add['company-store-offices'] = dict(skip_main=True, parts=parts, decks=[dict(rect=rect_c(c + eo * (W / 2 + 0.6), L, 1.2, ns), h=0.45)])
-    # Cow Boy office: board entry vestibule on the west gable, right of centre as seen from the street (Houghton 3013536)
+    # Cow Boy office: board entry vestibule on the east (Main Street) gable, just left of centre seen from the street (Houghton 3013536, camera fitted)
     c, uu, vv, L, W = _rect_frame(orig_rect('cowboy-office'))
     ew = uu if uu[0] > 0 else -uu; nn = np.array([-ew[1], ew[0]])
-    style_add['cowboy-office'] = dict(parts=[dict(rect=rect_c(c - ew * (L / 2 + 0.5) - nn * 0.8, 1.0, 1.5, ew), eave=2.2, ridge=2.6)])
+    style_add['cowboy-office'] = dict(parts=[dict(rect=rect_c(c + ew * (L / 2 + 0.6) - nn * 0.55, 1.2, 1.15, ew), eave=2.2, ridge=2.45)])   # vestibule on the Main Street (east) gable, fitted from Houghton 3013536
 
     # ------------------------------------------------ dates and grades the photos change
     props['photo85-u10'] = dict(built=1886.0, built_text='after 1885 (open ground in SHSND 00042-00071)', notes_add='Photo audit: SHSND 00042-00071 (1885) shows open ground and a cottonwood here, so the building is shown from 1886.')
