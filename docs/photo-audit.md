@@ -133,6 +133,8 @@ Still open:
 - **St. Mary's**: the 1886 roof reads slightly steeper than today's (eave about 4.1, ridge about 8.1), and the belfry about 0.5 m higher.
 
 ## Second round with the overviews (Oct 17)
+Open questions are collected for the historian Rolf Sletten in `docs/questions-for-rolf-sletten.md`.
+
 Prompted by Matt's comparison of the gallery views, every building in the town core and the packing plant was checked against all five overview cameras at once.
 
 - **Packing plant rotated about 14 degrees.** The two ground photos could not fix the plant's rotation about the chimney: with the chimney as the only known point, any rotation fitted them about equally. The overviews 00042-00071 and -00195 do fix it. The runway pier and the cooling-house cupola, at opposite ends, give 15 and 12 degrees independently. The long axis now runs at a bearing of about 76 degrees (ENE-WSW); the tall block is 33 m long, eave about 10 m; the chimney 22.7 m. The two ground-photo cameras were refitted (2.5 and 0.7 px RMS). The road to the ford was rerouted around the plant. The DMC river panorama independently needed the plant's west end about 4 m further east, which the rotation supplies. That panorama also suggests the east tower and east building sit about 5 m further west; not applied (one 600 px view).
