@@ -558,6 +558,19 @@ upd('demores-packing-plant', notes='+SHSND 00042-00153 is captioned "de Mores Pa
 # multi-view matching; each move is within the stated uncertainty of the earlier placement.
 for _fid, _m in (('photo85-u01', '27.5 m west'), ('photo85-g', '4.5 m'), ('photo85-f', '4 m'), ('photo85-c', '3 m'), ('photo85-o', '6.6 m'), ('photo85-u09', '10.9 m east'), ('photo85-m', '3.3 m')):
     upd(_fid, notes='+Moved ' + _m + ' in Oct 2026 after the overview cameras were re-solved from surviving buildings (docs/photo-audit.md).')
+# Oct 17: town core re-checked against the five overview cameras (inventory in docs/photo-audit.md)
+upd('metropolitan-hotel', geom=rect((-103.524177, 46.914867), 33, 73.5, 87.6),
+    evidence='+Oct 2026 re-solve: a rectangle fitted to 13 eave and base corners in four solved overviews (00042-00071, -00195, -00194, 00259-00003; 2.4 px RMS) gives a long axis EAST-WEST (azimuth 87.6 +/-1.4 deg), 22.4 x 10.1 m (about 74 x 33 ft, matching the Cow Boy\'s 35 x 80 ft), eave 7.1 m and a low hipped roof; its south wall lines up with the south edge of today\'s Rough Riders original block. The earlier north-south block was wrong.')
+upd('roberts-hall', geom=rect((-103.524733, 46.913921), 24, 75, 356.2),
+    evidence='+Oct 2026: moved about 8 m west from a rectangle fit to six eave and base corners in the solved overviews 00042-00071 and -00195 (3.4 px RMS); size kept, eave about 7.9 m.')
+upd('paddock-livery', geom=rect((-103.524188, 46.914275), 26, 52, 90), loc='C',
+    evidence='+Oct 2026: moved to the east side of Third Street. SHSND 00042-00071 shows a large barn there with its gable and wagon door facing east (and the roof in 00042-00193 agrees); the old west-side spot shows no barn in 71 or 193. Its identity as Paddock\'s is inferred; its length (16 m) is a placeholder.')
+upd('photo85-u07', geom=rect((-103.525118, 46.914827), 20, 46, 55),
+    notes='+Moved about 40 m in Oct 2026: its east end triangulated in 00042-00071 and -00195 (2 px); the old spot is open ground in 71.')
+upd('photo85-u11', geom=rect((-103.526162, 46.914359), 20, 26, 0),
+    notes='+Moved about 30 m in Oct 2026 to the light shed on the west side of Main Street in 00042-00071 (one sharp view; low confidence).')
+# photo85-u12 was the company store's two left gables seen again; drop it
+F[:] = [k for k in F if k['id'] != 'photo85-u12']
 
 # --- known but not yet located
 UNPLACED = [
@@ -590,9 +603,9 @@ MASS = {
  'st-marys-church':     dict(eave=4.2, ridge=7.7, roof='gable', src='lidar 2021 (original building)'),
  'chateau-de-mores':    dict(eave=3.8, ridge=9.4, roof='gable', src='lidar 2021 (original building; trees nearby)'),
  'courthouse-cottages': dict(eave=3.2, ridge=6.0, roof='hip',   src='lidar 2021 (eave of the 1884 wings); ridge estimated'),
- 'roberts-hall':        dict(eave=7.5, ridge=10.1, roof='gable', src='photo scale bars, SHSND 00042-00071 (7.9/10.5) and -00195 (7.0/9.7); Cow Boy: two 12-ft stories, 26 ft high'),
+ 'roberts-hall':        dict(eave=7.9, ridge=10.5, roof='gable', src='photo scale bars, SHSND 00042-00071 (7.9/10.5) and -00195 (7.0/9.7); Cow Boy: two 12-ft stories, 26 ft high'),
  'hotel-de-mores':      dict(eave=8.5, ridge=10.5, roof='gable', src='photo scale bars, SHSND 00042-00195 (8.5/10.2) and -00071 (9.1/11.7 at the tall east block)'),
- 'metropolitan-hotel':  dict(eave=7.6, ridge=7.6, roof='flat',  src='photo scale bar, SHSND 00042-00195 (flat roof, about 7.6 m)'),
+ 'metropolitan-hotel':  dict(eave=7.1, ridge=8.9, roof='hip',  src='fitted to eave corners in four solved overviews (00042-00071, -00195, -00194, 00259-00003); low hipped roof'),
  'ferris-store':        dict(eave=6.5, ridge=8.9, roof='gable', src='lidar 2021 of the 1963 reconstruction built to the original plan'),
  'demores-packing-plant': dict(eave=0, ridge=22.7, roof='chimney', src='round, tapering brick stack; height solved at about 22.7 m (+/-2 m) from the fitted plant photos (00042-00074, MHS 72460) together with the town overviews (an estimate; only the lower ruin survives)'),
 }
