@@ -560,6 +560,8 @@ function enterPhoto(c, btn){
   if (yr && sl!==slice){ slice=sl; applyFilters(); }
   // trains, wagons and people are not in the photographs: hide them while comparing
   for (const tr of trains) tr.visible=false; for (const g of lifeGroups) g.grp.visible=false;
+  // the model's trees are a modern-day guess and block several ground-level views: hide them while comparing
+  for (const m of (vegetation.userData.trees||[])) m.visible=false;
   $('#cmpTitle').textContent=`${c.title} (${c.date})`;
   $('#cmpSub').textContent = `${c.ref}. The camera is solved from the buildings in the photo; slide to compare.`;
   const {rt,up,fw}=camBasis(c);
@@ -568,7 +570,7 @@ function enterPhoto(c, btn){
   resize();
 }
 function leavePhoto(keepCam){
-  photoCam=null; controls.enabled=true; photo.style.display='none'; $('#cmp').style.display='none'; applyFilters();
+  photoCam=null; controls.enabled=true; photo.style.display='none'; $('#cmp').style.display='none'; applyFilters(); for (const m of (vegetation.userData.trees||[])) m.visible=true;
   if(!keepCam){ camera.position.set(330,330,620); controls.target.set(-220,0,40); controls.update(); }
   resize();
 }

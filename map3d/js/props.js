@@ -42,6 +42,7 @@ export function buildVegetation(scene0, season) {
   });
   if (season === 'winter') crowns.forEach(c => { c.material = new THREE.MeshStandardMaterial({color: 0x5a524a, roughness: 1, transparent: true, opacity: .55, flatShading: true}); });
   grp.add(trunks, ...crowns);
+  grp.userData.trees = [trunks, ...crowns];
   // ---- sagebrush and grass tussocks
   const sage = scene0.sage || [];
   const sg = new THREE.IcosahedronGeometry(.55, 1); sg.scale(1, .6, 1); sg.translate(0, .22, 0);

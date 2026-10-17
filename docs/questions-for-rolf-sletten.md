@@ -35,7 +35,7 @@ The questions below are the ones the photographs and papers can't settle. Any an
 
 - **3.1 St. Mary's Church.** In the c.1886 photo the roof reads slightly steeper and the belfry about 0.5 m higher than today. In a c.1890s view the church reads about 8% shorter than today's footprint. Has the church been lengthened, re-roofed or had its belfry rebuilt? The side windows were pointed in 1886 and are round-headed now: when did that change?
 - **3.2 Von Hoffman House.** What was the original wall colour, and what was the north end of the roof like?
-- **3.3 Chateau stable and outbuildings.** The NRHP puts the coachman's house, carriage shed, stable and corral "to the south and further east, on the next terrace towards the river." The 1883 photo shows two gabled sheds in the bottom land about 100–120 m south of the house, and nothing at the spot we had. Where did each outbuilding stand?
+- **3.3 Chateau stable and outbuildings.** The NRHP puts the coachman's house, carriage shed, stable and corral "to the south and further east, on the next terrace towards the river." The 1883 photo shows two gabled sheds in the bottom land about 100–120 m south of the house, and nothing at the spot we had. Where did each outbuilding stand? (Update Oct 17: the 1884 photo puts a long low stable or carriage shed on the upper terrace about 45 m west-north-west of the house; is that right?)
 - **3.4 Metropolitan Hotel / Rough Riders.** The photos show a dark two-storey building with its long side east-west, about 22 x 10 m, a low hipped roof and paired windows; it is white by about 1905. Which side was the front and porch on? Was it painted between 1886 and 1901?
 
 ## 4. Little Missouri and the railroad
@@ -45,7 +45,8 @@ The questions below are the ones the photographs and papers can't settle. Any an
 - **4.3 Track east of the river.** Was the NP line through Medora moved after 1883?
 - **4.4 Medora depot.** By the 1890s the depot reads taller. Was it rebuilt or given a second storey? Can anyone read the mileboards (about "595.3 M" to St. Paul)?
 - **4.5 Hotels and houses.** Where were Peter Malloy's hotel at Little Missouri (the Western House?), the Pioneer Hotel ("close to the depot"), the NP section house and water tank, the Tiser House, Gifford Bros. store, the 1883 saloons and Paddock's 1880 cabin?
-- **4.6 The river.** A late-1880s panorama shows a water channel running between the track and the packing plant. Was that the river's main channel then, or a slough?
+- **4.6 The Cantonment.** Haynes's 1880 photo shows a log building about 97 x 22 ft, long axis WNW-ESE, about 90 m west of where the 1883 plat's symbols put the post. Which building is it, and how were the buildings laid out around the parade ground?
+- **4.7 The river.** A late-1880s panorama shows a water channel running between the track and the packing plant. Was that the river's main channel then, or a slough?
 
 ## 5. Photographs
 

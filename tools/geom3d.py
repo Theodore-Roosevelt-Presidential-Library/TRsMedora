@@ -97,6 +97,9 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     for fid in ('lm-depot', 'pyramid-park-hotel'):
         props[fid] = dict(notes_add='In the 3D view placed from the Haynes 1881 photo (SHSND 00119-00017) with its camera fitted to the depot and the track: depot front about 9.5 m north of the main track; hotel front about 38 m north of the track and about 50 m east of the depot\'s west end, 14 m frontage. The hotel\'s distance trades off against its size (an 11.4 m frontage would put it about 6 m nearer).')
 
+    # ------------------------------------------------ Cantonment: the log building in Haynes 1880 (MHS 91738), camera fixed by the butte skyline
+    geom['cantonment'] = [[-961.1, 749.6], [-987.2, 763.3], [-990.3, 757.3], [-964.2, 743.5]]
+    props['cantonment'] = dict(notes_add='In the 3D view the cantonment is shown by the one building Haynes photographed in 1880 (MHS 91738): with the camera fixed by the butte skyline (1 px RMS), a log building about 29.5 x 6.8 m (97 x 22 ft, so the storehouse or a 100-ft barracks block; size +/-10%), eave about 1.9 m, long axis WNW-ESE, front facing NNE, centred about 87 m west of the plat-based symbol (+/-15 m). The plat\'s eight symbols are schematic and are kept on the 2D map.')
     # ------------------------------------------------ courthouse cottages: two separate small hipped cottages (SHSND 00042-00194/-00195)
     c, uu, vv, L, W = _rect_frame(orig_rect('courthouse-cottages'))
     ns = uu if abs(uu[1]) > abs(uu[0]) else vv
@@ -145,12 +148,18 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
                       evidence='A small light gabled one-storey building close east of the house, with smoke or steam beside it (SHSND 00042-00152, 1883), placed from that photo\'s fitted camera; a chimney seen past the east gable in 00042-00196 (1886) fits it.',
                       sources='SHSND 00042-00152', photos='shsnd:00042-00152', notes='Added from the 2026 photo audit.'))
     p = orig_rect('chateau-outbuildings', point=True)
-    extra.append(dict(id='chateau-stable', name='Chateau carriage shed and stable (provisional place)', town='Chateau', kind='building', built=1883.6, built_text='by 1884',
+    extra.append(dict(id='chateau-stable', name='Chateau stable or carriage shed', town='Chateau', kind='building', built=1883.9, built_text='between the 1883 photo (00042-00158, absent) and 1884 (00042-00157)',
                       removed=None, removed_text='', use='carriage shed / stable', material='frame, dark', stories='1', loc='D', form='C',
-                      rect=rect_c(p, 20, 7, bearing_u(90)), eave=3.0, ridge=5.0,
-                      evidence='A long, low gabled building with wagons in front (SHSND 00042-00157, 1884). The NRHP nomination puts the coachman\'s house, carriage shed and stable to the south and further east; placed at the gazetteer\'s outbuildings point. Its direction from the house in the photo is uncertain.',
-                      sources='SHSND 00042-00157; NRHP 1974', photos='shsnd:00042-00157', notes='Added from the 2026 photo audit; place provisional.'))
+                      rect=[[-777.81, -223.12], [-771.25, -225.60], [-764.19, -206.88], [-770.75, -204.40]], eave=2.5, ridge=4.0,
+                      evidence='A long, low gabled building with wagons in front (SHSND 00042-00157, 1884). With that photo\'s camera fitted to the Chateau (3% worst point), its bearing is firm and its base meets the upper terrace about 45 m west-north-west of the house; the range is weak (+/-15-25 m along the sight line). Absent in the 1883 photo 00042-00158. The earlier provisional place south-east of the house showed nothing in three photos.',
+                      sources='SHSND 00042-00157, 00042-00158; NRHP 1974', photos='shsnd:00042-00157', notes='Added from the 2026 photo audit; moved Oct 17 from the fitted 1884 photo.'))
 
+    for k, (ce, cn) in enumerate(((-747.0, -349.0), (-731.0, -330.0))):
+        extra.append(dict(id='chateau-shed-%d' % (k + 1), name='Chateau shed in the bottom land (%d of 2)' % (k + 1), town='Chateau', kind='building', built=1883.6, built_text='by 1883',
+                          removed=None, removed_text='', use='shed (perhaps part of the coachman\'s house, carriage shed and corral group)', material='frame', stories='1', loc='C', form='D',
+                          rect=rect_c((ce, cn), 5, 4, bearing_u(110)), eave=2.4, ridge=3.6,
+                          evidence='One of two small gabled sheds in the bottom land south of the house in SHSND 00042-00152 (1883), located along that photo\'s fitted camera rays at river-bottom level (+/-10 m). The NRHP puts the coachman\'s house, carriage shed, stable and corral "to the south and further east, on the next terrace towards the river".',
+                          sources='SHSND 00042-00152; NRHP 1974', photos='shsnd:00042-00152', notes='Added Oct 2026 from the fitted Chateau photos.'))
     # ------------------------------------------------ buildings in the 1885-86 overviews that the gazetteer lacks
     extra.append(dict(id='photo85-x1', name='Unidentified cottage (south-east of St. Mary\'s)', town='Medora', kind='building', built=1885.0, built_text='by 1885',
                       removed=None, removed_text='', use='dwelling?', material='frame, white', stories='1', loc='B', form='C',
