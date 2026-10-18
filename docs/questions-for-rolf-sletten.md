@@ -35,8 +35,9 @@ The questions below are the ones the photographs and papers can't settle. Any an
 ## 3. Surviving buildings
 
 - **3.1 St. Mary's Church.** In the c.1886 photo the roof reads slightly steeper and the belfry about 0.5 m higher than today. In a c.1890s view the church reads about 8% shorter than today's footprint. Has the church been lengthened, re-roofed or had its belfry rebuilt? The side windows were pointed in 1886 and are round-headed now: when did that change?
-- **3.2 Von Hoffman House.** What was the original wall colour, and what was the north end of the roof like?
+- **3.2 Von Hoffman House.** What was the original wall colour, and what was the north end of the roof like? (SHSND 00098-00019, catalogued as "Foley's house", is the Von Hoffman House c.1910s-30s: mid-tone brick, a clipped-gable roof with a porch across the gable end.)
 - **3.3 Chateau stable and outbuildings.** The NRHP puts the coachman's house, carriage shed, stable and corral "to the south and further east, on the next terrace towards the river." The 1883 photo shows two gabled sheds in the bottom land about 100–120 m south of the house, and nothing at the spot we had. Where did each outbuilding stand? (Update Oct 17: the 1884 photo puts a long low stable or carriage shed on the upper terrace about 45 m west-north-west of the house; is that right?)
+- **3.3a Chateau service wing.** The hunting-party photo (00042-00191) and 00098-00018 show the north side in the 1880s: a 1½-storey wing with its ridge parallel to the main block and an east-facing gable, lean-tos, and no windows at the east end of the main north wall. Today's wing (and our model) has a north-facing gable. When was the wing rebuilt?
 - **3.4 Metropolitan Hotel / Rough Riders.** The photos show a dark two-storey building with its long side east-west, about 22 x 10 m, a low hipped roof and paired windows; it is white by about 1905. Which side was the front and porch on? Was it painted between 1886 and 1901?
 
 ## 4. Little Missouri and the railroad
@@ -62,5 +63,6 @@ The questions below are the ones the photographs and papers can't settle. Any an
 | SHSND_0103 (TRC o292512), winter view from the west bluff | 1890s | Dates the taller depot and the hotel's removal |
 | DMC 25741, "RENT FREE" panorama (Osborn/Organ) | 1887–1907 | Dates the river channel |
 
+- **5.1a Joe Ferris's store.** Hagedorn's 1921 plate captioned "Joe Ferris's Store" shows a two-storey store with its gable to the street, a porch on the gable front and an outside stair on the south side. Is that the Ferris store, or is the false-fronted building beside it?
 - **5.2 Better copies.** Does anyone hold a larger copy of the Dickinson Museum Center panorama (copy negative 27124-002), or the glass plates of Huffman's 1886 views (Montana Historical Society)?
 - **5.3 Other photos.** Are there 1883–87 photos of Medora we haven't found, especially of Main Street, the rink, the livery or the stockyards? SHSND 00098-00019 ("Foley's house") is one we know of but haven't examined.
