@@ -677,9 +677,10 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
     const hn = [hf.n[0] * F.u[0] + hf.n[1] * F.u[1], hf.n[0] * F.v[0] + hf.n[1] * F.v[1]], mid = [(hf.a[0] + hf.b[0]) / 2, (hf.a[1] + hf.b[1]) / 2];
     const c = [mid[0] - hn[0] * (mw / 2 + .3), mid[1] - hn[1] * (mw / 2 + .3)], p = P2(F, c[0], c[1]), zr = roofZ(c), ang = Math.atan2(hf.b[1] - hf.a[1], hf.b[0] - hf.a[0]) + rotU;
     bk.add(wallKey, box(p[0], z0 + zr + mh / 2 - .3, -p[1], hf.len * lf, mh + .3, mw, ang)); bk.add(roofKey, box(p[0], z0 + zr + mh + .06, -p[1], hf.len * lf + .4, .12, mw + .6, ang)); }
-  // ridge ventilators (sheds): vent_w / vent_h set their size (default 1.1 x 0.8 m)
+  // ridge ventilators (sheds): vent_w / vent_h set their size (default 1.1 x 0.8 m); vent_at: [fraction, ...] places each one along
+  // the ridge, 0 = the end at the rect's first corner (-L/2), 1 = the far end (ice house: measured in MHS 72460 and 00042-00075)
   if (st.vents && roofType !== 'flat') for (let i = 0; i < st.vents; i++) {
-    const t = (i + 0.5) / st.vents - 0.5, a = ridgeAlongU ? [F.L * t * .9, 0] : [0, F.W * t * .9], p = P2(F, a[0], a[1]), vw = st.vent_w || 1.1, vh = st.vent_h || 0.8;
+    const t = st.vent_at ? st.vent_at[i] - 0.5 : ((i + 0.5) / st.vents - 0.5) * .9, a = ridgeAlongU ? [F.L * t, 0] : [0, F.W * t], p = P2(F, a[0], a[1]), vw = st.vent_w || 1.1, vh = st.vent_h || 0.8;
     bk.add(wallKey, box(p[0], z0 + ridgeH + vh / 2 - .05, -p[1], vw, vh, vw)); const g = new THREE.ConeGeometry(vw * .86, vw * .55, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + vh - .05 + vw * .275, -p[1]); bk.add(roofKey, g); }
   // galleries on one front (packing house): roofed porch at the ground, open framing above.
   // gallery: {side, frac, end} or {side, span: [m0, m1] metres from the 'from' end of that face (may run past the block's ends), from: compass end},

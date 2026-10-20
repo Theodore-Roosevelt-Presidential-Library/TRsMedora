@@ -150,9 +150,17 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
                       sources='SHSND 00042-00150, 00042-00188, 00042-00074, 00042-00075; MHS 72460',
                       photos='shsnd:00042-00150; shsnd:00042-00188; shsnd:00042-00074; mhs:72460',
                       notes='Added from the 2026 photo audit. A refrigerator car (NP 4800) stands at its loading platform in 00042-00150.'))
-    # east building: gable roof with its ridge along the plant axis; its south-west corner meets the tower. 17.5 m long, not
-    # 30: its east gable shows at x 1622 in 00042-00074 and its east end at about x 860 in the panorama DMC 25741.
-    geom['pp-east-building'] = [P(47.5, 3.81), P(65.0, 3.81), P(65.0, 14.81), P(47.5, 14.81)]
+    # east building: TWO parallel gabled ranges with their ridges along the plant axis, each with two ridge ventilators; the
+    # south-west corner of the south range meets the tower. 17.5 m long, not 30: its east gable shows at x 1622 in 00042-00074 and
+    # its east end at about x 860 in the panorama DMC 25741. Re-measured Oct 20 (plant review B) in the three solved overviews:
+    # 00042-00071 (from the east) shows two gable ends side by side east of the tower, together about 1.4 degrees = 16-18 m across
+    # (n about 173-191 at the east end, with 71's known 0.3-degree southward offset); 00042-00195 shows one long dark roof with
+    # FOUR ventilators in two pairs, the second pair shifted about 25 px right and up (a second range about 8-9 m further north);
+    # 00042-00193 the same. The south face stays on the line fitted to MHS 72460 and 00042-00074 (o = 3.81); the pair is 16 m deep.
+    geom['pp-east-building'] = [P(47.5, 3.81), P(65.0, 3.81), P(65.0, 19.81), P(47.5, 19.81)]
+    style_add['pp-east-building'] = dict(skip_main=True, parts=[
+        dict(rect=[P(47.5, 3.81), P(65.0, 3.81), P(65.0, 11.81), P(47.5, 11.81)], eave=6.0, ridge=8.5, style=dict(vents=2, vent_w=1.5, vent_h=1.0, _south=True)),
+        dict(rect=[P(47.5, 11.81), P(65.0, 11.81), P(65.0, 19.81), P(47.5, 19.81)], eave=6.0, ridge=8.5, style=dict(vents=2, vent_w=1.5, vent_h=1.0, _north=True))])
     extra.append(dict(id='pp-east-tower', name='Plant tower (east)', town='Medora', kind='building', built=1885.3, built_text='by 1885', removed=None, removed_text='',
                       use='unknown (a walkway from the main house reached it)', material='frame, dark boards', stories='', loc='C', form='C',
                       rect=rect_c(sw + U * 44.6 + ns_ * 2.95, 2.7, 2.7, U), eave=10.3, ridge=11.4,
@@ -175,14 +183,31 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
                       sources='SHSND 00042-00188', photos='shsnd:00042-00188', notes='Added Oct 2026 at the user\'s request; shown as an open frame in the 1883 view.'))
     extra.append(dict(id='pp-north-barn', name='Barn north of the cooling house', town='Medora', kind='building', built=1883.95, built_text='by 1884 (the frame of 1883 closed in)',
                       removed=None, removed_text='', use='barn or storehouse for the plant', material='frame, dark boards', stories='1.5', loc='C', form='C',
-                      rect=FR, eave=4.0, ridge=6.5,
-                      evidence='The 1883 frame in SHSND 00042-00188 stands where a dark gabled building appears in the later plant photos (joint solve of the overviews); taken to be the same building, closed in. 00042-00075 (1885) shows its gable end to the north (ridge north-south) and its ridge well below the cooling house eave (about 6-6.5 m); low confidence.',
+                      rect=FR, eave=5.0, ridge=8.0,
+                      evidence='The 1883 frame in SHSND 00042-00188 stands where a dark gabled building appears in the later plant photos (joint solve of the overviews); taken to be the same building, closed in. 00042-00195 (1885) shows a big dark gable end facing the camera (south-south-east) at its bearing, apex about 8 m, so the ridge runs north-south; eave kept at the 5 m of the 1883 wall plates. (The dark gable end at the far left of 00042-00075 is not this building: with that camera re-solved on Oct 20 the barn lies just outside that photo\'s left edge.)',
                       sources='SHSND 00042-00188; overviews 00042-00071, -00195', photos='shsnd:00042-00188', notes='Added Oct 2026.'))
-    # ice house: SW corner from Huffman (72460), east end hidden behind the runway pier there; in front of the pier from the north (00042-00075)
-    geom['pp-ice-house'] = [[-254.62, 154.08], [-226.66, 160.86], [-229.75, 173.60], [-257.71, 166.81]]
-    # cross-gabled wing on the north side at the west end, as high as the main ridge (00042-00075): about 9 m wide, projecting about 6 m
-    style_add['pp-ice-house'] = dict(parts=[dict(rect=[[-257.71, 166.81], [-248.96, 168.93], [-250.38, 174.76], [-259.13, 172.64]], eave=5.0, ridge=8.0,
-                                                 style=dict(ridge='front', front='N', bays=0, gable_bays=0, barn=False, no_front_door=True))])
+    # ice house: SW corner from Huffman (72460), east end hidden behind the runway pier there; in front of the pier from the north (00042-00075).
+    # Re-measured Oct 20 (plant review B) with the 00042-00075 camera re-solved: the north face runs from the annex's west end (its east
+    # gable corner shares the annex's north-west corner's bearing) to a west gable just inside that photo's right edge, 31 m long,
+    # and the building lies nearly east-west (bearing about 89 degrees, not 76): the east end is where Huffman's view puts it, the
+    # west end swung about 6.5 m north. The two large louvred ventilators sit at 38% and 73% of the ridge from the west end (MHS 72460:
+    # 11.8 and 22.7 m; 00042-00075 agrees). The 'cross-gabled wing' once read in 00042-00075 is the shadow of the runway and pier on the
+    # east end of the north roof slope (same shingle texture, eave line unbroken), so no wing.
+    geom['pp-ice-house'] = [[-257.76, 160.52], [-226.66, 160.86], [-226.80, 173.96], [-257.90, 173.62]]
+    # first ice house of 1883 beside the plant, going up right of the timber frame in SHSND 00042-00188 (camera fitted to the cooling
+    # house): a wide gabled building sheathed in diagonal boards, its north-east gable end square to that camera, scaffolded. Its near
+    # gable corner lies at bearing 258 deg from the camera, 6 m north-west of the frame's north-west corner; the distance is NOT fixed
+    # by the photo (one view), taken as 72 m so that it adjoins the frame and so that its south-west gable end falls where 00042-00075
+    # (1885) shows a dark gable end with a low open platform in front, at the far left behind the trees. The eave is 109 px at that
+    # distance (5.6 m); the rake slopes at 21 degrees and its apex is beyond the photo's right edge, so the gable is at least 27 m wide;
+    # the length along the ridge (south-west) is unseen, taken as 28 m (27 x 28 x 6.5 m holds about the 4,000 tons the Cow Boy gives
+    # for the company ice houses in Dec. 1884). Hidden behind the cooling house, barn and east ranges in the 1885-86 overviews and
+    # behind the tall block in the views from the south.
+    extra.append(dict(id='pp-ice-house-1883', name='Ice house of 1883 beside the plant', town='Medora', kind='building', built=1883.6, built_text='being sheathed when SHSND 00042-00188 was taken (1883)',
+                      removed=None, removed_text='', use='ice house (the first; the NRHP says three ice houses adjoined the plant)', material='frame, diagonal boards, unpainted', stories='1', loc='C', form='C',
+                      rect=[[-185.52, 212.72], [-202.14, 234.0], [-224.2, 216.76], [-207.58, 195.48]], eave=5.6, ridge=10.6,
+                      evidence='SHSND 00042-00188 (1883): right of the timber frame a wide gabled building is being sheathed in diagonal boards behind a scaffold, its gable end square to the camera (the scaffold ledgers are level in the picture), the rake rising at about 21 degrees to an apex beyond the right edge, so the gable is at least 27 m wide. Bearing of its near corner 258 deg from the fitted camera (+/-0.5 deg); the distance is not determined by this one view and is taken as 72 m (adjoining the frame, 6 m north-west of its corner; +/-10 m, which scales the eave 5-6.5 m and the width 25-30 m). At that place its south-west gable end is what SHSND 00042-00075 (1885) shows at the far left behind the trees (a dark gable end with a low open platform in front). Not visible in the overviews 00042-00071/-00195/-00193 (hidden behind the cooling house, barn and east ranges) nor from the south (behind the tall block). Length along the ridge (28 m) assumed.',
+                      sources='SHSND 00042-00188; SHSND 00042-00075; Bad Lands Cow Boy, Dec. 1884 and Jan. 1886 (ice tonnage); NRHP 1975', photos='shsnd:00042-00188; shsnd:00042-00075', notes='Added Oct 20, 2026 (plant review B). Position along the camera ray and the length are assumptions; a second 1883-84 view would fix them.'))
     # ------------------------------------------------ Chateau outbuildings (SHSND 00042-00152, 1883; 00042-00157, 1884)
     extra.append(dict(id='chateau-outbuilding-east', name='Chateau outbuilding (east of the house)', town='Chateau', kind='building', built=1883.6, built_text='by 1883',
                       removed=1883.8, removed_text='gone by 1884: absent in front of the east veranda in SHSND 00042-00158 (1883), -00197 and MHS 72389 (1886)', use='temporary shed (cook or builders\' shack?) of 1883', material='frame, light painted', stories='1', loc='B', form='C',
