@@ -251,16 +251,32 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     # cooling house loading platform (SHSND 00042-00150), north side
     ch = [x for x in extra if x['id'] == 'pp-cooling-house'][0]
     style_add['pp-cooling-house'] = dict(decks=[dict(rect=rect_c(CH + np.array([-U[1], U[0]]) * 7.0, 11, 3, U), h=1.2)])
-    # company store: three joined front-gabled buildings of unequal width (Houghton 3013533), south to north 7.3 : 6.0 : 4.3
+    # company store: three joined front-gabled buildings facing east, in two dated states (joint solve, Oct 20, 2026; docs/photo-audit.md):
+    #  - winter 1883-84 (Houghton 3013533, camera fitted at 1.4% of the group's width): south to north 7.9, 7.0 and 4.0 m, ridges stepping
+    #    down 5.8 / 5.4 / 4.3 m (eaves 3.5 / 3.1 / 2.7), the small north block standing about 1.5 m forward of the other two (its south
+    #    side wall shows in the photo); about 19 m of frontage.
+    #  - summer 1885 (SHSND 00042-00071, camera held fixed; -00195 only shows that the group hides behind the Hotel de Mores): 7.9, 8.4 and
+    #    6.9 m = 23.2 m, all three gables the same height (eave 3.8, ridge 6.7 m); the north block rebuilt bigger. Dated 1885.0 (between
+    #    the two photographs; the exact date is not known). The footprint (build_features.py) is the 1885 group; the depth (9.2 m) is unmeasured.
     c, uu, vv, L, W = _rect_frame(orig_rect('company-store-offices'))
     ns = uu if uu[1] > 0 else -uu; eo = np.array([ns[1], -ns[0]])
-    # the three blocks step down in height from south to north (ridges about 5.4, 5.0, 4.2 m; eaves 3.0, 2.8, 2.4 above the snow)
-    fr = [7.3, 6.0, 4.3]; hts = [(3.2, 5.4), (3.0, 5.0), (2.6, 4.3)]; tot = sum(fr); pos = -L / 2; parts = []; stoops = []
-    for w, (ev, rg), door_t in zip(fr, hts, (0.5, 0.5, 0.32)):
-        seg = L * w / tot; parts.append(dict(rect=rect_c(c + ns * (pos + seg / 2), seg, W, ns), eave=ev, ridge=rg))
-        # Houghton 3013533: steps at each door, no continuous platform (door_t: the door's position along the block seen from the street, north at the left)
-        stoops.append(dict(rect=rect_c(c + ns * (pos + seg * (1 - door_t)) + eo * (W / 2 + 0.6), 1.5, 1.2, ns), h=0.35))
-        pos += seg
+    parts = []; stoops = []
+    STATES = [  # (widths S->N, (eave, ridge) per block, forward offset of each block's front in m, depth per block, from_date, until)
+        ([7.9, 7.0, 4.0], [(3.5, 5.8), (3.1, 5.4), (2.7, 4.3)], [0.0, 0.0, 1.5], [W, W, 7.0], None, 1885.0),
+        ([7.9, 8.4, 6.9], [(3.8, 6.7), (3.8, 6.7), (3.8, 6.7)], [0.0, 0.0, 0.0], [W, W, W], 1885.0, None)]
+    for widths, hts, fwd, deps, dfrom, duntil in STATES:
+        pos = -L / 2   # the south end is held fixed (the south block, with its chimney, is the same size in both photographs)
+        for w, (ev, rg), fw, dp, door_t in zip(widths, hts, fwd, deps, (0.5, 0.5, 0.32)):
+            cc = c + ns * (pos + w / 2) + eo * (W / 2 + fw - dp / 2)
+            pt = dict(rect=rect_c(cc, w, dp, ns), eave=ev, ridge=rg)
+            if dfrom is not None: pt['from_date'] = dfrom
+            if duntil is not None: pt['until'] = duntil
+            parts.append(pt)
+            # Houghton 3013533: steps at each door, no continuous platform (door_t: the door's position along the block seen from the street, north at the left)
+            sk = dict(rect=rect_c(c + ns * (pos + w * (1 - door_t)) + eo * (W / 2 + fw + 0.6), 1.5, 1.2, ns), h=0.35)
+            if dfrom is not None: sk['from_date'] = dfrom
+            if duntil is not None: sk['until'] = duntil
+            stoops.append(sk); pos += w
     style_add['company-store-offices'] = dict(skip_main=True, parts=parts, decks=stoops)
     # Cow Boy office: board entry vestibule on the east (Main Street) gable, just left of centre seen from the street (Houghton 3013536, camera fitted)
     c, uu, vv, L, W = _rect_frame(orig_rect('cowboy-office'))

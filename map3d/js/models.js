@@ -36,6 +36,24 @@ export function makeTextures() {
     for (let x = 0; x < w; x += w / 8) { g.fillStyle = '#d0d0d0'; g.fillRect(x, 0, 3, h); g.fillStyle = '#fff'; g.fillRect(x + 3, 0, 9, h); g.fillStyle = '#c4c4c4'; g.fillRect(x + 12, 0, 2, h); }
     noise(g, w, h, 26, 5000);
   });
+  // diagonal sheathing: boards about 0.24 m wide laid at 45 degrees, dark and weathered, each board edged by a shadow line
+  // (packing-plant east building and ice house, MHS 72460, SHSND 00042-00074/-00075). On the walls the boards rise to the right
+  // seen from outside (the faces run clockwise, so u grows to the left; the canvas stripes therefore run down-right). The 2 m tile
+  // repeats seamlessly because a tile edge crosses a whole number of boards.
+  TEX.diagonal = canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = '#e8e8e8'; g.fillRect(0, 0, w, h);
+    const nb = 12, p = w / nb, bw = p * Math.SQRT2, len = w * 3;   // nb / 2 boards across a tile edge
+    for (let k = -nb; k < 2 * nb; k++) {           // one board per k: a rotated rectangle through (0, 2 k p)
+      g.save(); g.translate(0, k * p * 2); g.rotate(Math.PI / 4);
+      const v = 0.78 + rnd() * 0.22;                 // board-to-board variation
+      g.fillStyle = `rgb(${232 * v | 0},${232 * v | 0},${232 * v | 0})`; g.fillRect(-len, 0, 2 * len, bw);
+      g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(-len, 0, 2 * len, 3.5);        // shadow line at the board's upper edge
+      g.fillStyle = 'rgba(255,255,255,.45)'; g.fillRect(-len, bw - 2.5, 2 * len, 2.5);   // lit lower edge
+      for (let t = -len; t < len; t += 6 + rnd() * 10) { g.fillStyle = `rgba(0,0,0,${0.05 + rnd() * 0.09})`; g.fillRect(t, 4, 2 + rnd() * 5, bw - 7); }   // grain streaks along the board
+      g.restore();
+    }
+    noise(g, w, h, 36, 6000);
+  });
   const brick = (base, mortar) => canvasTex(256, 256, (g, w, h) => {
     g.fillStyle = mortar; g.fillRect(0, 0, w, h);
     const bh = h / 26, bw = w / 10;
@@ -211,7 +229,7 @@ function mat(key, grade) {
   const isSign = key.startsWith('sign:') || key.startsWith('signguess:');
   const [kind, color] = isSign ? ['sign', null] : key.split('#');
   const col = color ? new THREE.Color('#' + color) : new THREE.Color(0xffffff);
-  const map = {wall_clapboard: TEX.clapboard, wall_drop: TEX.drop, wall_boardbatten: TEX.boardbatten, wall_brick: TEX.brick, wall_yellowbrick: TEX.yellowbrick, wall_log: TEX.log,
+  const map = {wall_clapboard: TEX.clapboard, wall_drop: TEX.drop, wall_boardbatten: TEX.boardbatten, wall_diagonal: TEX.diagonal, wall_brick: TEX.brick, wall_yellowbrick: TEX.yellowbrick, wall_log: TEX.log,
     roof_shingle: TEX.shingle, roof_tin: TEX.tin, roof_sod: TEX.sod, roof_boards: TEX.boards, wall_vlog: TEX.vlog, blindArch: TEX.blindArch, window: TEX.window, windowArched: TEX.windowArched, windowLancet: TEX.windowLancet, door: TEX.door, storefront: TEX.storefront,
     plank: TEX.plank, trim: null, stone: null, dark: null, coach: TEX.coach}[kind] || (isSign ? SIGNS[key] : undefined);
   const m = new THREE.MeshStandardMaterial({color: col, map: map || null, roughness: kind.startsWith('roof_tin') ? 0.55 : 0.92, metalness: kind === 'roof_tin' ? 0.3 : 0, side: THREE.DoubleSide});
@@ -729,14 +747,22 @@ function splitRect(R, n, gap) {
 }
 
 // decks and platforms (st.decks: [{rect, h, rails: [[[e,n],[e,n],...], ...]}]) and fences (st.fences: [{pts, kind: 'rail'|'board'|'picket', h}])
-function buildDecks(bk, st, zAt) {
+// a bucket whose keys carry the '@from,to' date suffix when the element (a part, a deck) has from_date / until; see the date filter in app
+function datedBucket(bk, el) {
+  if (el.from_date == null && el.until == null) return bk;
+  const sfx = '@' + (el.from_date || 0) + ',' + (el.until || 9999);
+  return {add: (k, g) => bk.add(k.includes('@') ? k : k + sfx, g)};
+}
+function buildDecks(bk0, st, zAt) {
   for (const dk of (st.decks || [])) {
+    const bk = datedBucket(bk0, dk);
     const R = dk.rect, c = R.reduce((s, p) => [s[0] + p[0] / 4, s[1] + p[1] / 4], [0, 0]), zt = (dk.z ?? Math.max(...R.map(p => zAt(p[0], p[1])))) + (dk.h ?? .5);
     bk.add('plank#94805f', poly(R.map(p => V(p[0], p[1], zt)), R.map(p => [p[0] - c[0], p[1] - c[1]])));
     for (let i = 0; i < 4; i++) { const a = R[i], b = R[(i + 1) % 4], L = Math.hypot(b[0] - a[0], b[1] - a[1]);
       bk.add('plank#7d6b52', quad(V(a[0], a[1], zt), V(b[0], b[1], zt), V(b[0], b[1], Math.min(zt - .2, zAt(b[0], b[1]) - .3)), V(a[0], a[1], Math.min(zt - .2, zAt(a[0], a[1]) - .3)), [0, 0], [L, 0], [L, 1], [0, 1])); }
     for (const line of (dk.rails || [])) railLine(bk, line, () => zt, 1.1, 2.4, 'trim#6f5e49');
   }
+  const bk = bk0;
   for (const fe of (st.fences || [])) {
     const h = fe.h || 1.2;
     if (fe.kind === 'board') for (let i = 0; i < fe.pts.length - 1; i++) { const a = fe.pts[i], b = fe.pts[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), za = zAt(a[0], a[1]), zb = zAt(b[0], b[1]);
@@ -783,7 +809,8 @@ export function buildDetailed(f, ctx) {
     const base = Object.fromEntries(Object.entries(st).filter(([k]) => !ONE_OFF.includes(k)));
     const s2 = Object.assign({chimneys: 0}, base, p.style || {});
     const z0 = p.z0 ?? (Math.min(...p.rect.map(q => ctx.zAt(q[0], q[1]))) + (p.raise || 0));   // raise: lift the part's floor (a vestibule on a raised sill)
-    buildBlock(bk, f, s2, z0, p.eave, p.rect, s2.front ? DIRS[s2.front] : frontDir, grade, p.ridge);
+    // a part dated with from_date / until (company store: the 1883-84 blocks until 1885.0, the enlarged 1885 blocks after) gets the '@from,to' key suffix
+    buildBlock(datedBucket(bk, p), f, s2, z0, p.eave, p.rect, s2.front ? DIRS[s2.front] : frontDir, grade, p.ridge);
   }
   buildDecks(bk, st, ctx.zAt);
   for (const br of (st.bridges || [])) {     // elevated open walkway between buildings: two stringers, plank deck, rails
