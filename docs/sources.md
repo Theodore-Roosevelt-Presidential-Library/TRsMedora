@@ -11,13 +11,13 @@ Updated October 15, 2026, after an online sweep of photos, maps, written sources
 | PLAT1883 | "Plat of Medora, Billings County, D.T.," 1883. SHSND, Marquis de Mores Collection 00042, item 00042-00183. [Exhibit page](https://history.nd.gov/exhibits/gardening/pop_medora-plat.html) |
 | HAG | Hermann Hagedorn, *Roosevelt in the Bad Lands* (1921). [archive.org](https://archive.org/details/rooseveltinbadla00hage) |
 | LANG | Lincoln Lang, *Ranching with Roosevelt* (1926). [archive.org](https://archive.org/details/ranchingwithroos0000unse) |
-| HM52 | Hagen & Mattison, "Pyramid Park, 1879–1883" (1952 typescript; Cantonment building list pp. 10–11). [TRC o50100](https://www.theodorerooseveltcenter.org/digital-library/o50100/) |
+| HM52 | Hagen & Mattison, "Pyramid Park, 1879–1883" (typescript, 44 pp.; the TR Center dates it 1949, this project's key says 1952; Cantonment building list pp. 10–11; p. 9 on the gravel pits; p. 14 n. 25: Hagedorn's "Maunders" is Paddock). [TRC o50100](https://www.theodorerooseveltcenter.org/digital-library/o50100/) |
 | BROOKS57 | Chester L. Brooks, *Report on Historic Features of Medora and Vicinity* (NPS, June 1957, 52 pp.). [TRC o275515](https://www.theodorerooseveltcenter.org/digital-library/o275515) |
 | NPSHB | Brooks & Mattison, *Theodore Roosevelt and the Dakota Badlands* (NPS Historical Handbook, 1958/1962). [npshistory.com](https://npshistory.com/handbooks/historical/thro/1962.pdf) |
 | HRS17 | Fiege, Ore & Orsi, *Historic Resource Study: Theodore Roosevelt National Park* (2017). [npshistory.com](https://npshistory.com/publications/thro/hrs.pdf) |
-| AUTO | T.R., *An Autobiography* (1913), ch. IV |
+| AUTO | T.R., *An Autobiography* (1913), ch. IV. The only Roosevelt quotation in the repo is "about three in the morning" (verbatim; see [arrival-train.md](arrival-train.md)) |
 | TRC-CANT | TR Center encyclopedia, ["Cantonment"](https://www.theodorerooseveltcenter.org/encyclopedia/dakota-and-ranching/cantonment) |
-| Cow Boy | *The Bad Lands Cow Boy*, Feb 7, 1884–Dec 23, 1886. [LOC sn84024777](https://www.loc.gov/item/sn84024777/) |
+| Cow Boy | *The Bad Lands Cow Boy*, Feb 7, 1884–Dec 23, 1886. [LOC sn84024777](https://www.loc.gov/item/sn84024777/). The LOC catalogue note "Published in Medora, N.D., Nov. 13, 1885-Dec. 23, 1886" is the cataloguer's, not masthead text; the paper dated itself from Little Missouri in Feb 1884 and from Medora by April 30, 1885. Quoting rule (Oct 2026 audit): quote only the paper's words as given in `data/sources/cowboy_building_mentions_1884-1886.csv` `quote` column or the page OCR; keep brackets for insertions; never put the CSV's `location_text` or `building` summary inside quotation marks. |
 | Dickinson Press | [LOC sn88076013](https://www.loc.gov/item/sn88076013/) (Apr 1883–Mar 1885; Apr–Dec 1887) |
 | Bismarck Tribune / Bismarck Weekly Tribune | LOC sn85042331 (1879–84); [sn85042588](https://www.loc.gov/item/sn85042588/) (1884–87) |
 | St. Paul Daily Globe | LOC sn90059522 |

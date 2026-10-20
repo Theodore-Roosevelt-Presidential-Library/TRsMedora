@@ -4,7 +4,7 @@ Research note, October 15, 2026. Train name and equipment are **not yet confirme
 
 ## What is known
 
-- T.R. reached Little Missouri station "about three in the morning" in September 1883 (AUTO ch. IV). The TR Center gives the night of September 7–8. A Library OTD post said "shortly after two." **Reconcile before publishing.**
+- T.R. stepped off the westbound train at Little Missouri at about three in the morning on **September 8, 1883**. This is the date the project uses everywhere (map, 3D view, [timeline.md](timeline.md)). The hour is his own: "I first reached the Little Missouri on a Northern Pacific train about three in the morning of a cool September day in 1883" (AUTO ch. IV). The day varies by source: the TR Center encyclopedia gives the night of September 7–8, the Library's own timeline (trlibrary.com/tr/timeline) and HMdb 87982 give September 8, and Hagedorn (ch. I: "three o'clock of a cool, September morning") gives September 7, with the dignitaries' bonfire "twenty-four hours previous". The TR Center's 1883–84 diary (o288501) has no September 1883 entries, so the day still rests on these accounts. A Library OTD post said "shortly after two" (Edmund Morris's phrasing); nothing in the sources supports "two", so the OTD post should be corrected rather than carried alongside "about three".
 - He came west from Chicago and St. Paul on the Northern Pacific's regular through westbound passenger train. A forum post citing the 1883 *Official Guide* says the through train west left Minneapolis at 8:45 p.m. That fits a 3 a.m. arrival two nights later. The Guide itself has not been checked.
 - **Train name is unconfirmed.**
   - The NP's own Fall 1883 Rand McNally map shows the westbound train as the "Northern Pacific Express."
