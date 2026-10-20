@@ -195,3 +195,14 @@ After the overview re-solve and the photo fits, location (first letter) and form
 - **Duplicates found:** Hagedorn's "Abattoir of the Marquis" is 00042-00075 (an independent solve agrees with its camera within about 5 m and 3 deg); his Hotel de Mores plate is 00042-00076.
 - **Possible model issues:** the Chateau's 1880s service wing (see the Rolf questions, 3.3a); Hagedorn's "Joe Ferris's Store" plate does not fit the modelled false-front store (5.1a); SHSND 00098-00019 is the Von Hoffman House with mid-tone brick walls.
 - **Source:** Hagedorn 1921 plates at full resolution: archive.org rooseveltinbadla00hage, page n390 (Roberts Hall), n404 (hotel, abattoir), n436 (Ferris store).
+
+## Oct 19: fixes from the evaluation (docs/evaluation-2026-10-19.md)
+- **Opening view** now frames Medora, Little Missouri and the Chateau together from above the south-east hills.
+- **Start spots** carry the date they name (the Roosevelt spot opens on Sept. 1883, on the track side of the Little Missouri depot with the Pyramid Park Hotel beyond); the chimney spot stands 80 m back from the plant's south front; the church spot shows St. Mary's and the Von Hoffman House together. The `date=` hash is read before `walk=` so links keep their date.
+- **Telegraph poles** keep 15 m clear of every photo camera (one stood 4 m in front of Huffman's depot camera).
+- **Captions** say when a camera is approximate rather than solved, and show the archive credit. README states that the gallery serves reduced copies and that permissions must be settled before public use.
+- **Trestle:** the gazetteer and geography doc now give Hagedorn's 300 ft as the river span and the 210 m as reconstructed approach trestle plus span; Rolf question 4.7 quotes him.
+- **River:** the reconstructed 1880-86 channel and the ford on it are exported to the 2D map (`map/data/river_1880s_photos.geojson`, dashed, low confidence) beside the plat trace; the 3D ford moved onto the reconstructed channel, 100 yd downstream of the trestle.
+- **Packing-plant galleries** are dated (until 1886.0) and the six 1886 photo views carry t=1886.3, so Huffman's views show the plant without them; the 1885 view keeps them.
+- **Company store** dated 1883.6 (going up in summer 1883 per the timeline's Dickinson Press items), so it stands in the Sept. 1883 slice; its gallery caption now says the frontage is unresolved.
+- Docs brought up to date: modeling-approach (markers, not transparency; scale figures), geography-and-overlay (Little Missouri fitted to Haynes 1881; river and trestle), photo-matching (solved views removed from "not solved").

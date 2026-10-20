@@ -51,4 +51,4 @@ Then open the map from a web server, for example `python3 -m http.server` in the
 
 ## Image rights
 
-The map links out to photographs rather than copying them. The 1883 plat is shown from the State Historical Society of North Dakota's public web image. Order a high-resolution copy and check terms before any public use. Montana Historical Society images are for educational use only without permission.
+The 2D map links out to photographs rather than copying them. The 3D view's photo gallery (`map3d/photos/`) serves reduced copies of 32 period photographs from the State Historical Society of North Dakota, the Montana Historical Society, Harvard's Houghton Library (via Hagedorn 1921) and the Dickinson Museum Center, each with its credit and a link to the archive record. That is for this internal experiment only: Montana Historical Society images are for educational use only without permission, and permissions for all of them need settling before any public use. The 1883 plat is shown from SHSND's public web image; order a high-resolution copy and check terms before any public use.

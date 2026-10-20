@@ -211,9 +211,12 @@ const sun = new THREE.DirectionalLight(0xfff3e0, 2.4); sun.position.set(-250, 42
 sun.castShadow = true; sun.shadow.mapSize.set(innerWidth<820?1024:2048, innerWidth<820?1024:2048); Object.assign(sun.shadow.camera,{left:-520,right:520,top:520,bottom:-520,near:10,far:1500}); sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.4;
 scene.add(sun, sun.target);
 const camera = new THREE.PerspectiveCamera(40, 1, 1, 8000);
-camera.position.set(330, 330, 620);
+camera.position.set(380, 560, 820);   // provisional; homeView() sets the real opening view once the terrain is known
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(-220, 0, 40); controls.maxPolarAngle = Math.PI*0.495; controls.update();
+controls.target.set(-320, 0, 40); controls.maxPolarAngle = Math.PI*0.495; controls.update();
+// the opening view: Medora, Little Missouri and the Chateau in one frame, from above the south-east hills
+function homeView(){ camera.position.set(380, zAt(380,-820)+560, 820); controls.target.set(-320, zAt(-320,-40), 40); controls.update(); }
+homeView();
 
 // local metres: x = east, y = up, z = -north
 const P = (e,n,u) => new THREE.Vector3(e, u, -n);
@@ -425,8 +428,9 @@ if (trackDense){
 
 // ---------- date slices and filters
 let slice = 2;
+let photoCam = null;   // the period photo view in use, if any
 function applyFilters(){
-  const t = SLICES[slice].t, unk = $('#showUnk').checked;
+  const t = (photoCam && photoCam.t) || SLICES[slice].t, unk = $('#showUnk').checked;   // a photo view may carry its own date within the slice
   for (const g of groups){
     const f=g.userData;
     let on = (f.built==null || f.built<=t) && (f.removed==null || f.removed>t);
@@ -445,7 +449,8 @@ function applyFilters(){
   const guess = $('#showGuessSigns').checked;
   for (const [d] of detailGroups) d.traverse(o=>{ if(!o.isMesh||!o.name) return;
     if (o.name.startsWith('signguess:')) o.visible = guess;
-    else if (o.name.startsWith('sign:')) o.visible = t>=o.signFrom && t<o.signTo; });
+    else if (o.name.startsWith('sign:')) o.visible = t>=o.signFrom && t<o.signTo;
+    else if (o.dateFrom!=null) o.visible = t>=o.dateFrom && t<o.dateTo; });
   [...document.querySelectorAll('#chain button')].forEach((b,i)=>b.setAttribute('aria-pressed', String(i===slice)));
 }
 SLICES.forEach((s,i)=>{
@@ -531,7 +536,6 @@ renderer.domElement.addEventListener('pointermove',e=>{
 renderer.domElement.addEventListener('pointerleave',()=>tip.style.display='none');
 
 // ---------- photo viewpoints
-let photoCam = null;
 const photo = $('#photo');
 const THUMB = {'71':'photos/thumbs/solved71.jpg','195':'photos/thumbs/solved195.jpg','194':'photos/thumbs/solved194.jpg','193':'photos/thumbs/solved193.jpg','259':'photos/thumbs/solved259.jpg'};
 const allViews = [...cams.map(c=>Object.assign({single:false, thumb:THUMB[c.id]}, c)), ...(scene0.photo_views||[]).map(v=>Object.assign({single:true}, v))];
@@ -564,13 +568,13 @@ function enterPhoto(c, btn){
   photo.src=c.url; photo.style.display='block'; $('#cmp').style.display='block'; $('#photoLink').href=c.page;
   // show the town as it stood when the photograph was taken
   const yr=+((c.date||'').match(/1[89]\d\d/)||[0])[0], sl = c.slice ?? (yr<1883?0: yr<1885?1: yr<1887?2: 3);
-  if (yr && sl!==slice){ slice=sl; applyFilters(); }
+  if (yr && sl!==slice){ slice=sl; applyFilters(); } else if (c.t) applyFilters();
   // trains, wagons and people are not in the photographs: hide them while comparing
   for (const tr of trains) tr.visible=false; for (const g of lifeGroups) g.grp.visible=false;
   // the model's trees are a modern-day guess and block several ground-level views: hide them while comparing
   for (const m of (vegetation.userData.trees||[])) m.visible=false;
   $('#cmpTitle').textContent=`${c.title} (${c.date})`;
-  $('#cmpSub').textContent = `${c.ref}. The camera is solved from the buildings in the photo; slide to compare.`;
+  $('#cmpSub').textContent = `${c.ref}, ${c.credit||''}. ${c.fit==='points' ? 'The camera is solved from the buildings in the photo' : 'The camera is approximate: placed from the skyline or by inference, not solved from the buildings'}; slide to compare.`;
   const {rt,up,fw}=camBasis(c);
   camera.position.set(c.C[0]-O.utm13n[0], c.C[2]-O.z0, -(c.C[1]-O.utm13n[1]));
   const M=new THREE.Matrix4().makeBasis(rt, up, fw.clone().negate()); camera.quaternion.setFromRotationMatrix(M);
@@ -578,7 +582,7 @@ function enterPhoto(c, btn){
 }
 function leavePhoto(keepCam){
   photoCam=null; controls.enabled=true; photo.style.display='none'; $('#cmp').style.display='none'; applyFilters(); for (const m of (vegetation.userData.trees||[])) m.visible=true;
-  if(!keepCam){ camera.position.set(330,330,620); controls.target.set(-220,0,40); controls.update(); }
+  if(!keepCam) homeView();
   resize();
 }
 $('#exitPhoto').onclick=()=>leavePhoto();
@@ -653,7 +657,7 @@ $('#exitWalk').onclick=leaveWalk;
 }
 (scene0.viewpoints||[]).forEach(v=>{
   const b=document.createElement('button'); b.type='button'; b.innerHTML=`<b>${esc(v.title)}</b>`;
-  b.onclick=()=>{ startWalk(v.at[0], v.at[1], v.heading); [...document.querySelectorAll('#spots button')].forEach(x=>x.setAttribute('aria-pressed',String(x===b))); };
+  b.onclick=()=>{ if(v.slice!=null && v.slice!==slice){ slice=v.slice; applyFilters(); } startWalk(v.at[0], v.at[1], v.heading); [...document.querySelectorAll('#spots button')].forEach(x=>x.setAttribute('aria-pressed',String(x===b))); };
   $('#spots').appendChild(b);
 });
 // look by dragging
@@ -716,11 +720,11 @@ const _v=new THREE.Vector3();
 function scaleMarkers(){ const h=renderer.domElement.clientHeight||800, k=2*Math.tan(camera.fov*Math.PI/360)/h;
   for (const mk of markers){ if(!mk.parent.visible) continue; const d=_v.copy(mk.position).distanceTo(camera.position); mk.visible = mk.userData.want && !photoCam && !(walking && d>180); if(!mk.visible) continue; const px=walking?26:30; mk.scale.set(px*k*d*0.8, px*k*d, 1); } }
 renderer.setAnimationLoop(now=>{ scaleMarkers(); walkStep(now); if(!walking&&!photoCam) flyStep(now); if(!photoCam && !walking) controls.update(); renderer.render(scene,camera); });
+{ const m=location.hash.match(/date=(\d)/); if(m){ slice=+m[1]; applyFilters(); } }
 { const m=location.hash.match(/walk=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/); if(m) startWalk(+m[1],+m[2],+m[3]); }
 // view from any point: #look=e,n,height,targetE,targetN,targetHeight (heights above the ground; for sharing and testing)
 { const m=location.hash.match(/look=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/);
   if(m){ const v=m.slice(1).map(Number); camera.position.set(v[0], zAt(v[0],v[1])+v[2], -v[1]); controls.target.set(v[3], zAt(v[3],v[4])+v[5], -v[4]); controls.update(); } }
-{ const m=location.hash.match(/date=(\d)/); if(m){ slice=+m[1]; applyFilters(); } }
 // open a period photo view directly: #view=<id>&op=<0-100>   (ids as in the gallery, e.g. 71, 195, mhs72461)
 { const m=location.hash.match(/view=([\w-]+)/); if(m){ const v=allViews.find(x=>String(x.id)===m[1]); if(v){ enterPhoto(v); const o=location.hash.match(/op=(\d+)/); if(o) setOp(+o[1]); } } }
 </script>

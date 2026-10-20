@@ -425,7 +425,7 @@ STYLE = {
                           bays=6, gable_bays=2, no_front_door=True, ridge='shed', shed_high='E', rise=1.0, chimneys=0),
                      dict(wall='drop', wall_color='#958c7d', trim='#8a8173', timber='#6e6558', roof='tin', roof_color='#77736c', front='S', stories=1,
                           bays=0, gable_bays=0, blank=True, no_front_door=True, ridge='shed', shed_high='N', rise=0.6, chimneys=0,
-                          gallery=dict(side='S', span=[-2.1, 9.6], **{'from': 'W'}, levels=3, depth=2.4, h=9.3, porch=4.3))],
+                          gallery=dict(side='S', span=[-2.1, 9.6], **{'from': 'W'}, levels=3, depth=2.4, h=9.3, porch=4.3, until=1886.0))],   # in the 1885 photo; gone in the 1886 and 1887 ones
         basis='SHSND 00042-00074 (= 00042-00153 and 0039_00001, the same 1885 exposure; the "1883" on the card is wrong), 00042-00075 (from the north), Huffman 1886 (MHS 72460) and 00042-00180: three parts: a tall nearly windowless block (32.6 m long, eave about 10 m; its long axis runs ENE-WSW at about 76 degrees, not due east: placed by a joint solve of the two plant photos and the town overviews 00042-00071 and -00195 about the surviving chimney) of horizontal siding on a stone foundation course, with a short box ventilator on its low roof; a lower annex at the west end with three rows of small windows and a louvred monitor (its roof slopes down to the west, eave about 8.4 m there and 9.4 m at the block); and a low one-storey east wing (eave about 4.5 m) between the block and the tower, fronted in 1885 by three levels of galleries (a roofed porch below, open framing above, up to about 9 m) that run from just west of the block\'s south-east corner to the tower (00042-00074; gone by 1886 in MHS 72460 and 00042-00180). An enclosed, roofed runway slopes from the top of the tall block (roof about 10.9 m) up to a timber pier about 25 m west-south-west of the block (roof about 12.3 m), with only a few struts beneath it near the ends: a knee brace at the pier and a V-strut standing on the annex\'s west end (MHS 72460, 00042-00074, -00075); an open walkway rises from the block\'s east end (about 8 m) to the tower (about 9 m); a small log hut with a shed roof stands in front of the east building; a raised loading platform runs along the north side. Depth not measurable in the photos; 8.2 m (assumed) meets the cooling house (the foundation note gives 14-24 ft). Sign: the undated "rent free" banner (00042-00180) is on the south wall; shown only in the spring 1887 view'),
  'pp-ice-house': dict(wall='boardbatten', wall_color='#5e564c', trim='#4a443c', roof='shingle', roof_color='#4f4a44', front='S', ridge='long', stories=2, bays=0, gable_bays=0,
         vents=2, chimneys=0, eave=5.0, rise=3.0, barn=True,
@@ -613,6 +613,26 @@ for it in out['features']:
         it['built'] = min(it.get('built') or 1880.5, 1880.5)
         it['notes'] = ((it.get('notes') or '') + ' 3D view: a timber pile trestle (open deck, bents of four piles every 4.6 m, about 210 m) at rail level +4.5 m, spanning the river where it turns north under the grade and the flood channel east of it. Length, bent spacing and pile layout are reconstructed (photo reconciliation of MHS 72459 and SHSND 00119-00017), not documented.').strip()
 _tl = LineString([(x - ORIGIN[0], y - ORIGIN[1]) for x, y in RAIL_SEG.coords])
+# the ford, "a hundred yards north of the trestle" (HAG): on the reconstructed channel, 91 m downstream (north) of
+# where the trestle crosses it. The 2D map's ford stays on the plat trace; this one goes with the 3D river.
+_rl = [(x - ORIGIN[0], y - ORIGIN[1]) for x, y in _riv83]
+_tr_mid = LineString(_rl).interpolate(LineString(_rl).project(Point(_ch_pt((TRESTLE[0] + TRESTLE[1]) / 2))))
+_ford = None
+_rl_n = list(reversed(_rl))             # now south (upstream) to north (downstream)
+_Lr = LineString(_rl_n); _ford = _Lr.interpolate(_Lr.project(_tr_mid) + 91.4)
+for it in out['features']:
+    if it['id'] == 'ford':
+        it['point'] = [round(_ford.x, 2), round(_ford.y, 2)]
+        it['ground'] = round(zat(_ford.x + ORIGIN[0], _ford.y + ORIGIN[1]) - ORIGIN[2], 2) if 'ground' in it else it.get('ground')
+        it['notes'] = ((it.get('notes') or '') + ' 3D view: placed 100 yd downstream of the trestle on the reconstructed 1880-86 channel.').strip()
+# the reconstructed channel for the 2D map, in lon/lat, with the ford
+_inv = Transformer.from_crs(26913, 4326, always_xy=True)
+json.dump({'type': 'FeatureCollection', 'features': [
+    {'type': 'Feature', 'properties': {'name': 'Little Missouri River at the crossing, 1880-86 (reconstructed from MHS 72459, Haynes 1881 and the town views; low confidence)'},
+     'geometry': {'type': 'LineString', 'coordinates': [list(_inv.transform(x, y)) for x, y in _riv83]}},
+    {'type': 'Feature', 'properties': {'name': 'Ford, 100 yards north of the trestle (HAG), on the reconstructed channel'},
+     'geometry': {'type': 'Point', 'coordinates': list(_inv.transform(_ford.x + ORIGIN[0], _ford.y + ORIGIN[1]))}}]},
+    open(R('map', 'data', 'river_1880s_photos.geojson'), 'w'))
 out['sidings'] = []
 for sd in SIDINGS:
     ds = list(np.arange(sd['ch'][0], sd['ch'][1], 4.0)) + [sd['ch'][1]]
@@ -667,14 +687,15 @@ while len(sage) < 9000:
 out['sage'] = sage
 # telegraph line along the railroad: poles about 50 m apart on the south side, 11.5 m from the main (clear of the
 # second siding at Little Missouri); across the trestle they stand on the ends of the bent caps, 2.2 m from the centre
+_PV = json.load(open(R('data', 'photo_views.json')))
 poles = []
 for d in np.arange(10, RAIL_SEG.length, 50.0):
     if TRESTLE[0] - 8 < d < TRESTLE[1] + 8:
         d = TRESTLE[0] + BENT * round((d - TRESTLE[0]) / BENT); d = min(max(d, TRESTLE[0] + BENT), TRESTLE[1] - BENT)
         e, n = _ch_pt(d, -2.2); poles.append([round(e, 1), round(n, 1), round(TRESTLE_Z - 0.5, 2)]); continue
-    for dd_ in (0, -5, 5, -10, 10, -15, 15, -20, 20):     # step along the line to keep the pole out of the river and the slough
+    for dd_ in (0, -5, 5, -10, 10, -15, 15, -20, 20):     # step along the line to keep the pole out of the river, the slough and the photo cameras
         e, n = _ch_pt(d + dd_, -11.5); c = int((e + ORIGIN[0] - meta['x0']) / _res); r = int((meta['y1'] - n - ORIGIN[1]) / _res)
-        if _d83[r, c] > 22 and _dsl[r, c] > 5: break
+        if _d83[r, c] > 22 and _dsl[r, c] > 5 and all(math.hypot(e - v['e'], n - v['n']) > 15 for v in _PV): break
     poles.append([round(e, 1), round(n, 1), round(zat(e + ORIGIN[0], n + ORIGIN[1]) - ORIGIN[2], 2)])
 out['poles'] = poles
 
@@ -688,20 +709,20 @@ for v in json.load(open(R('data', 'photo_views.json'))):
     f = (v['H'] / 2) / math.tan(math.radians(v['vfov'] / 2))
     out['photo_views'].append(dict(id=v['id'], ref=v['ref'], title=v['title'], date=v['date'], url=v['img'], thumb=v['thumb'], page=_cat.get(key, v['page']),
                                    credit=v['credit'], fit=v.get('fit', 'points'), rms=v.get('rms'), W=v['W'], H=v['H'], C=[v['e'] + ORIGIN[0], v['n'] + ORIGIN[1], g + v['h']],
-                                   yaw=v['yaw'], pitch=v['pitch'], roll=v.get('roll', 0), f=round(f, 1), cx=v.get('cx', v['W'] / 2), cy=v.get('cy', v['H'] / 2), slice=v.get('slice')))
+                                   yaw=v['yaw'], pitch=v['pitch'], roll=v.get('roll', 0), f=round(f, 1), cx=v.get('cx', v['W'] / 2), cy=v.get('cy', v['H'] / 2), slice=v.get('slice'), t=v.get('t')))
 
 # street-level viewpoints: (title, lon, lat, look-at lon, look-at lat)
+# (title, stand-at e,n in local metres, look-at e,n, date slice to open on or None)
 VIEWS = [
- ('Little Missouri depot, where Roosevelt stepped off the train (Sept. 1883)', -103.53262, 46.91652, -103.532968, 46.91594),
- ('Main Street outside the Hotel de Mores', -103.52628, 46.91378, -103.525635, 46.913867),
- ('Third Avenue by the Ferris store', -103.52540, 46.91482, -103.525759, 46.915065),
- ('St. Mary\'s Church and the Von Hoffman House', -103.52300, 46.91420, -103.52178, 46.914),
- ('Below the packing-plant chimney', -103.52725, 46.91580, -103.527793, 46.916084),
- ('The Chateau lawn, looking across to Medora', -103.53430, 46.91265, -103.5255, 46.9142),
+ ('Little Missouri depot, where Roosevelt stepped off the train (Sept. 1883)', (-596.0, 206.5), (-560.0, 222.0), 0),   # on the track side, the depot front at right and the Pyramid Park Hotel beyond
+ ('Main Street outside the Hotel de Mores', (-80.3, -63.0), (-37.6, -54.0), None),
+ ('Third Avenue by the Ferris store', (-15.5, 53.8), (-43.1, 80.9), None),
+ ('St. Mary\'s Church and the Von Hoffman House', (120.0, -70.0), (215.0, 0.0), None),    # both in one 60-degree view
+ ('Below the packing-plant chimney', (-150.0, 125.0), (-200.3, 190.9), None),              # 80 m back, the chimney and the south front
+ ('The Chateau lawn, looking across to Medora', (-688.6, -200.0), (-30.0, -20.0), None),
 ]
 out['viewpoints'] = []
-for title, lo, la, tlo, tla in VIEWS:
-    x, y = T.transform(lo, la); tx, ty = T.transform(tlo, tla)
-    out['viewpoints'].append({'title': title, 'at': loc(x, y), 'heading': round(math.degrees(math.atan2(tx - x, ty - y)) % 360, 1)})
+for title, (x, y), (tx, ty), sl in VIEWS:
+    out['viewpoints'].append({'title': title, 'at': [x, y], 'heading': round(math.degrees(math.atan2(tx - x, ty - y)) % 360, 1), 'slice': sl})
 json.dump(out, open(R('map3d', 'data', 'scene.json'), 'w'))
 print(len(out['features']), 'features written to map3d/data/scene.json')

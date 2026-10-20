@@ -43,10 +43,8 @@ The photos are not in the repo, for rights reasons. Download them from the SHSND
 
 | Photo | What happened |
 |---|---|
-| SHSND 00042-00151, "View of Medora", 1883 | Ground-level view with no surviving building to anchor it. The best skyline fit (on the west bluffs) isn't credible. |
-| Haynes, "Bad Land City, Little Missouri", 1881 (SHSND 00119-00017; MHS 108837) | No position near the Little Missouri station fits the skyline and track together. The Pyramid Park Hotel and depot stay where they are; the photo is used for their form only. |
-| SHSND 00042-00176, horse near the Von Hoffman House | The control points don't fit (34 px). The photo is used for identification only. |
-| Haynes 1880 views (MHS 91737, 91738) | Online copies are too small, about 480 px per stereo half. |
+| SHSND 00042-00151, "View of Medora", 1883 | Ground-level view with no surviving building to anchor it; retried Oct 18 against the current terrain and it still fits anywhere along the valley. |
+| *(Since solved, Oct 2026: the Haynes 1881 Little Missouri view, 00042-00176 and the Haynes 1880 Cantonment view are now fitted; the 1880 crossing view is in the gallery as a best-effort camera. See docs/photo-audit.md.)* | |
 | Hagedorn 1919 overview (Houghton 3013472) | Control points fit poorly (more than 70 px), probably because the print is cropped off-centre. Used for relative positions only. |
 
 ## Results

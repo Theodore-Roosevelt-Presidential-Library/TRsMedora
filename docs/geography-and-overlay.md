@@ -2,7 +2,7 @@
 
 ## The layout
 
-The Little Missouri River flows north. The Northern Pacific crossed it on a timber bridge of about 300 feet.
+The Little Missouri River flows north. The Northern Pacific crossed it on a timber trestle: Hagedorn gives "three hundred feet of trestle" over the river, and the 1880 and 1886 photographs show a longer pile trestle running on over the flood plain (the 3D view reconstructs about 210 m in all).
 
 - **West bank:** Little Missouri grew up around the depot, about half a mile southeast of the 1879 Cantonment. The Chateau sits on a terrace to the south.
 - **East bank:** Medora was platted on the flat under the bluff, with the packing plant at its west edge by the track.
@@ -32,7 +32,7 @@ A three-point affine fit is stored in `data/reference/plat_1883_georef.json`. Tw
 
 ## What the overlay shows
 
-- **The river has moved.** In 1883 the channel ran east of today's. It bent close under the north end of Medora and crossed the track a little east of where the river is today. The 1883 channel on the map is traced from the plat and is approximate.
+- **The river has moved.** In 1883 the channel ran east of today's. The plat trace (the solid line on the 2D map) bends close under the north end of Medora and crosses the track a little east of where the river is today; it is approximate. At the crossing itself the 1880–86 photographs (MHS 72459, Haynes 1881, the town views) put the channel in a loop south of the grade, turning north under the west end of the trestle, with a narrow slough north of the track. That reconstruction (the dashed line on the 2D map, and the water in the 3D view) is low confidence and is one of the questions for Rolf Sletten.
 - **The southern grid is gone.** The plat's rotated grid of about 40 blocks south of the track does not survive in today's lots. Was it vacated, replatted or never built on? Ask the Billings County Recorder.
 - **East of the river the plat draws the track up to about 100 m south of today's line.** It is either schematic there or the line was later moved. NP valuation and right-of-way maps at the Minnesota Historical Society would settle it.
 - **The Cantonment is drawn on the plat** as eight building symbols about half a mile northwest of the crossing. They are schematic. The 1879 reserve map (SHSND MAP.032-00111) and SHSND's 2025 remote-sensing survey can pin down the real buildings.
@@ -49,7 +49,7 @@ Every feature in `data/buildings.csv` records its method:
 | relative | Worked out from a written description relative to another feature (for example "north of the depot") | C |
 | schematic | Near where sources put it; the spot itself is a guess | D |
 
-**Little Missouri.** Placed from Hagedorn's description of September 1883 (hotel north of the track, store and boarding house south, shacks on the riverbank). It is anchored on the depot, 110 m northwest of the 1883 crossing. That spot is a reasoned guess. The Haynes 1881 photo and the Cantonment reserve map are the best ways to improve it.
+**Little Missouri.** The depot and the Pyramid Park Hotel are fixed by the Haynes 1881 photograph (SHSND 00119-00017), whose camera is solved against the depot and the rails to about 1%. The store, boarding house and shacks are placed from Hagedorn's description of September 1883 (hotel north of the track, store and boarding house south, shacks on the riverbank) relative to those two, and Huffman's spring 1886 view shows the ground there empty, so they end at 1886.0. The Cantonment reserve map would still improve the rest.
 
 **Medora.** Uses the period street names that survive today: Third Avenue, Third Street, Main Street and Broadway (*Cow Boy*, 1884–85).
 

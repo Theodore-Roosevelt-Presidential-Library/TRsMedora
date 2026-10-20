@@ -48,7 +48,7 @@ The questions below are the ones the photographs and papers can't settle. Any an
 - **4.4 Medora depot.** By the 1890s the depot reads taller. Was it rebuilt or given a second storey? Can anyone read the mileboards (about "595.3 M" to St. Paul)?
 - **4.5 Hotels and houses.** Where were Peter Malloy's hotel at Little Missouri (the Western House?), the Pioneer Hotel ("close to the depot"), the NP section house and water tank, the Tiser House, Gifford Bros. store, the 1883 saloons and Paddock's 1880 cabin?
 - **4.6 The Cantonment.** Haynes's 1880 photo shows a log building about 97 x 22 ft, long axis WNW-ESE, about 90 m west of where the 1883 plat's symbols put the post. Which building is it, and how were the buildings laid out around the parade ground?
-- **4.7 The bridge.** Haynes's 1880 photo and Huffman's 1886 view show a long pile trestle (we model about 210 m on a raised grade). How long was the original NP bridge at Little Missouri, and when was it replaced by fill?
+- **4.7 The bridge.** Hagedorn says the train "rumbled across three hundred feet of trestle," but Haynes's 1880 photo and Huffman's 1886 view show a pile trestle much longer than 300 ft, running on over the flood plain (we model about 210 m, or 690 ft, on a raised grade). Was the 300 ft the river span only? How long was the whole NP trestle at Little Missouri, and when was it replaced by fill?
 - **4.8 The river.** A late-1880s panorama shows a water channel running between the track and the packing plant. Was that the river's main channel then, or a slough? We now show a narrow slough north of the track and the main channel looping south of it in 1880-86.
 
 ## 5. Photographs

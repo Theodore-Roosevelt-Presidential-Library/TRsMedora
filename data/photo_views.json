@@ -20,7 +20,8 @@
   "fit": "points",
   "rms": 4.4,
   "worst_pct": 1.2,
-  "slice": 2
+  "slice": 2,
+  "t": 1886.3
  },
  {
   "id": "shsnd00042-00077",
@@ -158,7 +159,8 @@
   "fit": "points",
   "rms": 0.7,
   "worst_pct": 0.5,
-  "slice": 2
+  "slice": 2,
+  "t": 1886.3
  },
  {
   "id": "shsnd00042-00152",
@@ -204,7 +206,8 @@
   "fit": "points",
   "rms": 2.1,
   "worst_pct": 2.3,
-  "slice": 2
+  "slice": 2,
+  "t": 1886.3
  },
  {
   "id": "dmc25741",
@@ -432,7 +435,8 @@
   "vfov": 16.558,
   "rms": 2.9,
   "worst_pct": 1.7,
-  "slice": 2
+  "slice": 2,
+  "t": 1886.3
  },
  {
   "id": "mhs72389",
@@ -455,7 +459,8 @@
   "vfov": 28.203,
   "rms": 2.2,
   "worst_pct": 3.9,
-  "slice": 2
+  "slice": 2,
+  "t": 1886.3
  },
  {
   "id": "mhs91738",
@@ -584,7 +589,7 @@
   "H": 1003,
   "fit": "partial",
   "ref": "Houghton 3013533",
-  "title": "The office and company store of the Marquis de Mores",
+  "title": "The office and company store of the Marquis de Mores (the model keeps the 27 m frontage of the 1885 overview; this photo suggests 18-20 m, unresolved)",
   "date": "winter 1883-84",
   "page": "https://id.lib.harvard.edu/images/olvwork421175/urn-3:FHCL.HOUGH:3013533/catalog",
   "credit": "Theodore Roosevelt Collection, Houghton Library, Harvard University (3013533), as reproduced in Hagedorn, Roosevelt in the Bad Lands (1921)",
@@ -622,7 +627,8 @@
   "cy": 211.5,
   "rms": 3.1,
   "worst_pct": 0.9,
-  "slice": 2
+  "slice": 2,
+  "t": 1886.3
  },
  {
   "id": "shsnd00042-00021",

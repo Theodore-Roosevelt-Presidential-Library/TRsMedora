@@ -205,6 +205,7 @@ function signTex(sg) {
   }, [1, 1]);
 }
 function mat(key, grade) {
+  key = key.split('@')[0];                 // a '@from,to' suffix dates the geometry (see buildDetailed); the material ignores it
   const k = key + '|' + grade;
   if (MATS.has(k)) return MATS.get(k);
   const isSign = key.startsWith('sign:') || key.startsWith('signguess:');
@@ -643,18 +644,20 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
   if (st.gallery) {
     const G = st.gallery, fc = toward(DIRS[G.side] || [0, -1]);
     const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]), fr = G.frac || .35, dep = G.depth || 2.2, GH = G.h || H, ph = G.porch || 3.2;
+    const dk = (G.from_date != null || G.until != null) ? '@' + (G.from_date || 0) + ',' + (G.until || 9999) : '';   // dated gallery (packing house: 1885 only)
+    const gTimber = timberKey + dk, gRoof = roofKey + dk, plankKey = 'plank#8d8170' + dk;
     let ta = 0.5 - fr / 2, tb = 0.5 + fr / 2;
     if (G.span) { const d = DIRS[G.from || 'W'], toB = (s1[0] - s0[0]) * d[0] + (s1[1] - s0[1]) * d[1] > 0, a = G.span[0] / fc.len, b = G.span[1] / fc.len; [ta, tb] = toB ? [1 - b, 1 - a] : [a, b]; }
     else if (G.end) { const d = DIRS[G.end], toB = (s1[0] - s0[0]) * d[0] + (s1[1] - s0[1]) * d[1] > 0; [ta, tb] = toB ? [1 - fr - .02, .98] : [.02, fr + .02]; }
     const lv = G.levels || 3, lh = (GH - ph) / Math.max(1, lv - 1), ang = Math.atan2(s1[1] - s0[1], s1[0] - s0[0]);
     const A = [s0[0] + (s1[0] - s0[0]) * ta, s0[1] + (s1[1] - s0[1]) * ta], B = [s0[0] + (s1[0] - s0[0]) * tb, s0[1] + (s1[1] - s0[1]) * tb];
     const M = [(A[0] + B[0]) / 2 + fc.n[0] * dep / 2, (A[1] + B[1]) / 2 + fc.n[1] * dep / 2], len = Math.hypot(B[0] - A[0], B[1] - A[1]);
-    bk.add('plank#8d8170', box(M[0], z0 + .9, -M[1], len, .25, dep, ang));            // raised floor on posts
-    bk.add(roofKey, box(M[0], z0 + ph, -M[1], len + .3, .12, dep + .3, ang));          // porch roof at the ground level
-    for (let k = 1; k < lv; k++) bk.add(timberKey, box(M[0] + fc.n[0] * dep / 2, z0 + ph + k * lh, -(M[1] + fc.n[1] * dep / 2), len, .16, .16, ang));   // open frame above
-    bk.add(timberKey, box(M[0] + fc.n[0] * dep / 2, z0 + 1.9, -(M[1] + fc.n[1] * dep / 2), len, .08, .08, ang));   // porch rail
-    const np = Math.round(len / 2.5) + 1; for (let i = 0; i < np; i++) { const t = i / (np - 1), x = A[0] + (B[0] - A[0]) * t + fc.n[0] * (dep - .1), y = A[1] + (B[1] - A[1]) * t + fc.n[1] * (dep - .1); bk.add(timberKey, box(x, z0 + GH / 2, -y, .16, GH, .16));
-      if (i < np - 1) { const t2 = (i + 1) / (np - 1), x2 = A[0] + (B[0] - A[0]) * t2 + fc.n[0] * (dep - .1), y2 = A[1] + (B[1] - A[1]) * t2 + fc.n[1] * (dep - .1); bk.add(timberKey, beam(V(x, y, z0 + ph + .2), V(x2, y2, z0 + GH - .3), .1)); } }
+    bk.add(plankKey, box(M[0], z0 + .9, -M[1], len, .25, dep, ang));            // raised floor on posts
+    bk.add(gRoof, box(M[0], z0 + ph, -M[1], len + .3, .12, dep + .3, ang));          // porch roof at the ground level
+    for (let k = 1; k < lv; k++) bk.add(gTimber, box(M[0] + fc.n[0] * dep / 2, z0 + ph + k * lh, -(M[1] + fc.n[1] * dep / 2), len, .16, .16, ang));   // open frame above
+    bk.add(gTimber, box(M[0] + fc.n[0] * dep / 2, z0 + 1.9, -(M[1] + fc.n[1] * dep / 2), len, .08, .08, ang));   // porch rail
+    const np = Math.round(len / 2.5) + 1; for (let i = 0; i < np; i++) { const t = i / (np - 1), x = A[0] + (B[0] - A[0]) * t + fc.n[0] * (dep - .1), y = A[1] + (B[1] - A[1]) * t + fc.n[1] * (dep - .1); bk.add(gTimber, box(x, z0 + GH / 2, -y, .16, GH, .16));
+      if (i < np - 1) { const t2 = (i + 1) / (np - 1), x2 = A[0] + (B[0] - A[0]) * t2 + fc.n[0] * (dep - .1), y2 = A[1] + (B[1] - A[1]) * t2 + fc.n[1] * (dep - .1); bk.add(gTimber, beam(V(x, y, z0 + ph + .2), V(x2, y2, z0 + GH - .3), .1)); } }
     if (G.doors !== false) for (let k = 0; k < Math.min(lv, 2); k++) put(fc, fc.len * Math.min(.95, Math.max(.05, (ta + tb) / 2)) + (k % 2 ? 1.5 : -1.5), k ? ph + .1 : 1.0, 1.0, 2.1, 'door');
   }
   // enclosed runway from the top of the building out to a timber pier (packing house; SHSND 00042-00074/-75, Huffman 1886 = MHS 72460)
@@ -771,6 +774,7 @@ export function buildDetailed(f, ctx) {
   const grp = new THREE.Group();
   for (const [mesh, k] of bk.meshes(k => mat(k, grade)).map((m, i) => [m, [...bk.m.keys()][i]])) {
     mesh.userData = f; mesh.name = k;
+    if (k.includes('@')) { const [a, b] = k.split('@')[1].split(',').map(Number); mesh.dateFrom = a || 0; mesh.dateTo = b || 9999; }
     if (k.startsWith('sign:')) { const all = [...(st.signs || []), ...(st.parts || []).flatMap(p => (p.style && p.style.signs) || [])]; const sg = all.find(s => 'sign:' + s.id === k); mesh.signFrom = sg?.from ?? 0; mesh.signTo = sg?.to ?? 9999; }
     grp.add(mesh);
   }

@@ -106,6 +106,7 @@ summary{cursor:pointer;font:700 16px var(--serif);margin:22px 0 6px}
     <label><input type="checkbox" id="lyr-plat" checked> 1883 plat of Medora</label>
     <div style="margin:2px 0 8px 24px"><label for="plat-op" class="small" style="margin:0">Plat opacity</label><input type="range" id="plat-op" min="0" max="1" step="0.05" value="0.8"></div>
     <label><input type="checkbox" id="lyr-river" checked> River channel in 1883 (traced from the plat)</label>
+    <label><input type="checkbox" id="lyr-river2" checked> River at the crossing, 1880–86 (reconstructed from photos; low confidence)</label>
     <label><input type="checkbox" id="lyr-hist" checked> Buildings and features, 1883–87</label>
     <label><input type="checkbox" id="lyr-modern"> Today's lots, streets and buildings</label>
     <div style="margin-top:10px"><label for="base" class="small" style="margin:0 0 4px">Background</label>
@@ -179,11 +180,14 @@ function el(tag, attrs={}, ...kids){
   return e;
 }
 
-Promise.all(['config.json','historic_features.geojson','river_1883.geojson','modern.geojson','unplaced.json']
+Promise.all(['config.json','historic_features.geojson','river_1883.geojson','modern.geojson','unplaced.json','river_1880s_photos.geojson']
   .map(f => fetch('data/'+f).then(r => { if(!r.ok) throw new Error(f); return r.json(); })))
-.then(([cfg, hist, river, modern, unplaced]) => {
+.then(([cfg, hist, river, modern, unplaced, river2]) => {
   const plat = L.imageOverlay(cfg.plat_image, cfg.plat_bounds, {pane:'plat', opacity:.8, interactive:false, alt:'1883 plat of Medora'}).addTo(map);
   const riverL = L.geoJSON(river, {pane:'river', style:{color:RIVER, weight:9, opacity:.45, lineCap:'round'}}).addTo(map);
+  const river2L = L.geoJSON(river2, {pane:'river', style:{color:RIVER, weight:3, opacity:.8, dashArray:'8 6'},
+    pointToLayer:(f,ll)=>L.circleMarker(ll,{radius:5,color:RIVER,fillColor:'#fff',fillOpacity:1,weight:2}),
+    onEachFeature:(f,l)=>l.bindTooltip(f.properties.name)}).addTo(map);
 
   const modernL = L.geoJSON(modern, {pane:'modern', style: f => {
     const p = f.properties;
@@ -275,7 +279,7 @@ Promise.all(['config.json','historic_features.geojson','river_1883.geojson','mod
 
   // controls
   const tog = (id, layer) => document.getElementById(id).addEventListener('change', e => e.target.checked ? layer.addTo(map) : map.removeLayer(layer));
-  tog('lyr-plat', plat); tog('lyr-river', riverL); tog('lyr-hist', shown); tog('lyr-modern', modernL);
+  tog('lyr-plat', plat); tog('lyr-river', riverL); tog('lyr-river2', river2L); tog('lyr-hist', shown); tog('lyr-modern', modernL);
   document.getElementById('plat-op').addEventListener('input', e => plat.setOpacity(+e.target.value));
   document.getElementById('base').addEventListener('change', e => { map.removeLayer(base); base = bases[e.target.value].addTo(map); });
 

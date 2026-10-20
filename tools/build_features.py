@@ -109,10 +109,10 @@ add(id='np-railroad', name='Northern Pacific main line (as in 1883)', town='Betw
     evidence='West of the river, today\'s BNSF (former NP) track falls exactly on the track drawn on the 1883 plat. East of the river the plat draws the track up to ~100 m south of today\'s line, south of a row of blocks that today lies north of the track. Either the plat is schematic there or the line was later realigned - check NP valuation and right-of-way maps (MNHS).',
     sources='PLAT1883; OSM; HAG ch. I', photos='mhs:91737; mhs:95324 (bridge, 1880)')
 add(id='np-bridge', name='Northern Pacific bridge (trestle) over the Little Missouri', town='Between', bank='both',
-    kind='bridge', built=1880.5, built_text='1880', use='railroad bridge', material='timber', footprint_ft='~300 ft long (HAG)',
+    kind='bridge', built=1880.5, built_text='1880', use='railroad bridge', material='timber', footprint_ft='~300 ft of trestle over the river (HAG); the 3D view adds approach trestle over the flood channel, about 690 ft in all (reconstructed)',
     loc='B', form='C', method='plat',
     geom=LineString([along(-45), along(45)]),
-    evidence='Where the track crosses the 1883 channel traced from the plat. HAG: the train "rumbled across three hundred feet of trestle." People crossed on foot between the rails at high water (HAG).',
+    evidence='Where the track crosses the 1883 channel traced from the plat. HAG: the train "rumbled across three hundred feet of trestle." People crossed on foot between the rails at high water (HAG). Haynes 1880 (MHS 91737) and Huffman 1886 (MHS 72459) show a pile trestle much longer than 300 ft, so Hagedorn\'s figure is taken as the river span and the rest as approach trestle over the flood plain; the total is not documented.',
     sources='PLAT1883; HAG ch. I; Bismarck Weekly Tribune 1885-10-16 (an NP bridge west of Medora burned)',
     photos='mhs:91737 (under construction, 1880); mhs:95324; mhs:72459 (Huffman 1886, "Medora from railway bridge"); shsnd:00042-00151')
 add(id='ford', name='Ford of the Little Missouri', town='Between', bank='river', kind='landmark', built=1879,
@@ -451,7 +451,7 @@ upd('metropolitan-hotel', geom=rect((-103.524176, 46.914867), 35, 80, 0), method
     evidence='Same site as today\'s Rough Riders Hotel (HMdb 87499). Triangulated from three photos: the dark, flat-roofed two-story building with rows of windows in SHSND 00042-00071 ("J") and 00042-00195, and the same building, white-painted, in the c.1905 postcard (00259-00003), where it is the Rough Riders Hotel. The three sight lines agree within 0.06 degrees (in the 00042-00071 photo the reprojected base sits about 40 px below the picked base, a known depth bias of that camera at the north end of town). ' + TRI + ' It stands about 30 m south of the centre of today\'s (much larger) Rough Riders complex, i.e. at its south end.',
     photos='+; ' + PH71 + '; ' + PH195 + '; ' + PH259)
 add(id='company-store-offices', name='De Mores company office and store (probable), three joined front-gabled buildings; on the site later given to the Medora Stage & Forwarding Co.', town='Medora', bank='east', kind='building group',
-    built=1883.9, built_text='photographed winter 1883-84 (Houghton 3013533); standing in the 1885 photos', use='NPRC store, post office, meat market and company offices (Cow Boy); probably also the office, warehouse and baggage room of the Medora-Deadwood stage line (NPSHB), Oct 1884-May 1885', material='frame, white-painted', stories='1 1/2-2',
+    built=1883.6, built_text='going up in summer 1883 with the slaughter house and the Chateau (Dickinson Press 1883-06-16 to 08-18, see docs/timeline.md); photographed winter 1883-84 (Houghton 3013533); standing in the 1885 photos', use='NPRC store, post office, meat market and company offices (Cow Boy); probably also the office, warehouse and baggage room of the Medora-Deadwood stage line (NPSHB), Oct 1884-May 1885', material='frame, white-painted', stories='1 1/2-2',
     footprint_ft='row about 90 ft long (placeholder)', loc='C', form='C', method='photo',
     geom=rect((-103.526429, 46.914076), 30, 90, 0),
     evidence='Building group "E" of the 1885 bird\'s-eye view, triangulated from SHSND 00042-00071 and 00042-00195. ' + TRI + ' Three matching front-gabled buildings facing east, on the west side of Main Street.',

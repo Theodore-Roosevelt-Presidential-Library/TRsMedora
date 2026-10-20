@@ -3,7 +3,7 @@
 ## Principles
 
 1. **Data first, model second.** The model is generated from `data/buildings.csv` (later GeoJSON), so new evidence changes the data, not hand-edited geometry.
-2. **Show the confidence.** Each building is drawn according to its grade: solid for A, lighter for B, outline or translucent for C and D. A click shows the evidence and sources.
+2. **Show the confidence.** Each building carries its location grade as a marker above it (A to D), and a click shows the evidence and sources. (Transparency by grade was the first idea; markers read better in 3D and leave the massing honest.)
 3. **Time is a property.** Every building has a built date and a removed date. A slider over September 1883 to 1887 filters what is visible, with four presets that match the timeline slices:
    - A: September 1883 (Roosevelt arrives)
    - B: summer 1884 (boom)
@@ -36,7 +36,7 @@ Match the Library's other 3D work (CampusMap, LBCSystems) so it can share hostin
 
 ## Out of scope for now
 
-Interiors, people and animals, the ranches (Maltese Cross and Elkhorn), and photorealistic texturing.
+Interiors, the ranches (Maltese Cross and Elkhorn), and photorealistic texturing. A few figures, horses, wagons and a train are placed as scale cues only; they are not evidence of anything.
 
 ## Lidar point cloud (added Oct 16, 2026)
 
