@@ -574,7 +574,7 @@ function enterPhoto(c, btn){
   // the model's trees are a modern-day guess and block several ground-level views: hide them while comparing
   for (const m of (vegetation.userData.trees||[])) m.visible=false;
   $('#cmpTitle').textContent=`${c.title} (${c.date})`;
-  $('#cmpSub').textContent = `${c.ref}, ${c.credit||''}. ${c.fit==='points' ? 'The camera is solved from the buildings in the photo' : 'The camera is approximate: placed from the skyline or by inference, not solved from the buildings'}; slide to compare.`;
+  $('#cmpSub').textContent = `${c.ref}${c.credit ? ', ' + c.credit : ''}. ${c.fit==='partial' ? 'The camera is approximate: placed from the skyline or by inference, not solved from the buildings' : 'The camera is solved from the buildings in the photo'}; slide to compare.`;
   const {rt,up,fw}=camBasis(c);
   camera.position.set(c.C[0]-O.utm13n[0], c.C[2]-O.z0, -(c.C[1]-O.utm13n[1]));
   const M=new THREE.Matrix4().makeBasis(rt, up, fw.clone().negate()); camera.quaternion.setFromRotationMatrix(M);

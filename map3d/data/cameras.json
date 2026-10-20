@@ -18,7 +18,8 @@
   "roll": -1.924918120812051,
   "f": 3048.473818827202,
   "cx": 1056,
-  "cy": 820
+  "cy": 820,
+  "credit": "State Historical Society of North Dakota, 00042-00071"
  },
  {
   "id": "195",
@@ -39,7 +40,8 @@
   "roll": -0.8869264752157251,
   "f": 3126.543900716573,
   "cx": 1024,
-  "cy": 690
+  "cy": 690,
+  "credit": "State Historical Society of North Dakota, 00042-00195"
  },
  {
   "id": "194",
@@ -60,7 +62,8 @@
   "roll": 1.5618206901830725,
   "f": 1820.8745176886002,
   "cx": 1008,
-  "cy": 680
+  "cy": 680,
+  "credit": "State Historical Society of North Dakota, 00042-00194"
  },
  {
   "id": "193",
@@ -81,7 +84,8 @@
   "roll": 1.1618967514663303,
   "f": 3344.924795330062,
   "cx": 1282,
-  "cy": 817
+  "cy": 817,
+  "credit": "State Historical Society of North Dakota, 00042-00193"
  },
  {
   "id": "259",
@@ -102,6 +106,7 @@
   "roll": 1.1050490624511218,
   "f": 2297.6193164219603,
   "cx": 560,
-  "cy": 356
+  "cy": 356,
+  "credit": "State Historical Society of North Dakota, 00259-00003"
  }
 ]

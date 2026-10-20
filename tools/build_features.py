@@ -622,7 +622,7 @@ MASS = {
  'chateau-de-mores':    dict(eave=3.8, ridge=9.4, roof='gable', src='lidar 2021 (original building; trees nearby)'),
  'courthouse-cottages': dict(eave=3.2, ridge=6.0, roof='hip',   src='lidar 2021 (eave of the 1884 wings); ridge estimated'),
  'roberts-hall':        dict(eave=7.9, ridge=10.5, roof='gable', src='photo scale bars, SHSND 00042-00071 (7.9/10.5) and -00195 (7.0/9.7); Cow Boy: two 12-ft stories, 26 ft high'),
- 'hotel-de-mores':      dict(eave=8.5, ridge=10.5, roof='gable', src='photo scale bars, SHSND 00042-00195 (8.5/10.2) and -00071 (9.1/11.7 at the tall east block)'),
+ 'hotel-de-mores':      dict(eave=7.6, ridge=10.6, roof='gable', src='SHSND 00042-00149 camera solve (ridge/eave 1.40, eave = length/4.0 for the 100-ft footprint) checked against 00042-00195 (eave 41-44 px at 570 m = 7.4-8.0 m) and -00071 (peak at 10.5-10.6 m)'),
  'metropolitan-hotel':  dict(eave=7.1, ridge=8.9, roof='hip',  src='fitted to eave corners in four solved overviews (00042-00071, -00195, -00194, 00259-00003); low hipped roof'),
  'ferris-store':        dict(eave=6.5, ridge=8.9, roof='gable', src='lidar 2021 of the 1963 reconstruction built to the original plan'),
  'demores-packing-plant': dict(eave=0, ridge=22.7, roof='chimney', src='round, tapering brick stack; height solved at about 22.7 m (+/-2 m) from the fitted plant photos (00042-00074, MHS 72460) together with the town overviews (an estimate; only the lower ruin survives)'),
