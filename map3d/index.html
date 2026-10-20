@@ -118,8 +118,6 @@ button{font:inherit;color:inherit}
       <li>Once you're standing: drag to look around, click the ground to walk to it, or use the arrow keys (Shift to run). Esc returns to the overview.</li>
     </ul>
     <div class="btnrow" style="margin-top:0"><button class="btn" id="exitWalk" type="button" hidden>Back to the overview</button></div>
-    <p class="small" style="margin:10px 0 0">Or start from one of these spots:</p>
-    <div class="views" id="spots" style="margin-top:6px"></div>
 
     <h2>Compare with the period photographs</h2>
     <p class="small">Open a photograph and the model is drawn from where the photographer stood. Slide between the photo and the model to see what matches.</p>
@@ -618,7 +616,6 @@ function leaveWalk(){
   walking=false; controls.enabled=true; camera.near=1; camera.fov=40; camera.updateProjectionMatrix();
   scene.fog.near=1800; scene.fog.far=4200;
   $('#walkhint').style.display='none'; $('#compass').style.display='none'; $('#exitWalk').hidden=true;
-  [...document.querySelectorAll('#spots button')].forEach(x=>x.setAttribute('aria-pressed','false'));
   pinGrp.visible=true;
   const p=camera.position.clone();
   controls.target.set(p.x,p.y-EYE,p.z); camera.position.set(p.x+260,p.y+240,p.z+300); controls.update();
@@ -655,11 +652,7 @@ $('#exitWalk').onclick=leaveWalk;
     showDetail(f);
   };
 }
-(scene0.viewpoints||[]).forEach(v=>{
-  const b=document.createElement('button'); b.type='button'; b.innerHTML=`<b>${esc(v.title)}</b>`;
-  b.onclick=()=>{ if(v.slice!=null && v.slice!==slice){ slice=v.slice; applyFilters(); } startWalk(v.at[0], v.at[1], v.heading); [...document.querySelectorAll('#spots button')].forEach(x=>x.setAttribute('aria-pressed',String(x===b))); };
-  $('#spots').appendChild(b);
-});
+// start-spot buttons removed Oct 20, 2026 (Matt): walk by double-clicking the ground instead
 // look by dragging
 let drag=null;
 renderer.domElement.addEventListener('pointerdown',e=>{ if(walking){ drag=[e.clientX,e.clientY]; renderer.domElement.setPointerCapture(e.pointerId);} });
