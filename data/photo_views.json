@@ -185,7 +185,8 @@
   "fit": "points",
   "rms": 5.8,
   "worst_pct": 2.7,
-  "slice": 1
+  "slice": 1,
+  "t": 1883.75
  },
  {
   "id": "shsnd00042-00196",
@@ -414,7 +415,8 @@
   "vfov": 39.127,
   "rms": 3.4,
   "worst_pct": 3.3,
-  "slice": 0
+  "slice": 0,
+  "t": 1883.85
  },
  {
   "id": "shsnd00042-00197",

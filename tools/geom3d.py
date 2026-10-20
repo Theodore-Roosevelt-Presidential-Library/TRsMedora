@@ -85,8 +85,10 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     geom['pyramid-park-hotel'] = tn(q, u, nrm, -50, 16, -26, 13)
     style_add['pyramid-park-hotel'] = dict(skip_main=True, parts=[
         dict(rect=tn(q, u, nrm, 0, 14, 0, 8), eave=5.15, ridge=8.4, style=dict(_main=True)),
-        dict(rect=tn(q, u, nrm, 6.8, 14, -0.4, 8), eave=5.15, ridge=8.9, style=dict(_cross=True)),
-        dict(rect=tn(q, u, nrm, -6.2, 0, 0, 8), eave=5.15, ridge=8.4, style=dict(_west=True)),       # west end of the same roof, new light boards
+        # cross gable: south half of the block only, apex at the main ridge (Haynes 1881: one continuous ridge, no north gable)
+        dict(rect=tn(q, u, nrm, 6.8, 14, -0.4, 4.0), eave=5.15, ridge=8.4, style=dict(_cross=True)),
+        # west block: light front-gabled block flush with the front, gable to the south (the dark rake in the photo); -0.1 keeps its front proud of the main wall
+        dict(rect=tn(q, u, nrm, -6.2, 0, -0.1, 8), eave=5.15, ridge=8.4, style=dict(_west=True)),
         dict(rect=tn(q, u, nrm, -9.5, -2.5, 4.5, 12.5), eave=5.0, ridge=8.2, style=dict(_rear=True))],  # light rear wing, its gable to the west
         )   # no porch or platform in front: Haynes 1881 shows the people standing on bare ground
     for fid, off in (('lm-roberts-saloon', 38), ('nelson-store', -30), ('mcgeeney-boarding-house', -30), ('fitzgerald-shack', -28), ('maunders-shack', 22)):
@@ -173,16 +175,19 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
                       sources='SHSND 00042-00188', photos='shsnd:00042-00188', notes='Added Oct 2026 at the user\'s request; shown as an open frame in the 1883 view.'))
     extra.append(dict(id='pp-north-barn', name='Barn north of the cooling house', town='Medora', kind='building', built=1883.95, built_text='by 1884 (the frame of 1883 closed in)',
                       removed=None, removed_text='', use='barn or storehouse for the plant', material='frame, dark boards', stories='1.5', loc='C', form='C',
-                      rect=FR, eave=5.0, ridge=7.5,
-                      evidence='The 1883 frame in SHSND 00042-00188 stands where a building about 7.5 m high appears in the later plant photos (joint solve of the overviews); taken to be the same building, closed in.',
+                      rect=FR, eave=4.0, ridge=6.5,
+                      evidence='The 1883 frame in SHSND 00042-00188 stands where a dark gabled building appears in the later plant photos (joint solve of the overviews); taken to be the same building, closed in. 00042-00075 (1885) shows its gable end to the north (ridge north-south) and its ridge well below the cooling house eave (about 6-6.5 m); low confidence.',
                       sources='SHSND 00042-00188; overviews 00042-00071, -00195', photos='shsnd:00042-00188', notes='Added Oct 2026.'))
     # ice house: SW corner from Huffman (72460), east end hidden behind the runway pier there; in front of the pier from the north (00042-00075)
     geom['pp-ice-house'] = [[-254.62, 154.08], [-226.66, 160.86], [-229.75, 173.60], [-257.71, 166.81]]
+    # cross-gabled wing on the north side at the west end, as high as the main ridge (00042-00075): about 9 m wide, projecting about 6 m
+    style_add['pp-ice-house'] = dict(parts=[dict(rect=[[-257.71, 166.81], [-248.96, 168.93], [-250.38, 174.76], [-259.13, 172.64]], eave=5.0, ridge=8.0,
+                                                 style=dict(ridge='front', front='N', bays=0, gable_bays=0, barn=False, no_front_door=True))])
     # ------------------------------------------------ Chateau outbuildings (SHSND 00042-00152, 1883; 00042-00157, 1884)
     extra.append(dict(id='chateau-outbuilding-east', name='Chateau outbuilding (east of the house)', town='Chateau', kind='building', built=1883.6, built_text='by 1883',
-                      removed=None, removed_text='', use='outbuilding (kitchen or wash house?)', material='frame, light painted', stories='1', loc='B', form='C',
+                      removed=1883.8, removed_text='gone by 1884: absent in front of the east veranda in SHSND 00042-00158 (1883), -00197 and MHS 72389 (1886)', use='temporary shed (cook or builders\' shack?) of 1883', material='frame, light painted', stories='1', loc='B', form='C',
                       rect=rect_c((-705.0, -237.0), 6, 5, bearing_u(110)), eave=2.6, ridge=4.3,
-                      evidence='A small light gabled one-storey building close east of the house, with smoke or steam beside it (SHSND 00042-00152, 1883), placed from that photo\'s fitted camera; a chimney seen past the east gable in 00042-00196 (1886) fits it.',
+                      evidence='A small light gabled one-storey building close east of the house, with smoke or steam beside it (SHSND 00042-00152, 1883), placed from that photo\'s fitted camera; a chimney seen past the east gable in 00042-00196 (1886) fits it. Not in the 1883 Ingersoll view (00042-00158) nor the 1886 east views, which look straight at this spot (architectural review, Oct 20, 2026), so shown only in autumn 1883.',
                       sources='SHSND 00042-00152', photos='shsnd:00042-00152', notes='Added from the 2026 photo audit.'))
     p = orig_rect('chateau-outbuildings', point=True)
     extra.append(dict(id='chateau-stable', name='Chateau stable or carriage shed', town='Chateau', kind='building', built=1883.9, built_text='between the 1883 photo (00042-00158, absent) and 1884 (00042-00157)',
@@ -205,13 +210,13 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
                       sources='SHSND 00042-00193/-00194/-00195', photos='shsnd:00042-00195; shsnd:00042-00194; shsnd:00042-00193', notes='Added from the 2026 photo audit.'))
     extra.append(dict(id='photo85-x2', name='Unidentified house east of the Von Hoffman House', town='Medora', kind='building', built=1885.0, built_text='by 1885-86',
                       removed=None, removed_text='', use='dwelling?', material='frame, white', stories='1', loc='C', form='C',
-                      rect=rect_c((307.0, -20.0), 8, 6, bearing_u(90)), eave=2.8, ridge=4.4,
-                      evidence='A white side-gabled house with a chimney, a door and two windows facing south, with a darker building against it and a small white shed (SHSND 00042-00194, -00193; still there in 00259-00003); moved 12 m east to fit the fitted camera of 00042-00176. Position good to about +/-15 m.',
+                      rect=rect_c((298.0, -20.0), 8, 6, bearing_u(90)), eave=2.8, ridge=4.4,
+                      evidence='A white side-gabled house with a chimney, a door and two windows facing south, with a darker building against it and a small white shed (SHSND 00042-00194, -00193; still there in 00259-00003); moved 12 m east to fit the fitted camera of 00042-00176, then 9 m back west so the dark building adjoins it on the east as 00042-00194/-00193 show (Oct 20, 2026). Position good to about +/-15 m.',
                       sources='SHSND 00042-00193/-00194', photos='shsnd:00042-00194; shsnd:00042-00193', notes='Added from the 2026 photo audit.'))
     extra.append(dict(id='photo85-x2b', name='Unidentified dark building east of the Von Hoffman House', town='Medora', kind='building', built=1885.0, built_text='by 1885-86',
                       removed=None, removed_text='', use='unknown', material='log or unpainted boards', stories='1', loc='C', form='D',
-                      rect=rect_c((312.0, -30.0), 7, 5, bearing_u(90)), eave=2.5, ridge=3.8,
-                      evidence='Adjoining the white house to its south in SHSND 00042-00194 (M).', sources='SHSND 00042-00194', photos='shsnd:00042-00194', notes='Added from the 2026 photo audit.'))
+                      rect=rect_c((306.5, -20.5), 7, 5, bearing_u(90)), eave=2.5, ridge=3.8,
+                      evidence='Adjoining the white house to its east in SHSND 00042-00194 and -00193 (M; both cameras look WNW/NW and show it at the right of the white house).', sources='SHSND 00042-00194', photos='shsnd:00042-00194', notes='Added from the 2026 photo audit.'))
     extra.append(dict(id='von-hoffman-outbuilding', name='Von Hoffman House yard outbuilding', town='Medora', kind='building', built=1885.0, built_text='by 1885',
                       removed=None, removed_text='', use='outbuilding (stable or carriage house?)', material='frame', stories='1', loc='B', form='C',
                       rect=rect_c((257.0, -7.0), 13, 6, bearing_u(90)), eave=2.5, ridge=4.2,
@@ -223,10 +228,14 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     style_add['von-hoffman-house'] = dict(fences=[dict(kind='rail', h=1.2, pts=[[255.8, -40.5], [240.0, -40.5], [240.0, 3.0], [273.0, 3.0], [273.0, -23.0]])])
 
     # ------------------------------------------------ unidentified buildings: footprints the photos size differently
-    for fid, L, W, brg in (('photo85-u04', 12, 6, None), ('photo85-u07', 11, 5, 20), ('photo85-u11', 5, 4, None), ('photo85-u12', 16, 10, 0), ('photo85-f', 7.3, 4.9, 90)):
+    for fid, L, W, brg in (('photo85-u04', 12, 6, 90), ('photo85-u07', 11, 5, 20), ('photo85-u11', 5, 4, None), ('photo85-f', 7.3, 4.9, 90)):   # u04: 00042-00071 shows one light barn-like building with its gable to the east
         try: c, uu, vv, L0, W0 = _rect_frame(orig_rect(fid))
         except KeyError: continue
         geom[fid] = rect_c(c, L, W, bearing_u(brg) if brg is not None else uu)
+    # u05: the low light shed west of u04's barn-like building (00042-00071); moved 6 m west so it is not inside u04
+    try:
+        c, uu, vv, L0, W0 = _rect_frame(orig_rect('photo85-u05')); geom['photo85-u05'] = rect_c(c + np.array([-6.0, 0.0]), L0, W0, uu)
+    except KeyError: pass
     # u03: an ell at the south end projecting east
     try:
         c, uu, vv, L0, W0 = _rect_frame(orig_rect('photo85-u03'))
@@ -245,14 +254,18 @@ def overrides(osm, T, ORIGIN, orig_rect, feats=()):
     # company store: three joined front-gabled buildings of unequal width (Houghton 3013533), south to north 7.3 : 6.0 : 4.3
     c, uu, vv, L, W = _rect_frame(orig_rect('company-store-offices'))
     ns = uu if uu[1] > 0 else -uu; eo = np.array([ns[1], -ns[0]])
-    fr = [7.3, 6.0, 4.3]; tot = sum(fr); pos = -L / 2; parts = []
-    for w in fr:
-        seg = L * w / tot; parts.append(dict(rect=rect_c(c + ns * (pos + seg / 2), seg, W, ns), eave=3.2, ridge=5.4)); pos += seg
-    style_add['company-store-offices'] = dict(skip_main=True, parts=parts, decks=[dict(rect=rect_c(c + eo * (W / 2 + 0.6), L, 1.2, ns), h=0.45)])
+    # the three blocks step down in height from south to north (ridges about 5.4, 5.0, 4.2 m; eaves 3.0, 2.8, 2.4 above the snow)
+    fr = [7.3, 6.0, 4.3]; hts = [(3.2, 5.4), (3.0, 5.0), (2.6, 4.3)]; tot = sum(fr); pos = -L / 2; parts = []; stoops = []
+    for w, (ev, rg), door_t in zip(fr, hts, (0.5, 0.5, 0.32)):
+        seg = L * w / tot; parts.append(dict(rect=rect_c(c + ns * (pos + seg / 2), seg, W, ns), eave=ev, ridge=rg))
+        # Houghton 3013533: steps at each door, no continuous platform (door_t: the door's position along the block seen from the street, north at the left)
+        stoops.append(dict(rect=rect_c(c + ns * (pos + seg * (1 - door_t)) + eo * (W / 2 + 0.6), 1.5, 1.2, ns), h=0.35))
+        pos += seg
+    style_add['company-store-offices'] = dict(skip_main=True, parts=parts, decks=stoops)
     # Cow Boy office: board entry vestibule on the east (Main Street) gable, just left of centre seen from the street (Houghton 3013536, camera fitted)
     c, uu, vv, L, W = _rect_frame(orig_rect('cowboy-office'))
     ew = uu if uu[0] > 0 else -uu; nn = np.array([-ew[1], ew[0]])
-    style_add['cowboy-office'] = dict(parts=[dict(rect=rect_c(c + ew * (L / 2 + 0.6) - nn * 0.55, 1.2, 1.15, ew), eave=2.2, ridge=2.45)])   # vestibule on the Main Street (east) gable, fitted from Houghton 3013536
+    style_add['cowboy-office'] = dict(parts=[dict(rect=rect_c(c + ew * (L / 2 + 0.6) - nn * 0.55, 1.2, 1.15, ew), eave=2.1, ridge=2.35, **{'raise': 0.45})])   # vestibule on the Main Street (east) gable, on the raised sill, fitted from Houghton 3013536
 
     # ------------------------------------------------ dates and grades the photos change
     props['photo85-u10'] = dict(built=1886.0, built_text='after 1885 (open ground in SHSND 00042-00071)', notes_add='Photo audit: SHSND 00042-00071 (1885) shows open ground and a cottonwood here, so the building is shown from 1886.')

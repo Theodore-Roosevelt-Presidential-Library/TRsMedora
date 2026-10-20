@@ -104,7 +104,7 @@ export function buildingDetails(f, info, zAt, kind) {
     // woodpile
     const wp = at(-depth / 2 - 1.2, len / 2 - 1.5); box('wood', wp, 2.2, .7, .9, .35);
   }
-  if (kind === 'dwelling' && f.style && /residence|dwelling|house/i.test(f.use || '')) {
+  if (kind === 'dwelling' && f.style && !(f.style.fences && f.style.fences.length) && /residence|dwelling|house/i.test(f.use || '')) {   // not when the building has its own measured fences
     // picket fence across the front yard
     const fy = depth / 2 + 5, half = len / 2 + 2;
     for (let b = -half; b <= half; b += .35) box('white', at(fy, b), .05, 1.0, .07, .5);

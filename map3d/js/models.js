@@ -433,6 +433,8 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
   const sh = Math.min(3.8, H / ((st.stories || 1) + (half ? 0.2 : 0)));
   const winKey = st.arched === 'lancet' ? 'windowLancet' : st.arched ? 'windowArched' : 'window';
   const winW = st.win_w || 0.9;
+  const winH = st.win_h || Math.min(1.6, sh * .5);                          // sash height (win_h overrides the storey-based default)
+  const doorH = Math.min(st.door_h || 2.2, H - 0.15);                      // never push a door head through a low eave
   const put = (fc, along, bottom, w, h, key, out = 0.04) => {
     const isWin = key.startsWith('window');
     if (st.blank && isWin) return;
@@ -463,15 +465,19 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
   const drawOpenings = (fc, spec) => {
     const A = P2(F, ...fc.a), B = P2(F, ...fc.b), l2r = ((B[0] - A[0]) * -fc.n[1] + (B[1] - A[1]) * fc.n[0]) > 0;
     for (const [fl, items] of Object.entries(spec)) for (const [kind, t] of items) {
-      const al = (l2r ? t : 1 - t) * fc.len, s0 = +fl, base = s0 === 0 ? 0 : s0 * sh;
+      // storey key 'a' = the attic (half-storey gable window above the eave line)
+      const al = (l2r ? t : 1 - t) * fc.len, attic = fl === 'a', s0 = attic ? stories : +fl;
+      const base = attic ? H + (st.attic_sill ?? 0.5) - 0.76 : (s0 === 0 ? 0 : s0 * sh);   // attic: sill attic_sill above the eave
       if (kind === 'win' || kind === 'shut') {
-        if (kind === 'shut') put(fc, al, base + (s0 === 0 ? .95 : .76), winW * 1.05, Math.min(1.6, sh * .5), `trim#${(st.shutters || '#6b5a48').slice(1)}`, .07);   // shutters closed over the window
+        const wh = attic ? (st.attic_win_h || 1.3) : winH;
+        if (kind === 'shut') put(fc, al, base + (s0 === 0 ? .95 : .76), winW * 1.05, wh, `trim#${(st.shutters || '#6b5a48').slice(1)}`, .07);   // shutters closed over the window
         else if (st.arched === 'lancet') {     // tall pointed window with a stone sill
           const sill = base + (st.win_sill ?? 1.0), wh2 = st.win_h || 2.6;
           put(fc, al, sill, winW, wh2, winKey); put(fc, al, sill - .12, winW + .25, .12, trimKey, .08);
-        } else put(fc, al, base + (s0 === 0 ? .95 : .76), winW, Math.min(1.6, sh * .5), winKey);
+        } else put(fc, al, base + (s0 === 0 ? .95 : .76), winW, wh, winKey);
       } else {
-        const w = kind === 'double' ? 1.6 : (st.door_w || 1.0), dh = st.door_h || 2.25; put(fc, al, base + .05, w, dh, 'door');
+        const w = kind === 'double' ? 1.6 : (st.door_w || 1.0), dh = Math.min(st.door_h || 2.25, H - 0.15); put(fc, al, base + .05, w, dh, 'door');
+        if (kind === 'transomdoor') put(fc, al, base + dh + .08, w, st.transom_h || 0.45, winKey);   // transom light over the door (Medora depot)
         if (kind === 'archdoor') put(fc, al, base + dh + .05, w + (st.arch_extra ?? .5), st.arch_h || 1.5, `blindArch#${(st.wall_color || '#e9e3d6').slice(1)}`, .03);
         if (kind === 'hooddoor') {   // small gabled hood over the door on brackets
           const c = [A[0] + (B[0] - A[0]) * al / fc.len, A[1] + (B[1] - A[1]) * al / fc.len], ux = (B[0] - A[0]) / fc.len, uy = (B[1] - A[1]) / fc.len, n = fc.n;
@@ -493,14 +499,17 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
       let nn = (s >= 1 && st.upper_bays && fc.long) ? st.upper_bays : n;
       if (s === stories) nn = Math.max(1, Math.min(2, n));   // half-story gable window(s)
       if (s === stories && fc === rear && st.rear_bays === 0) continue;
-      const bottom = s * sh + 0.95 * (s === 0 ? 1 : 0.8), wh = st.win_h || Math.min(1.6, sh * 0.5);
+      // half-storey gable windows sit attic_sill above the eave line (so they clear a porch roof), attic_win_h tall
+      const attic = s === stories && half;
+      const bottom = (attic && st.attic_sill != null) ? H + st.attic_sill : s * sh + 0.95 * (s === 0 ? 1 : 0.8), wh = attic ? (st.attic_win_h || winH) : winH;
       if (isFront && s === 0) continue;                      // ground floor of the front is done below
       if (st.barn && s === 0) continue;
       if (st.paired && fc.long) {
         const np = Math.max(1, Math.round(nn / 2));
         for (let i = 0; i < np; i++) { const c = fc.len * (i + 0.5) / np; if (skipAt(fc, c)) continue; for (const dd of [-0.6, 0.6]) put(fc, c + dd * winW * 1.2, bottom, winW, wh, winKey); }
       } else for (let i = 0; i < nn; i++) {
-        const along = fc.len * (i + 0.5) / nn; if (skipAt(fc, along)) continue;
+        // attic_pair_gap: a close pair of gable windows centred on the gable (Von Hoffman House)
+        const along = (attic && nn === 2 && st.attic_pair_gap) ? fc.len / 2 + (i - 0.5) * st.attic_pair_gap : fc.len * (i + 0.5) / nn; if (skipAt(fc, along)) continue;
         put(fc, along, bottom, winW, st.arched === 'lancet' ? (st.win_h || 2.6) : wh, winKey);
       }
     }
@@ -514,10 +523,11 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
         // explicit ground-floor openings across the front: list of [kind, centre as fraction of the face from the left as seen from outside]
         const A = P2(F, ...fc.a), B = P2(F, ...fc.b), leftToRight = ((B[0] - A[0]) * -fc.n[1] + (B[1] - A[1]) * fc.n[0]) > 0;
         for (const [kind, t] of st.front_openings) { const al = (leftToRight ? t : 1 - t) * fc.len;
-          if (kind === 'door') put(fc, al, 0.05, 1.0, 2.2, 'door'); else if (kind === 'double') put(fc, al, 0.05, 1.6, 2.4, 'door'); else put(fc, al, .95, winW, Math.min(1.6, sh * .5), winKey); }
+          if (kind === 'door' || kind === 'transomdoor') { put(fc, al, 0.05, st.door_w || 1.0, doorH, 'door'); if (kind === 'transomdoor') put(fc, al, doorH + .08, st.door_w || 1.0, st.transom_h || 0.45, winKey); }
+          else if (kind === 'double') put(fc, al, 0.05, 1.6, Math.min(2.4, H - 0.15), 'door'); else put(fc, al, .95, winW, winH, winKey); }
       } else {
-        const nn = Math.max(2, n); put(fc, fc.len / 2, 0.05, 1.05, 2.25, 'door');
-        for (let i = 0; i < nn; i++) { const along = fc.len * (i + 0.5) / nn; if (Math.abs(along - fc.len / 2) > 1.1) put(fc, along, .95, winW, Math.min(1.6, sh * .5), winKey); }
+        const nn = Math.max(2, n); put(fc, fc.len / 2, 0.05, 1.05, Math.min(st.door_h || 2.25, H - 0.15), 'door');
+        for (let i = 0; i < nn; i++) { const along = fc.len * (i + 0.5) / nn; if (Math.abs(along - fc.len / 2) > 1.1) put(fc, along, .95, winW, winH, winKey); }
       }
     }
   }
@@ -575,13 +585,14 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
   if (st.outside_stair) {
     const os = typeof st.outside_stair === 'string' ? {side: st.outside_stair} : st.outside_stair;
     const fc = toward(DIRS[os.side]);
-    const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]), tl = Math.min(fc.len - 1.4, sh * 1.6), steps = 14;
+    // os.at: the landing's distance from the os.top end of the face (default 0.8); os.len: how far the stair runs from the landing
+    const s0 = P2(F, fc.a[0], fc.a[1]), s1 = P2(F, fc.b[0], fc.b[1]), a0 = os.at ?? 0.8, tl = os.len ?? Math.min(fc.len - 1.4, sh * 1.6), steps = Math.max(8, Math.round(tl / 0.42));
     // the top landing is at the end of the face nearest os.top (compass) or at fc.b
     let topAtB = true; if (os.top) { const d = DIRS[os.top]; topAtB = (s1[0] - s0[0]) * d[0] + (s1[1] - s0[1]) * d[1] > 0; }
-    const at = (dist) => { const t = topAtB ? (fc.len - 0.8 - dist) / fc.len : (0.8 + dist) / fc.len; return [s0[0] + (s1[0] - s0[0]) * t + fc.n[0] * .7, s0[1] + (s1[1] - s0[1]) * t + fc.n[1] * .7]; };
+    const at = (dist) => { const t = topAtB ? (fc.len - a0 - dist) / fc.len : (a0 + dist) / fc.len; return [s0[0] + (s1[0] - s0[0]) * t + fc.n[0] * .7, s0[1] + (s1[1] - s0[1]) * t + fc.n[1] * .7]; };
     for (let i = 0; i < steps; i++) { const p = at(tl * (1 - (i + 1) / steps)); bk.add('plank#8c7558', box(p[0], z0 + sh * (i + 1) / steps, -p[1], .9, .08, .9)); }
     const top = at(-0.3); bk.add('plank#8c7558', box(top[0], z0 + sh, -top[1], 1.2, .12, 1.2));
-    put(fc, topAtB ? fc.len - 0.8 : 0.8, sh + .05, 1.0, 2.1, 'door', .05);
+    put(fc, topAtB ? fc.len - a0 : a0, sh + .05, 1.0, 2.1, 'door', .05);
     const p0 = at(tl), p1 = at(0); bk.add(trimKey, beam(V(p0[0] + fc.n[0] * .45, p0[1] + fc.n[1] * .45, z0 + .9), V(p1[0] + fc.n[0] * .45, p1[1] + fc.n[1] * .45, z0 + sh + .9), .06));
   }
   // bay window: flat box, or canted three-sided bay with its own low hip roof (Medora depot)
@@ -598,7 +609,8 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
       // a window in each face, over a 0.8 m board base
       const ww = Math.min(L - .25, i === 1 ? 0.95 : 0.6), mt = (t0 + t1) / 2, mo = (o0 + o1) / 2, ex = (t1 - t0) / L, eo = (o1 - o0) / L;
       const wp = (s, h) => pt(mt + ex * s, mo + eo * s + .03 * (i === 1 ? 1 : 0.7), h);
-      bk.add('window', quad(wp(-ww / 2, .8), wp(ww / 2, .8), wp(ww / 2, Math.min(eh - .25, 2.7)), wp(-ww / 2, Math.min(eh - .25, 2.7)), [0, 0], [1, 0], [1, 1], [0, 1]));
+      const wt = Math.min(eh - .25, bw.win_top ?? 2.7);   // win_top: window head height (the depot's heads sit under the MEDORA board)
+      bk.add('window', quad(wp(-ww / 2, .8), wp(ww / 2, .8), wp(ww / 2, wt), wp(-ww / 2, wt), [0, 0], [1, 0], [1, 1], [0, 1]));
     }
     // low hip roof: from the bay's outer eave up to the wall
     const ro = 0.25, rh = eh + 0.7, R2 = [[-w / 2 - ro, 0], [-cw / 2 - ro * .5, dp + ro], [cw / 2 + ro * .5, dp + ro], [w / 2 + ro, 0]];
@@ -612,8 +624,15 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
     for (const m of st.chimney_at.at) { const a = s * (ext - m); chimneyPts.push(ridgeAlongU ? [a, st.chimney_at.off || 0] : [st.chimney_at.off || 0, a]); }
   } else { const nch = st.chimneys ?? 1;
     for (let i = 0; i < nch; i++) { const t = nch === 1 ? 0.25 : (i / (nch - 1) - 0.5) * 0.7; chimneyPts.push(ridgeAlongU ? [F.L * t, 0] : [0, F.W * t]); } }
-  const chH = roofType === 'shed' ? (p) => shedH(p) : () => ridgeH;
-  for (const a of chimneyPts) { const p = P2(F, a[0], a[1]); const top = chH(a) + (st.chimney_h || 1.1);
+  // roof surface height at a local point (for flues off the ridge)
+  const roofZ = (p) => roofType === 'shed' ? shedH(p) : roofType === 'gable' ? he + (ridgeH - he) * Math.max(0, 1 - Math.abs(ridgeAlongU ? p[1] : p[0]) / bEw) : ridgeH;
+  for (const a of chimneyPts) { const p = P2(F, a[0], a[1]);
+    if (st.chimney_kind === 'pipe') {   // thin dark stovepipe through the roof, with a small cap (Haynes 1881, Houghton 1883-84)
+      const rz = roofZ(a), top = rz + (st.chimney_h || 1.2), g = new THREE.CylinderGeometry(.09, .09, top - rz + .3, 8).toNonIndexed(); g.translate(p[0], z0 + (top + rz - .3) / 2, -p[1]); bk.add('dark#2e2a26', g);
+      const cp = new THREE.CylinderGeometry(.16, .12, .1, 8).toNonIndexed(); cp.translate(p[0], z0 + top, -p[1]); bk.add('dark#2e2a26', cp);
+      continue;
+    }
+    const top = roofZ(a) + (st.chimney_h || 1.1);
     bk.add('wall_brick#9c5a44', box(p[0], z0 + (top + ridgeH - 2.5) / 2, -p[1], .48, top - ridgeH + 2.5, .48));
     bk.add('wall_brick#8e5040', box(p[0], z0 + top - .1, -p[1], .62, .18, .62)); }   // corbelled cap
   // church belfry on the ridge just behind the front gable (St. Mary's: base 2.6 m, open stage 2.3 m, pyramid roof 1.8 m)
@@ -622,22 +641,28 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
     const fm = [(front.a[0] + front.b[0]) / 2, (front.a[1] + front.b[1]) / 2], L0 = Math.hypot(...fm) || 1;
     const c = [fm[0] - fm[0] / L0 * back, fm[1] - fm[1] / L0 * back], p = P2(F, c[0], c[1]);
     const shingKey = bf.color ? `wall_clapboard#${bf.color.slice(1)}` : wallKey.replace(/^wall_[a-z]+/, 'wall_clapboard'), postKey = bf.color ? `trim#${bf.color.slice(1)}` : trimKey;
-    bk.add(shingKey, box(p[0], z0 + ridgeH - .3 + (bf.base || .8) / 2, -p[1], bwid, (bf.base || .8) + .6, bwid, rotU));
+    const skirt = bf.skirt ?? .6;   // how far the shingled base box reaches down the roof slopes below the ridge
+    bk.add(shingKey, box(p[0], z0 + ridgeH - skirt / 2 + (bf.base || .8) / 2, -p[1], bwid, (bf.base || .8) + skirt, bwid, rotU));
     const sb = z0 + ridgeH + (bf.base || .8) - .3, stg = bf.stage || 2.3;
     for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { const q = P2(F, c[0] + dx * (bwid / 2 - .15), c[1] + dy * (bwid / 2 - .15)); bk.add(postKey, box(q[0], sb + stg / 2, -q[1], .3, stg, .3)); }
     if (bf.mullion) for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) { const q = P2(F, c[0] + dx * (bwid / 2 - .1), c[1] + dy * (bwid / 2 - .1)); bk.add(postKey, box(q[0], sb + stg / 2, -q[1], .16, stg, .16)); }   // centre post: two openings a face
     if (bf.rail) bk.add(trimKey, box(p[0], sb + .45, -p[1], bwid - .1, .1, bwid - .1, rotU));
-    bk.add('dark#2a2622', box(p[0], sb + stg / 2, -p[1], bwid * .55, stg * .8, bwid * .55, rotU));
+    if (bf.core !== false) bk.add('dark#2a2622', box(p[0], sb + stg / 2, -p[1], bwid * .55, stg * .8, bwid * .55, rotU));   // core: false = open stage (St. Mary's 1886: sky shows through)
     bk.add(postKey, box(p[0], sb + stg + .08, -p[1], bwid + .2, .16, bwid + .2, rotU));
     const g = new THREE.ConeGeometry((bwid + (bf.overhang ?? .5)) / Math.SQRT2, bf.roof || 1.8, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], sb + stg + .16 + (bf.roof || 1.8) / 2, -p[1]); bk.add(roofKey, g);
   }
   // roof monitor on a flat roof: monitor true or {len_frac, at (-0.5..0.5 along), w}
   if (st.monitor && roofType === 'flat') { const mo = st.monitor === true ? {} : st.monitor, lf = mo.len_frac ?? 0.7, at = mo.at ?? 0, mw = mo.w || 2.4, p = P2(F, F.L * at, 0);
     bk.add(wallKey, box(p[0], z0 + H + 0.9, -p[1], F.L * lf, 1.4, mw, rotU)); bk.add(roofKey, box(p[0], z0 + H + 1.65, -p[1], F.L * lf + .4, .12, mw + .6, rotU)); }
-  // ridge ventilators (sheds)
+  // monitor on a shed roof: a louvred box along the high edge (packing-house annex, SHSND 00042-00075)
+  if (st.monitor && roofType === 'shed') { const mo = st.monitor === true ? {} : st.monitor, lf = mo.len_frac ?? 0.7, mw = mo.w || 2.4, mh = mo.h || 1.4, hf = shedHigh;
+    const hn = [hf.n[0] * F.u[0] + hf.n[1] * F.u[1], hf.n[0] * F.v[0] + hf.n[1] * F.v[1]], mid = [(hf.a[0] + hf.b[0]) / 2, (hf.a[1] + hf.b[1]) / 2];
+    const c = [mid[0] - hn[0] * (mw / 2 + .3), mid[1] - hn[1] * (mw / 2 + .3)], p = P2(F, c[0], c[1]), zr = roofZ(c), ang = Math.atan2(hf.b[1] - hf.a[1], hf.b[0] - hf.a[0]) + rotU;
+    bk.add(wallKey, box(p[0], z0 + zr + mh / 2 - .3, -p[1], hf.len * lf, mh + .3, mw, ang)); bk.add(roofKey, box(p[0], z0 + zr + mh + .06, -p[1], hf.len * lf + .4, .12, mw + .6, ang)); }
+  // ridge ventilators (sheds): vent_w / vent_h set their size (default 1.1 x 0.8 m)
   if (st.vents && roofType !== 'flat') for (let i = 0; i < st.vents; i++) {
-    const t = (i + 0.5) / st.vents - 0.5, a = ridgeAlongU ? [F.L * t * .9, 0] : [0, F.W * t * .9], p = P2(F, a[0], a[1]);
-    bk.add(wallKey, box(p[0], z0 + ridgeH + .35, -p[1], 1.1, .8, 1.1)); const g = new THREE.ConeGeometry(.95, .6, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + 1.05, -p[1]); bk.add(roofKey, g); }
+    const t = (i + 0.5) / st.vents - 0.5, a = ridgeAlongU ? [F.L * t * .9, 0] : [0, F.W * t * .9], p = P2(F, a[0], a[1]), vw = st.vent_w || 1.1, vh = st.vent_h || 0.8;
+    bk.add(wallKey, box(p[0], z0 + ridgeH + vh / 2 - .05, -p[1], vw, vh, vw)); const g = new THREE.ConeGeometry(vw * .86, vw * .55, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + vh - .05 + vw * .275, -p[1]); bk.add(roofKey, g); }
   // galleries on one front (packing house): roofed porch at the ground, open framing above.
   // gallery: {side, frac, end} or {side, span: [m0, m1] metres from the 'from' end of that face (may run past the block's ends), from: compass end},
   //          depth, levels, h (framing height, default the block's eave), porch (porch-roof height, default 3.2)
@@ -686,9 +711,11 @@ function buildBlock(bk, f, st, z0, H, R, frontDir, grade, ridgeAbs) {
     const g = new THREE.ConeGeometry(tw * .78, 2.2, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + th + .55, -p[1]); bk.add(roofKey, g);
   }
   // cupola on the ridge or hip apex (cooling house)
-  if (st.cupola && !st.tower) { const cs = st.cupola === true ? {} : st.cupola, w = cs.w || 2.2, p = P2(F, 0, 0);
-    bk.add(wallKey, box(p[0], z0 + ridgeH + (cs.h || 1.6) / 2 - .2, -p[1], w, (cs.h || 1.6) + .4, w, rotU));
-    const g = new THREE.ConeGeometry(w * .82, cs.cap || 1.4, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + (cs.h || 1.6) + (cs.cap || 1.4) / 2 - .2, -p[1]); bk.add(roofKey, g); }
+  // cupola: true, {w, h, cap} or a list of them, each optionally dated with from_date / until (cooling house: small in 1883, larger from 1885)
+  if (st.cupola && !st.tower) for (const cs of (Array.isArray(st.cupola) ? st.cupola : [st.cupola === true ? {} : st.cupola])) {
+    const w = cs.w || 2.2, p = P2(F, 0, 0), dk = (cs.from_date != null || cs.until != null) ? '@' + (cs.from_date || 0) + ',' + (cs.until || 9999) : '';
+    bk.add(wallKey + dk, box(p[0], z0 + ridgeH + (cs.h || 1.6) / 2 - .2, -p[1], w, (cs.h || 1.6) + .4, w, rotU));
+    const g = new THREE.ConeGeometry(w * .82, cs.cap || 1.4, 4).toNonIndexed(); g.rotateY(Math.PI / 4 + rotU); g.translate(p[0], z0 + ridgeH + (cs.h || 1.6) + (cs.cap || 1.4) / 2 - .2, -p[1]); bk.add(roofKey + dk, g); }
   return {ridgeH, F, front};
 }
 
@@ -755,7 +782,7 @@ export function buildDetailed(f, ctx) {
   for (const p of (st.parts || [])) {
     const base = Object.fromEntries(Object.entries(st).filter(([k]) => !ONE_OFF.includes(k)));
     const s2 = Object.assign({chimneys: 0}, base, p.style || {});
-    const z0 = p.z0 ?? Math.min(...p.rect.map(q => ctx.zAt(q[0], q[1])));
+    const z0 = p.z0 ?? (Math.min(...p.rect.map(q => ctx.zAt(q[0], q[1]))) + (p.raise || 0));   // raise: lift the part's floor (a vestibule on a raised sill)
     buildBlock(bk, f, s2, z0, p.eave, p.rect, s2.front ? DIRS[s2.front] : frontDir, grade, p.ridge);
   }
   buildDecks(bk, st, ctx.zAt);
